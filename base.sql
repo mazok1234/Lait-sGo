@@ -95,7 +95,8 @@ CREATE TABLE production (
     lactation_id    BIGINT       NOT NULL REFERENCES lactation(id),
     vache_id        BIGINT       NOT NULL REFERENCES vache(id),
     date_production DATE         NOT NULL,
-    quantite_litres DECIMAL(6,2) NOT NULL,  
+    quantite_litres DECIMAL(6,2) NOT NULL, 
+    quantite_restante DECIMAL(6,2) DEFAULT quantite_litres,
     created_at      TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
     created_by      BIGINT       REFERENCES utilisateur(id)
 );
