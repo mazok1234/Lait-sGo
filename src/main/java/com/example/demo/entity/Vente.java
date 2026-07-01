@@ -9,6 +9,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 
@@ -31,7 +33,57 @@ public class Vente{
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @ManyToOne
+    @JoinColumn(name = "created_by")
+    private Utilisateur createdBy;
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public LocalDate getDateVente() {
+        return dateVente;
+    }
+
+    public void setDateVente(LocalDate dateVente) {
+        this.dateVente = dateVente;
+    }
+
+    public BigDecimal getQuantiteLait() {
+        return quantiteLait;
+    }
+
+    public void setQuantiteLait(BigDecimal quantiteLait) {
+        this.quantiteLait = quantiteLait;
+    }
+
+    public BigDecimal getPrixUnitaire() {
+        return prixUnitaire;
+    }
+
+    public void setPrixUnitaire(BigDecimal prixUnitaire) {
+        this.prixUnitaire = prixUnitaire;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Utilisateur getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(Utilisateur createdBy) {
+        this.createdBy = createdBy;
+    }
 
 
 }
