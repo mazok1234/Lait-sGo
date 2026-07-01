@@ -53,7 +53,7 @@ public class MouvementAlimentService {
     }
 
     public BigDecimal getStockActuel(Long alimentId) {
-        BigDecimal stock = mouvementRepo.calculerStockActuel(alimentId);
+        BigDecimal stock = mouvementRepo.findStockActuelDepuisVue(alimentId);
         return stock != null ? stock : BigDecimal.ZERO;
     }
 

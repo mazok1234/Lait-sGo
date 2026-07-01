@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+<head><title>Rations</title></head>
+<body>
+<div th:fragment="mainContent" class="page-content">
+
+    <div class="page-header">
+        <h1 class="page-title">Rations</h1>
+        <p class="page-subtitle">Rations journalieres par stade physiologique</p>
+    </div>
+
+    <div class="content-grid" style="grid-template-columns: 1fr 2fr; align-items:start;">
+        <div class="card" style="padding:18px; display:flex; flex-direction:column; gap:12px;">
+            <div th:if="${#lists.isEmpty(rations)}" class="text-center" style="padding:24px;color:#9CA3AF;">
+                Aucune ration trouvee.
+            </div>
+
+            <a th:each="r : ${rations}"
+               th:href="@{/rations(rationId=${r.id})}"
+               class="btn"
+               th:style="${rationSelectionnee != null and rationSelectionnee.id == r.id} ?
+                         'justify-content:space-between;border:1px solid #007AFF;background:#EFF6FF;color:#007AFF;' :
+                         'justify-content:space-between;border:1px solid #D1D5DB;background:#FFFFFF;color:#1A1A2E;'">
+                <span th:text="${r.nom}">Lactation haute</span>
+                <span style="font-size:0.8rem;opacity:.8;" th:text="${r.nbVaches + ' vaches'}">0 vaches</span>
+            </a>
+        </div>
+
+        <div class="card" th:if="${rationSelectionnee != null}">
+            <div class="card-header" style="display:block;">
+                <h2 class="card-title" th:text="${rationSelectionnee.nom}">Ration</h2>
+                <p style="margin-top:4px;color:#6B7280;font-size:0.88rem;"
+                   th:text="${'UFL total ' + #numbers.formatDecimal(nutrition.uflTotal,1,2) + ' - cout ' + #numbers.formatDecimal(nutrition.coutTotalAr,1,2) + ' Ar / jour'}">
+                    UFL total
+                </p>
+            </div>
+
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Aliment</th>
+                        <th>Quantite</th>
+                        <th style="text-align:center;">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="ligne : ${rationAliments}">
+                        <td th:text="${ligne.aliment != null ? ligne.aliment.nom : '-'}">-</td>
+                        <td th:text="${#numbers.formatDecimal(ligne.quantiteKg,1,2) + ' kg'}">0 kg</td>
+                        <td style="text-align:center;">
+                            <a th:href="@{/rations/aliments/delete/{id}(id=${ligne.id},rationId=${rationSelectionnee.id})}"
+                               class="btn btn-sm" style="border:1px solid #DC2626;color:#DC2626;"
+                               onclick="return confirm('Supprimer cet aliment de la ration ?');">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(rationAliments)}">
+                        <td colspan="3" class="text-center" style="padding:32px;color:#9CA3AF;">
+                            Aucun aliment dans cette ration.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="padding:16px 24px;border-top:1px solid #F0EEF0;display:flex;justify-content:flex-end;">
+                <a th:href="@{/rations/aliments/new(rationId=${rationSelectionnee.id})}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Ajouter
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/alimentation_sidebar :: sidebarScript('rations')}"></div>
+</div>
+</body>
+</html>
