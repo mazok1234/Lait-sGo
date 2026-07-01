@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+<head><title>Ajouter un aliment</title></head>
+<body>
+<div th:fragment="mainContent" class="page-content">
+
+    <div class="page-header">
+        <h1 class="page-title">Nouvel aliment</h1>
+    </div>
+
+    <div class="card" style="max-width:600px;margin:0 auto;">
+        <div class="card-header">
+            <h2 class="card-title">Informations de l'aliment</h2>
+        </div>
+        <div class="card-body" style="padding:24px;">
+            <form th:action="@{/aliments/save}" th:object="${aliment}" method="post"
+                  style="display:flex;flex-direction:column;gap:16px;">
+
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label for="nom" style="font-size:0.875rem;font-weight:600;">Nom</label>
+                    <input type="text" id="nom" th:field="*{nom}"
+                           style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
+                    <span th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}"
+                          style="color:#DC2626;font-size:0.8rem;"></span>
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label for="typeAliment" style="font-size:0.875rem;font-weight:600;">Type d'aliment</label>
+                    <select id="typeAliment" th:field="*{typeAliment}"
+                            style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;background:white;">
+                        <option value="">-- Sélectionner un type --</option>
+                        <option th:each="type : ${types}" th:value="${type.id}" th:text="${type.libelle}"></option>
+                    </select>
+                    <span th:if="${#fields.hasErrors('typeAliment')}" th:errors="*{typeAliment}"
+                          style="color:#DC2626;font-size:0.8rem;"></span>
+                </div>
+
+                <div style="display:flex;gap:16px;">
+                    <div style="display:flex;flex-direction:column;gap:6px;flex:1;">
+                        <label for="ufl" style="font-size:0.875rem;font-weight:600;">UFL</label>
+                        <input type="number" step="0.001" id="ufl" th:field="*{ufl}"
+                               style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
+                        <span th:if="${#fields.hasErrors('ufl')}" th:errors="*{ufl}"
+                              style="color:#DC2626;font-size:0.8rem;"></span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:6px;flex:1;">
+                        <label for="pdiG" style="font-size:0.875rem;font-weight:600;">PDI (g)</label>
+                        <input type="number" step="0.01" id="pdiG" th:field="*{pdiG}"
+                               style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
+                        <span th:if="${#fields.hasErrors('pdiG')}" th:errors="*{pdiG}"
+                              style="color:#DC2626;font-size:0.8rem;"></span>
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:16px;">
+                    <div style="display:flex;flex-direction:column;gap:6px;flex:1;">
+                        <label for="seuilAlerteKg" style="font-size:0.875rem;font-weight:600;">Seuil alerte (kg)</label>
+                        <input type="number" step="0.01" id="seuilAlerteKg" th:field="*{seuilAlerteKg}"
+                               style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
+                        <span th:if="${#fields.hasErrors('seuilAlerteKg')}" th:errors="*{seuilAlerteKg}"
+                              style="color:#DC2626;font-size:0.8rem;"></span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:6px;flex:1;">
+                        <label for="prixParKilo" style="font-size:0.875rem;font-weight:600;">Prix / Kg</label>
+                        <input type="number" step="0.01" id="prixParKilo" th:field="*{prixParKilo}"
+                               style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
+                        <span th:if="${#fields.hasErrors('prixParKilo')}" th:errors="*{prixParKilo}"
+                              style="color:#DC2626;font-size:0.8rem;"></span>
+                    </div>
+                </div>
+
+                <div style="display:flex;justify-content:space-between;margin-top:12px;">
+                    <a th:href="@{/aliments}" class="btn"
+                       style="border:1px solid #D1D5DB;background:white;color:#1A1A2E;">Retour</a>
+                    <button type="submit" class="btn btn-primary">Valider</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/alimentation_sidebar :: sidebarScript('alimentation')}"></div>
+
+</div>
+</body>
+</html>

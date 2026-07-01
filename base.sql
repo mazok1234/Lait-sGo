@@ -126,7 +126,7 @@ CREATE TABLE aliment (
     ufl             DECIMAL(5,3),   
     pdi_g           DECIMAL(6,2),  
     seuil_alerte_kg DECIMAL(10,2) DEFAULT 0,  
-    prix_eur_tonne  DECIMAL(8,2)  
+    prix_par_kilo   DECIMAL(8,2)  
 );
 
 CREATE TABLE mouvement_aliment (
@@ -201,7 +201,7 @@ SELECT
     r.nom,
     COALESCE(SUM(ra.quantite_kg * a.ufl), 0)                     AS ufl_total,
     COALESCE(SUM(ra.quantite_kg * a.pdi_g), 0)                   AS pdi_total_g,
-    COALESCE(SUM(ra.quantite_kg * a.prix_eur_tonne) / 1000.0, 0) AS cout_j_eur
+    COALESCE(SUM(ra.quantite_kg * a.prix_par_kilo), 0) AS cout_j_eur
 FROM ration r
 LEFT JOIN ration_aliment ra ON ra.ration_id = r.id
 LEFT JOIN aliment a ON a.id = ra.aliment_id

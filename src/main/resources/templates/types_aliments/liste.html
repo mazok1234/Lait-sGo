@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+<head>
+    <title>Types d'Aliments - Liste</title>
+</head>
+<body>
+    <div th:fragment="mainContent" class="page-content">
+        <div class="page-header">
+            <h1 class="page-title">Types d'Aliments</h1>
+            <p class="page-subtitle">Gestion des catégories d'aliments</p>
+        </div>
+
+        <div class="card card-table">
+            <div class="card-header filters" style="justify-content: space-between;">
+                <input type="text" placeholder="Recherche ..." class="filter-search">
+                <a th:href="@{/types-aliments/new}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Ajouter un type
+                </a>
+            </div>
+            
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Libellé</th>
+                            <th style="text-align: center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="type : ${types}">
+                            <td th:text="${type.code}">Code</td>
+                            <td th:text="${type.libelle}">Libellé</td>
+                            <td style="text-align: center; gap: 8px; display: flex; justify-content: center;">
+                                <a th:href="@{/types-aliments/edit/{id}(id=${type.id})}" class="btn btn-sm" style="border: 1px solid #007AFF; color: #007AFF;">Edit</a>
+                                <a th:href="@{/types-aliments/delete/{id}(id=${type.id})}" class="btn btn-sm" style="border: 1px solid #DC2626; color: #DC2626;" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce type ?');">Delete</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(types)}">
+                            <td colspan="3" class="text-center" style="padding: 20px;">Aucun type d'aliment trouvé.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var sidebarNav = document.querySelector('.sidebar-nav ul');
+                if (sidebarNav) {
+                    sidebarNav.innerHTML = `
+                        <li>
+                            <a href="/aliments">
+                                <i class="fas fa-apple-alt"></i>
+                                <span>Alimentation</span>
+                            </a>
+                        </li>
+                        <li class="active">
+                            <a href="/types-aliments">
+                                <i class="fas fa-tags"></i>
+                                <span>Types d'aliments</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/rations">
+                                <i class="fas fa-balance-scale"></i>
+                                <span>Rations</span>
+                            </a>
+                        </li>
+                    `;
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>
