@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+<head><title>Stades physiologiques</title></head>
+<body>
+<div th:fragment="mainContent" class="page-content">
+
+    <div class="page-header">
+        <h1 class="page-title">Stades physiologiques</h1>
+        <p class="page-subtitle">Gestion des stades de lactation (jours en lait)</p>
+    </div>
+
+    <div class="card card-table">
+        <div class="card-header filters" style="justify-content:space-between;">
+            <input type="text" id="searchInput" placeholder="Recherche ..."
+                   class="filter-search" oninput="filterTable(this,'stadesTable')">
+            <a th:href="@{/stades-physiologiques/new}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Ajouter un stade
+            </a>
+        </div>
+
+        <div class="card-body">
+            <table class="table" id="stadesTable">
+                <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Libelle</th>
+                    <th>Jour min</th>
+                    <th>Jour max</th>
+                    <th style="text-align:center;">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="stade : ${stades}">
+                    <td th:text="${stade.code}">-</td>
+                    <td th:text="${stade.libelle}">-</td>
+                    <td th:text="${stade.jourMin}">0</td>
+                    <td th:text="${stade.jourMax}">0</td>
+                    <td style="text-align:center;display:flex;justify-content:center;gap:6px;">
+                        <a th:href="@{/stades-physiologiques/edit/{id}(id=${stade.id})}"
+                           class="btn btn-sm" style="border:1px solid #6B7280;color:#6B7280;">
+                            <i class="fas fa-pen"></i>
+                        </a>
+                        <a th:href="@{/stades-physiologiques/delete/{id}(id=${stade.id})}"
+                           class="btn btn-sm" style="border:1px solid #DC2626;color:#DC2626;"
+                           onclick="return confirm('Supprimer ce stade ?');">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(stades)}">
+                    <td colspan="5" class="text-center" style="padding:32px;color:#9CA3AF;">
+                        Aucun stade physiologique trouve.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function filterTable(input, tableId) {
+            var filter = input.value.toLowerCase();
+            document.querySelectorAll('#' + tableId + ' tbody tr').forEach(function(row) {
+                row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
+            });
+        }
+    </script>
+
+    <div th:replace="~{fragments/alimentation_sidebar :: sidebarScript('stades')}"></div>
+</div>
+</body>
+</html>

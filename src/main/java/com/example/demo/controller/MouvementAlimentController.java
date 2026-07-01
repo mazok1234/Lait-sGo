@@ -33,7 +33,7 @@ public class MouvementAlimentController {
         return "mouvementsAlim/liste";
     }
 
-    // FORM : depuis /aliments -> +Mvt passe l'alimentId en paramètre
+    // FORM
     @GetMapping("/new")
     public String form(@RequestParam(required = false) Long alimentId, Model model) {
         MouvementAliment mouvement = new MouvementAliment();

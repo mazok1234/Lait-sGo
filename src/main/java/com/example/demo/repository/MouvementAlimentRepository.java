@@ -18,11 +18,13 @@ public interface MouvementAlimentRepository extends JpaRepository<MouvementAlime
     List<MouvementAliment> findByTypeMouvement(String typeMouvement);
 
     List<MouvementAliment> findByAlimentIdAndTypeMouvement(Long alimentId, String typeMouvement);
-    @Query("""
-        SELECT COALESCE(SUM(CASE WHEN m.typeMouvement = 'entree' THEN m.quantiteKg ELSE -m.quantiteKg END), 0)
-        FROM MouvementAliment m WHERE m.aliment.id = :alimentId
-    """)
-    BigDecimal calculerStockActuel(@Param("alimentId") Long alimentId);
+
+    @Query(value = """
+        SELECT COALESCE(v.stock_actuel_kg, 0)
+        FROM v_stock_aliment v
+        WHERE v.aliment_id = :alimentId
+    """, nativeQuery = true)
+    BigDecimal findStockActuelDepuisVue(@Param("alimentId") Long alimentId);
 
     @Query("""
         SELECT MIN(m.dateMouvement)
