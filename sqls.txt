@@ -66,3 +66,17 @@ CREATE TABLE ref_statut_lactation (
     libelle VARCHAR(100) NOT NULL
 );
 
+
+
+
+first get the actual remaining stock (generate the service and the repository function)
+(from the sum of quantite_restante in production)
+
+if the stock is sufficient then proceed , else return with error
+
+now the way we take milk is by fifo logic
+get a list of production where quantite_restante > 0 , date from oldest to newest
+until the milk need is met , itterate through every production objet and deduce the milk from the quantite_restante until the milk need is met
+for each production from which milk is deduced , add it to a list , and at the end , re save every production in that list so that the quantite_restante
+is updated afterwards
+then create a vente object (create random utilisateur for now) and save it 
