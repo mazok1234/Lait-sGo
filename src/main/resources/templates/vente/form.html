@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{index :: layout(~{::content})}">
+
+<div th:fragment="content">
+
+    <h2>Nouvelle vente</h2>
+
+    <form th:action="@{/vente/nouveau}" th:object="${vente}" method="post">
+
+        <p>
+            <label>Date de vente</label><br>
+            <input type="date" th:field="*{dateVente}">
+        </p>
+
+        <p>
+            <label>Quantité (L)</label><br>
+            <input type="number"
+                   step="0.01"
+                   th:field="*{quantiteLait}">
+        </p>
+
+        <p>
+            <label>Prix unitaire</label><br>
+            <input type="number"
+                   step="0.01"
+                   th:field="*{prixUnitaire}">
+        </p>
+
+        <button type="submit">
+            Enregistrer
+        </button>
+
+    </form>
+
+</div>
+
+</html>
