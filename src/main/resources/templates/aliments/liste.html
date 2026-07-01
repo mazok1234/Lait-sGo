@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+<head><title>Aliments</title></head>
+<body>
+<div th:fragment="mainContent" class="page-content">
+
+    <div class="page-header">
+        <h1 class="page-title">Alimentation</h1>
+        <p class="page-subtitle">Gestion des aliments et stocks</p>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="stats-grid">
+        <div class="card stat-card">
+            <div class="stat-icon" style="background-color:#EFF6FF;color:#007AFF;">
+                <i class="fas fa-apple-alt"></i>
+            </div>
+            <div class="stat-body">
+                <div class="stat-label">Nb d'aliments</div>
+                <div class="stat-value" th:text="${aliments.size()}">0</div>
+            </div>
+        </div>
+        <div class="card stat-card">
+            <div class="stat-icon" style="background-color:#FFF7ED;color:#F59E0B;">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="stat-body">
+                <div class="stat-label">Alerte stock</div>
+                <div class="stat-value" th:text="${alerteCount}">0</div>
+            </div>
+        </div>
+        <div class="card stat-card">
+            <div class="stat-icon" style="background-color:#ECFDF5;color:#059669;">
+                <i class="fas fa-coins"></i>
+            </div>
+            <div class="stat-body">
+                <div class="stat-label">Coût total estimé</div>
+                <div class="stat-value" th:text="${#numbers.formatDecimal(coutTotalEstime,1,2) + ' Ar'}">0 Ar</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tableau -->
+    <div class="card card-table">
+        <div class="card-header filters" style="justify-content:space-between;">
+            <input type="text" id="searchInput" placeholder="Recherche ..."
+                   class="filter-search" oninput="filterTable(this,'alimentsTable')">
+            <a th:href="@{/aliments/new}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Ajouter
+            </a>
+        </div>
+
+        <div class="card-body">
+            <table class="table" id="alimentsTable">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Type</th>
+                        <th>Stock actuel</th>
+                        <th>Seuil alerte</th>
+                        <th>Prix/Kg</th>
+                        <th style="text-align:center;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="aliment : ${aliments}">
+                        <td th:text="${aliment.nom}">-</td>
+                        <td th:text="${aliment.typeAliment != null ? aliment.typeAliment.libelle : '-'}">-</td>
+                        <td th:with="stock=${stocks[aliment.id]},
+                                     enAlerte=${aliment.seuilAlerteKg != null
+                                                and stocks[aliment.id] != null
+                                                and stocks[aliment.id] lt aliment.seuilAlerteKg}">
+                            <span th:text="${#numbers.formatDecimal(stock ?: 0, 1, 2) + ' kg'}"
+                                  th:class="${enAlerte} ? 'badge badge-danger' : ''"></span>
+                        </td>
+                        <td th:text="${aliment.seuilAlerteKg != null ? #numbers.formatDecimal(aliment.seuilAlerteKg,1,2) + ' kg' : '-'}">-</td>
+                        <td th:text="${aliment.prixParKilo != null ? #numbers.formatDecimal(aliment.prixParKilo,1,2) + ' Ar' : '-'}">-</td>
+                        <td style="text-align:center;display:flex;justify-content:center;gap:6px;">
+                            <a th:href="@{/mouvementsAlim/new(alimentId=${aliment.id})}"
+                               class="btn btn-sm btn-primary" style="font-size:0.78rem;">
+                                <i class="fas fa-exchange-alt"></i> +Mvt
+                            </a>
+                            <a th:href="@{/aliments/edit/{id}(id=${aliment.id})}"
+                               class="btn btn-sm" style="border:1px solid #6B7280;color:#6B7280;">
+                                <i class="fas fa-pen"></i>
+                            </a>
+                            <a th:href="@{/aliments/delete/{id}(id=${aliment.id})}"
+                               class="btn btn-sm" style="border:1px solid #DC2626;color:#DC2626;"
+                               onclick="return confirm('Supprimer cet aliment ?');">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(aliments)}">
+                        <td colspan="6" class="text-center" style="padding:32px;color:#9CA3AF;">
+                            Aucun aliment trouvé.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/alimentation_sidebar :: sidebarScript('alimentation')}"></div>
+
+    <script>
+        function filterTable(input, tableId) {
+            var filter = input.value.toLowerCase();
+            document.querySelectorAll('#' + tableId + ' tbody tr').forEach(function(row) {
+                row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
+            });
+        }
+    </script>
+
+</div>
+</body>
+</html>
