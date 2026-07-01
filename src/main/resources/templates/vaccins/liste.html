@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{index :: layout(~{::mainContent})}">
+
+<head>
+    <title>Santé - Vaccination</title>
+</head>
+
+<body>
+
+<div th:fragment="mainContent" class="page-content">
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <h1 class="page-title">Santé du troupeau</h1>
+        <p class="page-subtitle">Suivi des vaccinations et rappels</p>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+
+        <div class="card">
+            <div class="card-icon" style="background:#E3F2FD; color:#007AFF;">
+                <i class="fas fa-syringe"></i>
+            </div>
+            <div class="card-body">
+                <div class="card-label">Vaccinations totales</div>
+                <div class="card-value" th:text="${totalVaccins}">0</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-icon" style="background:#FFF3E0; color:#F57C00;">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="card-body">
+                <div class="card-label">Rappels en attente</div>
+                <div class="card-value" th:text="${rappelsCount}">0</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-icon" style="background:#E8F5E9; color:#2E7D32;">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="card-body">
+                <div class="card-label">À jour</div>
+                <div class="card-value" th:text="${okCount}">0</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="card" style="margin-bottom:20px;">
+        <div class="card-body" style="display:flex; gap:12px; padding:20px;">
+
+            <a th:href="@{/vaccins/historique/form}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Ajouter vaccination
+            </a>
+
+            <a th:href="@{/vaccins/rappels}" class="btn"
+               style="border:1px solid #007AFF; color:#007AFF;">
+                <i class="fas fa-bell"></i> Voir rappels
+            </a>
+
+            <a th:href="@{/vaccins/stats}" class="btn"
+               style="border:1px solid #007AFF; color:#007AFF;">
+                <i class="fas fa-chart-bar"></i> Voir statistiques
+            </a>
+
+        </div>
+    </div>
+
+
+
+<div class="card card-table">
+
+    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+
+        <span class="card-title">Vaccins prioritaires</span>
+
+    
+        <input type="text"
+               class="filter-search"
+               placeholder="Rechercher un vaccin..."
+               style="padding:8px 12px; border:1px solid #D1D5DB; border-radius:6px; outline:none; width:250px;">
+    </div>
+
+    <div class="card-body">
+
+        <table class="table" id="vaccinTable">
+
+            <thead>
+            <tr>
+                <th>Vaccin</th>
+                <th>Dernière date</th>
+                <th>Prochain rappel</th>
+                <th>Statut</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            <tr th:each="h : ${prioritaires}">
+
+                <td th:text="${h.protocoleVaccin.nomVaccin}"></td>
+
+                <td th:text="${h.dateVaccination}"></td>
+
+                <td th:text="${h.dateVaccination.plusDays(h.protocoleVaccin.dureeRappelJours)}"></td>
+
+                <td>
+                    <span class="badge badge-danger">URGENT</span>
+                </td>
+
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(prioritaires)}">
+                <td colspan="4" class="text-center" style="padding:20px;">
+                    Aucun vaccin critique
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const input = document.querySelector(".filter-search");
+    const table = document.getElementById("vaccinTable");
+
+    if (!input || !table) return;
+
+    input.addEventListener("keyup", function () {
+
+        const filter = this.value.toLowerCase();
+        const rows = table.querySelectorAll("tbody tr");
+
+        rows.forEach(row => {
+
+            const text = row.textContent.toLowerCase();
+
+            if (row.children.length === 1) return;
+
+            row.style.display = text.includes(filter) ? "" : "none";
+        });
+    });
+});
+</script>
+</body>
+</html>

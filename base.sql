@@ -80,6 +80,24 @@ CREATE TABLE vache (
     created_at       TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE protocole_vaccin(
+    id_protocole_vaccin SERIAL PRIMARY KEY,
+    nom_vaccin VARCHAR(255) NOT NULL,
+    age_min_jours INT NOT NULL, 
+    age_max_jours INT NOT NULL, 
+    duree_rappel_jours INT NOT NULL 
+);
+
+CREATE TABLE historique_vaccin(
+    id_historique_vaccin SERIAL PRIMARY KEY,
+    vache_id INT NOT NULL,
+    id_protocole_vaccin INT NOT NULL,
+    date_vaccination DATE NOT NULL,
+    type_injection VARCHAR(50) NOT NULL,
+    FOREIGN KEY (vache_id) REFERENCES vache(id),
+    FOREIGN KEY (id_protocole_vaccin) REFERENCES protocole_vaccin(id_protocole_vaccin)
+);
+
 CREATE TABLE lactation (
     id               BIGSERIAL   PRIMARY KEY,
     vache_id         BIGINT      NOT NULL REFERENCES vache(id),
