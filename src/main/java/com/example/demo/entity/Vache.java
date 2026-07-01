@@ -11,8 +11,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import java.util.List;
 
 @Entity
 @Table(name = "vache")
@@ -48,6 +50,9 @@ public class Vache {
 
     @Column(name = "score_locomotion")
     private Short scoreLocomotion;
+
+    @OneToMany(mappedBy = "vache")
+    private List<HistoriqueVaccin> historiques;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -129,6 +134,14 @@ public class Vache {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public List<HistoriqueVaccin> getHistoriques() {
+        return historiques;
+    }
+
+    public void setHistoriques(List<HistoriqueVaccin> historiques) {
+        this.historiques = historiques;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {
