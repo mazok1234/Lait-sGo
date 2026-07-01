@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{index :: layout(~{::mainContent})}">
+<head><title>Alertes</title></head>
+<body>
+<div th:fragment="mainContent" class="page-content">
+
+  <div class="page-header">
+    <h1 class="page-title">Alertes</h1>
+    <p class="page-subtitle">Surveillance centralisée du troupeau</p>
+  </div>
+
+  <!-- Messages flash -->
+  <div th:if="${succes}" class="alert alert-success" th:text="${succes}"></div>
+  <div th:if="${erreur}" class="alert alert-danger"  th:text="${erreur}"></div>
+
+  <!-- KPIs -->
+  <div class="stats-grid">
+    <div class="card stat-card">
+      <div class="stat-icon" style="background-color:#FEECEC;color:#DC2626;">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <div class="stat-body">
+        <div class="stat-label">Danger</div>
+        <div class="stat-value" th:text="${kpis['danger'] ?: 0}">0</div>
+      </div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-icon" style="background-color:#FFF7ED;color:#F59E0B;">
+        <i class="fas fa-exclamation-circle"></i>
+      </div>
+      <div class="stat-body">
+        <div class="stat-label">Warning</div>
+        <div class="stat-value" th:text="${kpis['warning'] ?: 0}">0</div>
+      </div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-icon" style="background-color:#EFF6FF;color:#007AFF;">
+        <i class="fas fa-info-circle"></i>
+      </div>
+      <div class="stat-body">
+        <div class="stat-label">Info</div>
+        <div class="stat-value" th:text="${kpis['info'] ?: 0}">0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tableau -->
+  <div class="card card-table">
+    <div class="card-header filters" style="justify-content:space-between; flex-wrap:wrap; gap:8px;">
+
+      <!-- Recherche JS locale -->
+      <input type="text" id="searchInput" placeholder="Rechercher..."
+             class="filter-search" oninput="filterTable(this,'alertesTable')"/>
+
+      <!-- Filtres niveau -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <a th:href="@{/alertes}" class="btn"
+           th:classappend="${niveauActif == null ? ' btn-primary' : ''}">Tous</a>
+        <a th:each="n : ${niveaux}"
+           th:href="@{/alertes(niveau=${n.code})}"
+           th:text="${n.libelle}"
+           class="btn"
+           th:classappend="${niveauActif == n.code ? ' btn-primary' : ''}">Niveau</a>
+      </div>
+
+      <!-- Filtres type -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <a th:href="@{/alertes}" class="btn"
+           th:classappend="${typeActif == null ? ' btn-primary' : ''}">Tous types</a>
+        <a th:each="t : ${types}"
+           th:href="@{/alertes(type=${t.id})}"
+           th:text="${t.libelle}"
+           class="btn"
+           th:classappend="${typeActif == t.id ? ' btn-primary' : ''}">Type</a>
+      </div>
+
+    </div>
+
+    <div class="card-body">
+      <table class="table" id="alertesTable">
+        <thead>
+          <tr>
+            <th>Niveau</th>
+            <th>Titre</th>
+            <th>Concerne</th>
+            <th>Reçue</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="alerte : ${alertes}">
+
+            <td>
+              <span th:text="${alerte.niveauLibelle}"
+                    th:style="${alerte.niveauCode == 'danger'} ? 'color:#DC2626;font-weight:600;'
+                              : (${alerte.niveauCode == 'warning'} ? 'color:#F59E0B;font-weight:600;'
+                              : 'color:#007AFF;font-weight:600;')">
+              </span>
+            </td>
+
+            <td th:text="${alerte.titre}">Titre</td>
+
+            <td>
+              <!-- FA-05 : Lien vers fiche vache -->
+              <a th:if="${alerte.vacheId != null}"
+                 th:href="@{/cheptel/{id}(id=${alerte.vacheId})}"
+                 th:text="${alerte.vacheBoucle != null ? alerte.vacheBoucle : 'Vache #' + alerte.vacheId}">
+                Vache
+              </a>
+              <span th:if="${alerte.vacheId == null}" style="color:#9CA3AF;">
+                <i class="fas fa-warehouse"></i> Alerte ferme
+              </span>
+            </td>
+
+            <td th:text="${#temporals.format(alerte.createdAt, 'dd/MM/yyyy HH:mm')}">Date</td>
+
+            <td>
+              <a th:href="@{/alertes/{id}(id=${alerte.id})}" class="btn btn-primary"
+                 style="font-size:12px;padding:4px 10px;">
+                <i class="fas fa-eye"></i> Voir
+              </a>
+            </td>
+
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

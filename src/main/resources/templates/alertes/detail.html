@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{index :: layout(~{::mainContent})}">
+<head><title>Détail alerte</title></head>
+<body>
+<div th:fragment="mainContent" class="page-content">
+
+  <div class="page-header">
+    <a href="/alertes" style="color:#007AFF;font-size:13px;">
+      <i class="fas fa-arrow-left"></i> Retour aux alertes
+    </a>
+    <h1 class="page-title" th:text="${alerte.titre}">Titre</h1>
+  </div>
+
+  <div class="card" style="max-width:600px;">
+    <div class="card-body" style="display:flex;flex-direction:column;gap:16px;">
+
+      <!-- Niveau -->
+      <div>
+        <div class="stat-label">Niveau</div>
+        <span th:text="${alerte.niveauLibelle}"
+              th:style="${alerte.niveauCode == 'danger'} ? 'color:#DC2626;font-weight:600;'
+                        : (${alerte.niveauCode == 'warning'} ? 'color:#F59E0B;font-weight:600;'
+                        : 'color:#007AFF;font-weight:600;')">
+        </span>
+      </div>
+
+      <!-- Type -->
+      <div>
+        <div class="stat-label">Type</div>
+        <span th:text="${alerte.typeLibelle}">Type</span>
+      </div>
+
+      <!-- Concerne (FA-05) -->
+      <div>
+        <div class="stat-label">Concerne</div>
+        <a th:if="${alerte.vacheId != null}"
+           th:href="@{/cheptel/{id}(id=${alerte.vacheId})}"
+           th:text="${alerte.vacheBoucle != null ? alerte.vacheBoucle : 'Vache #' + alerte.vacheId}"
+           style="color:#007AFF;">
+        </a>
+        <span th:if="${alerte.vacheId == null}" style="color:#9CA3AF;">
+          <i class="fas fa-warehouse"></i> Alerte ferme
+        </span>
+      </div>
+
+      <!-- Date -->
+      <div>
+        <div class="stat-label">Reçue le</div>
+        <span th:text="${#temporals.format(alerte.createdAt, 'dd/MM/yyyy à HH:mm')}">Date</span>
+      </div>
+
+      <!-- Description -->
+      <div th:if="${alerte.description != null and !alerte.description.isEmpty()}">
+        <div class="stat-label">Description</div>
+        <p th:text="${alerte.description}" style="color:#4B5563;line-height:1.6;">Description</p>
+      </div>
+
+      <!-- FA-03 : Bouton acquittement -->
+      <div th:if="${!alerte.acquittee}" style="padding-top:8px;border-top:1px solid #F0EEF0;">
+        <form th:action="@{/alertes/{id}/acquitter(id=${alerte.id})}" method="post">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-check"></i> Acquitter l'alerte
+          </button>
+        </form>
+      </div>
+
+      <div th:if="${alerte.acquittee}" style="color:#059669;font-weight:500;">
+        <i class="fas fa-check-circle"></i> Alerte déjà acquittée
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

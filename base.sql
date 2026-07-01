@@ -183,6 +183,8 @@ CREATE TABLE alerte (
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE INDEX idx_alerte_acquittee_date ON alerte(acquittee, created_at DESC);
+
 CREATE TABLE vente (
     id              BIGSERIAL    PRIMARY KEY,
     date_vente      DATE         NOT NULL,
@@ -191,6 +193,20 @@ CREATE TABLE vente (
     created_by      BIGINT       REFERENCES utilisateur(id),
     created_at      TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
+
+
+INSERT INTO ref_niveau_alerte (code, libelle) VALUES
+('danger',  'Danger'),
+('warning', 'Warning'),
+('info',    'Info');
+
+INSERT INTO ref_type_alerte (code, libelle) VALUES
+('ncs_eleve',        'NCS élevé — suspicion mammite'),
+('chute_production', 'Chute de production anormale'),
+('velage_proche',    'Vêlage proche'),
+('stock_bas',        'Stock aliment sous le seuil critique'),
+('bcs_hors_plage',   'Score BCS hors plage');
+
 
 CREATE VIEW v_lactation_total AS
 SELECT
