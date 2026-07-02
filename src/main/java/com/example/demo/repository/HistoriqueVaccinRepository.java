@@ -23,7 +23,7 @@ public interface HistoriqueVaccinRepository extends JpaRepository<HistoriqueVacc
     List<HistoriqueVaccin> findLastByVaccin();
 
     @Query("SELECT h FROM HistoriqueVaccin h " +
-           "WHERE ( :vacheId = 0 OR h.vache.id = :vacheId ) " +
+           "WHERE ( :vacheId IS NULL OR h.vache.id = :vacheId ) " +
            "AND ( :datedebut IS NULL OR h.dateVaccination >= :datedebut ) " +
            "AND ( :datefin IS NULL OR h.dateVaccination <= :datefin )")
     List<HistoriqueVaccin> findVaccins(@Param("vacheId") Long vacheId, 
