@@ -204,8 +204,9 @@ INSERT INTO ref_type_alerte (code, libelle) VALUES
 ('ncs_eleve',        'NCS élevé — suspicion mammite'),
 ('chute_production', 'Chute de production anormale'),
 ('velage_proche',    'Vêlage proche'),
-('stock_bas',        'Stock aliment sous le seuil critique'),
-('bcs_hors_plage',   'Score BCS hors plage');
+('stock_aliment_bas',        'Stock aliment sous le seuil critique'),
+('bcs_hors_plage',   'Score BCS hors plage'),
+('stock_lait_bas', 'Stock de lait bas après vente');
 
 
 CREATE VIEW v_lactation_total AS

@@ -23,28 +23,27 @@ public class AlerteService {
 
     // Tri fixe : danger=1, warning=2, info=3
     private static final Map<String, Integer> ORDRE_GRAVITE = Map.of(
-        "danger",  1,
-        "warning", 2,
-        "info",    3
-    );
+            "danger", 1,
+            "warning", 2,
+            "info", 3);
 
     public AlerteService(AlerteRepository alerteRepo,
-                         RefNiveauAlerteRepository niveauRepo,
-                         RefTypeAlerteRepository typeRepo,
-                         VacheRepository vacheRepo) {
+            RefNiveauAlerteRepository niveauRepo,
+            RefTypeAlerteRepository typeRepo,
+            VacheRepository vacheRepo) {
         this.alerteRepo = alerteRepo;
         this.niveauRepo = niveauRepo;
-        this.typeRepo   = typeRepo;
-        this.vacheRepo  = vacheRepo;
+        this.typeRepo = typeRepo;
+        this.vacheRepo = vacheRepo;
     }
 
     // FA-01 : Créer une alerte (appelé par le endpoint REST)
     public Alerte creerAlerte(Integer idType, Integer idNiveau,
-                               String titre, String description, Long vacheId) {
+            String titre, String description, Long vacheId) {
         RefNiveauAlerte niveau = niveauRepo.findById(idNiveau)
-            .orElseThrow(() -> new IllegalArgumentException("Niveau introuvable : " + idNiveau));
+                .orElseThrow(() -> new IllegalArgumentException("Niveau introuvable : " + idNiveau));
         RefTypeAlerte type = typeRepo.findById(idType)
-            .orElseThrow(() -> new IllegalArgumentException("Type introuvable : " + idType));
+                .orElseThrow(() -> new IllegalArgumentException("Type introuvable : " + idType));
 
         Alerte alerte = new Alerte();
         alerte.setNiveau(niveau);
@@ -62,23 +61,21 @@ public class AlerteService {
 
         if (niveauCode != null && typeId != null) {
             alertes = alerteRepo
-                .findByAcquitteeFalseAndNiveau_CodeAndType_IdOrderByCreatedAtDesc(niveauCode, typeId);
+                    .findByAcquitteeFalseAndNiveau_CodeAndType_IdOrderByCreatedAtDesc(niveauCode, typeId);
         } else if (niveauCode != null) {
             alertes = alerteRepo
-                .findByAcquitteeFalseAndNiveau_CodeOrderByCreatedAtDesc(niveauCode);
+                    .findByAcquitteeFalseAndNiveau_CodeOrderByCreatedAtDesc(niveauCode);
         } else if (typeId != null) {
             alertes = alerteRepo
-                .findByAcquitteeFalseAndType_IdOrderByCreatedAtDesc(typeId);
+                    .findByAcquitteeFalseAndType_IdOrderByCreatedAtDesc(typeId);
         } else {
             alertes = alerteRepo.findByAcquitteeFalseOrderByCreatedAtDesc();
         }
 
         // Tri danger > warning > info, puis par date décroissante
         alertes.sort(Comparator
-            .comparingInt((Alerte a) ->
-                ORDRE_GRAVITE.getOrDefault(a.getNiveau().getCode(), 99))
-            .thenComparing(Comparator.comparing(Alerte::getCreatedAt).reversed())
-        );
+                .comparingInt((Alerte a) -> ORDRE_GRAVITE.getOrDefault(a.getNiveau().getCode(), 99))
+                .thenComparing(Comparator.comparing(Alerte::getCreatedAt).reversed()));
 
         return alertes.stream().map(this::toDTO).collect(Collectors.toList());
     }
@@ -86,7 +83,7 @@ public class AlerteService {
     // FA-03 : Acquitter une alerte
     public void acquitter(Long id) {
         Alerte alerte = alerteRepo.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("Alerte introuvable : " + id));
+                .orElseThrow(() -> new NoSuchElementException("Alerte introuvable : " + id));
         if (alerte.getAcquittee()) {
             throw new IllegalStateException("Alerte déjà acquittée");
         }
@@ -97,18 +94,17 @@ public class AlerteService {
     // FA-05 : Détail d'une alerte
     public AlerteDTO getDetail(Long id) {
         Alerte alerte = alerteRepo.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("Alerte introuvable : " + id));
+                .orElseThrow(() -> new NoSuchElementException("Alerte introuvable : " + id));
         return toDTO(alerte);
     }
 
     // Compteurs KPIs pour le dashboard
     public Map<String, Long> compterParNiveau() {
         return alerteRepo.findByAcquitteeFalseOrderByCreatedAtDesc()
-            .stream()
-            .collect(Collectors.groupingBy(
-                a -> a.getNiveau().getCode(),
-                Collectors.counting()
-            ));
+                .stream()
+                .collect(Collectors.groupingBy(
+                        a -> a.getNiveau().getCode(),
+                        Collectors.counting()));
     }
 
     private AlerteDTO toDTO(Alerte a) {
@@ -124,14 +120,31 @@ public class AlerteService {
         dto.setAcquittee(a.getAcquittee());
         dto.setCreatedAt(a.getCreatedAt());
 
-        // Enrichissement depuis VacheRepository (déjà disponible dans le projet)
         if (a.getVacheId() != null) {
             vacheRepo.findById(a.getVacheId()).ifPresent(v -> {
-                dto.setVacheNom(v.getNumeroBoucle()); // utiliser numeroBoucle si pas de nom
+                dto.setVacheNom(v.getNumeroBoucle());
                 dto.setVacheBoucle(v.getNumeroBoucle());
             });
         }
 
         return dto;
+    }
+
+    // methode util a injecter par les autres modules
+    public void envoyerAlerte(String typeCode, String niveauCode,
+            String titre, String description, Long vacheId) {
+        try {
+            RefTypeAlerte type = typeRepo.findByCode(typeCode)
+                    .orElseThrow(() -> new IllegalArgumentException("Type inconnu : " + typeCode));
+
+            RefNiveauAlerte niveau = niveauRepo.findByCode(niveauCode)
+                    .orElseThrow(() -> new IllegalArgumentException("Niveau inconnu : " + niveauCode));
+
+            creerAlerte(type.getId(), niveau.getId(), titre, description, vacheId);
+
+        } catch (Exception e) {
+            // Ne pas faire planter le module appelant si l'alerte échoue
+            System.err.println("[Alertes] Alerte non envoyée : " + e.getMessage());
+        }
     }
 }
