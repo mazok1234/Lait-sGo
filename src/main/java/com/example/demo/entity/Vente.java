@@ -24,7 +24,7 @@ public class Vente{
     @Column(name = "date_vente")
     private LocalDate dateVente;
 
-    @Column(name = "quantite_lait")
+    @Column(name = "quantite_litres")
     private BigDecimal quantiteLait;
 
     @Column(name = "prix_unitaire")

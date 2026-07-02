@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+
+<head>
+    <title>Santé - Vaccination</title>
+</head>
+
+<body>
+
+    <div th:fragment="mainContent" class="page-content">
+
+        <div id="mainContent">
+
+            <div class="page-header">
+                <h1 class="page-title">Santé du troupeau</h1>
+                <p class="page-subtitle">Suivi des vaccinations et rappels</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="card">
+                    <div class="card-icon" style="background:#E3F2FD; color:#007AFF;">
+                        <i class="fas fa-syringe"></i>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-label">Vaccinations totales</div>
+                        <div class="card-value" th:text="${totalVaccins}">0</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon" style="background:#FFF3E0; color:#F57C00;">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-label">Rappels en attente</div>
+                        <div class="card-value" th:text="${rappelsCount}">0</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon" style="background:#E8F5E9; color:#2E7D32;">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-label">À jour</div>
+                        <div class="card-value" th:text="${okCount}">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-bottom:20px;">
+                <div class="card-body" style="display:flex; gap:12px; padding:20px;">
+                    <a th:href="@{/vaccins/historique/form}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Ajouter vaccination
+                    </a>
+                    <a th:href="@{/vaccins/rappels}" class="btn" style="border:1px solid #007AFF; color:#007AFF;">
+                        <i class="fas fa-bell"></i> Voir rappels
+                    </a>
+                    <a th:href="@{/vaccins/stats}" class="btn" style="border:1px solid #007AFF; color:#007AFF;">
+                        <i class="fas fa-chart-bar"></i> Voir statistiques
+                    </a>
+                    <button id="exportBtn" class="btn btn-primary" title="Exporter en Excel"
+                        style="background-color: #1040b9; width: 42px; height: 42px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border-radius: 8px;float:right;">
+                        <i class="fas fa-file-excel" style="font-size: 1.1rem;"></i>
+                    </button>
+
+                    <button id="importBtn" class="btn btn-primary" title="Importer depuis Excel"
+                        style="background-color: #10b9b3; width: 42px; height: 42px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border-radius: 8px; float: inline-end;">
+                        <i class="fas fa-file-upload" style="font-size: 1.1rem;"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="card card-table">
+                <div class="card-header"
+                    style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                    <span class="card-title">Vaccins prioritaires</span>
+                    <input type="text" class="filter-search" placeholder="Rechercher un vaccin..."
+                        style="padding:8px 12px; border:1px solid #D1D5DB; border-radius:6px; outline:none; width:250px;">
+                </div>
+
+                <div class="card-body">
+                    <table class="table" id="vaccinTable">
+                        <thead>
+                            <tr>
+                                <th>Vaccin</th>
+                                <th>Dernière date</th>
+                                <th>Prochain rappel</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="h : ${prioritaires}">
+                                <td th:text="${h.protocoleVaccin.nomVaccin}"></td>
+                                <td th:text="${h.dateVaccination}"></td>
+                                <td th:text="${h.dateVaccination.plusDays(h.protocoleVaccin.dureeRappelJours)}"></td>
+                                <td><span class="badge badge-danger">URGENT</span></td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(prioritaires)}">
+                                <td colspan="4" class="text-center" style="padding:20px;">Aucun vaccin critique</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="modalOverlay" class="hidden">
+            <div class="modal-card">
+                <h2 style="margin-top: 0; margin-bottom: 20px; font-size: 1.25rem; font-weight: 700;">Options d'export
+                    Excel</h2>
+
+                <form th:action="@{/vaccins/exportHistorique}" method="GET">
+
+                    <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px;">
+                        <label
+                            style="font-size: 0.8rem; color: #6B7280; font-weight: 600; text-transform: uppercase;">Sélectionner
+                            une Vache :</label>
+                        <select name="vacheId"
+                            style="padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-family: 'Inter', sans-serif; outline: none;">
+                            <option value="">-- Tout le troupeau --</option>
+                            <option th:each="v : ${vaches}" th:value="${v.id}" th:text="${v.numeroBoucle}"></option>
+                        </select>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px;">
+                        <label
+                            style="font-size: 0.8rem; color: #6B7280; font-weight: 600; text-transform: uppercase;">Date
+                            de début :</label>
+                        <input type="date" name="datedebut"
+                            style="padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-family: 'Inter', sans-serif; width: 100%;">
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px;">
+                        <label
+                            style="font-size: 0.8rem; color: #6B7280; font-weight: 600; text-transform: uppercase;">Date
+                            de fin :</label>
+                        <input type="date" name="datefin"
+                            style="padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-family: 'Inter', sans-serif; width: 100%;">
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" id="closeBtn" class="btn"
+                            style="background: #9CA3AF; color: white;">Annuler</button>
+                        <button type="submit" class="btn btn-primary"
+                            style="background-color: #10B981;">Télécharger</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="modalOverlay1" class="hidden">
+            <div class="card" style="margin-top: 20px; padding: 20px;">
+                <h3 class="card-title" style="margin-bottom: 12px;"> Importer un historique de vaccinations</h3>
+
+                <div th:if="${success}"
+                    style="color: #155724; background: #d4edda; padding: 10px; border-radius: 4px; margin-bottom: 10px;"
+                    th:text="${success}"></div>
+                <div th:if="${error}"
+                    style="color: #721c24; background: #f8d7da; padding: 10px; border-radius: 4px; margin-bottom: 10px;"
+                    th:text="${error}"></div>
+
+                <form th:action="@{/vaccins/importHistorique}" method="POST" enctype="multipart/form-data"
+                    style="display: flex; gap: 12px; align-items: center;">
+                    <input type="file" name="file" accept=".xlsx, .xls"
+                        style="padding: 8px; border: 1px dashed #D1D5DB; border-radius: 6px; flex: 1;" required>
+                    <button type="submit" class="btn btn-primary" style="background-color: #007AFF;">
+                        <i class="fas fa-upload"></i> Lancer l'import
+                    </button>
+                    <button type="button" id="closeBtn1" class="btn"
+                        style="background: #9CA3AF; color: white;">Annuler</button>
+                </form>
+            </div>
+        </div>
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+
+                const input = document.querySelector(".filter-search");
+                const table = document.getElementById("vaccinTable");
+
+                if (!input || !table) return;
+
+                input.addEventListener("keyup", function () {
+
+                    const filter = this.value.toLowerCase();
+                    const rows = table.querySelectorAll("tbody tr");
+
+                    rows.forEach(row => {
+
+                        const text = row.textContent.toLowerCase();
+
+                        if (row.children.length === 1) return;
+
+                        row.style.display = text.includes(filter) ? "" : "none";
+                    });
+                });
+
+                const exportBtn = document.getElementById('exportBtn');
+                const closeBtn = document.getElementById('closeBtn');
+                const modalOverlay = document.getElementById('modalOverlay');
+                const modalOverlay1 = document.getElementById('modalOverlay1');
+                const mainContent = document.getElementById('mainContent');
+                const importBtn = document.getElementById('importBtn');
+                const closeBtn1 = document.getElementById('closeBtn1');
+
+                if (exportBtn && closeBtn && modalOverlay && modalOverlay1 && mainContent && importBtn && closeBtn1) {
+                    exportBtn.addEventListener('click', function () {
+                        modalOverlay.classList.remove('hidden');
+                        mainContent.classList.add('blur-background');
+                    });
+
+                    closeBtn.addEventListener('click', function () {
+                        modalOverlay.classList.add('hidden');
+                        mainContent.classList.remove('blur-background');
+                    });
+
+                    importBtn.addEventListener('click', function () {
+                        modalOverlay1.classList.remove('hidden');
+                        mainContent.classList.add('blur-background');
+                    });
+
+                    closeBtn1.addEventListener('click', function () {
+                        modalOverlay1.classList.add('hidden');
+                        mainContent.classList.remove('blur-background');
+                    });
+                }
+
+
+            });
+        </script>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{index :: layout(~{::mainContent})}">
+
+<head>
+    <title>Historique Vaccin</title>
+</head>
+
+<body>
+
+<div th:fragment="mainContent" class="page-content">
+
+    <div class="page-header">
+        <h1 class="page-title">Ajouter un vaccin</h1>
+        <p class="page-subtitle">Enregistrer une vaccination dans l'historique</p>
+    </div>
+
+    <div class="card">
+        <div class="card-body" style="padding: 24px;">
+
+            <form th:action="@{/vaccins/historique/save}" method="post">
+
+                <!-- VACHE -->
+                <div style="margin-bottom: 16px;">
+                    <label>Vache</label>
+                    <select name="vacheId" required style="width:100%; padding:8px;">
+                        <option value="">-- choisir une vache --</option>
+                        <option th:each="v : ${vaches}"
+                                th:value="${v.id}"
+                                th:text="${v.numeroBoucle}">
+                        </option>
+                    </select>
+                </div>
+
+                <!-- VACCIN -->
+                <div style="margin-bottom: 16px;">
+                    <label>Vaccin</label>
+                    <select name="protocoleId" required style="width:100%; padding:8px;">
+                        <option value="">-- choisir un vaccin --</option>
+                        <option th:each="p : ${protocoles}"
+                                th:value="${p.idProtocoleVaccin}"
+                                th:text="${p.nomVaccin}">
+                        </option>
+                    </select>
+                </div>
+
+                <!-- DATE -->
+                <div style="margin-bottom: 16px;">
+                    <label>Date vaccination</label>
+                    <input type="date" name="dateVaccination"
+                           style="width:100%; padding:8px;" required>
+
+                    
+                </div>
+
+                <!-- TYPE -->
+                <div style="margin-bottom: 20px;">
+                    <label>Type injection</label>
+                    <select name="typeInjection" required style="width:100%; padding:8px;">
+                        <option value="INTRAMUSCULAIRE">Intramusculaire</option>
+                        <option value="SOUS_CUTANEE">Sous-cutanée</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Enregistrer
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

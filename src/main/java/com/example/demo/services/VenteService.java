@@ -1,4 +1,4 @@
-package com.example.demo.service;
+package com.example.demo.services;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +35,7 @@ public class VenteService {
         this.utilisateurRepository = utilisateurRepository;
     }
 
-    public void effectuerVente(BigDecimal quantite,BigDecimal prixUnitaire, LocalDate dateVente) {
+    public Vente effectuerVente(BigDecimal quantite,BigDecimal prixUnitaire, LocalDate dateVente) {
 
 
 
@@ -87,6 +89,29 @@ public class VenteService {
         vente.setCreatedBy( utilisateurRepository.findById(1L).orElseThrow());
 
         venteRepository.save(vente);
+        return vente;
     }
 
+    // public List<Vente> getMostRecentVentes(){
+    //     return venteRepository.findAllByOrderByDateVenteDesc();
+    // }
+
+    // public List<Vente> getOldestVentes(){
+    //     return venteRepository.findAllByOrderByDateVenteAsc();
+    // }
+
+    public Page<Vente> getMostRecentVentes(int page, int size){
+        return venteRepository.findAllByOrderByDateVenteDesc(Pageable.ofSize(size).withPage(page));
+    }
+
+    public Page<Vente> getOldestVentes(int page, int size){
+        return venteRepository.findAllByOrderByDateVenteAsc(Pageable.ofSize(size).withPage(page));
+    }
+
+    public Page<Vente> findByPrixTotalBetweenDateDesc( BigDecimal min, BigDecimal max, int page , int size){
+        return venteRepository.findByPrixTotalBetweenDateDesc(min, max, Pageable.ofSize(size).withPage(page));
+    }
+    public Vente findById(Integer id) {
+        return venteRepository.findById(id).orElseThrow(() -> new RuntimeException("Vente not found"));
+    }
 }

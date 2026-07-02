@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{index :: layout(~{::mainContent})}">
+
+<head>
+    <title>Statistiques Vaccins</title>
+</head>
+
+<body>
+
+<div th:fragment="mainContent" class="page-content">
+
+    <div class="page-header">
+        <h1 class="page-title">Statistiques Vaccination</h1>
+        <p class="page-subtitle">Analyse des vaccins et rappels du troupeau</p>
+    </div>
+
+    <div class="stats-grid">
+
+        <div class="card">
+            <div class="card-icon" style="background:#FFEBEE; color:#C62828;">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="card-body">
+                <div class="card-label">Urgents</div>
+                <div class="card-value"
+                     th:text="${stats.?[rappelUrgent].size()}">0</div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card card-table">
+
+        <div class="card-header"
+             style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+
+            <span class="card-title">Résumé des vaccins</span>
+
+        <input type="text"
+               class="filter-search"
+               placeholder="Rechercher un vaccin..."
+               style="padding:8px 12px; border:1px solid #D1D5DB; border-radius:6px; outline:none; width:250px;">
+        </div>
+
+        <div class="card-body">
+
+            <table class="table" id="statsTable">
+
+                <thead>
+                <tr>
+                    <th>Vaccin</th>
+                    <th>Bovins concernés</th>
+                    <th>Dernière vaccination</th>
+                    <th>Prochain rappel</th>
+                    <th>Statut</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                <tr th:each="s : ${stats}">
+
+                    <td th:text="${s.nomVaccin}"></td>
+
+                    <td>
+                        <span class="badge" style="background:#E3F2FD; color:#007AFF;">
+                            <i class="fas fa-cow"></i>
+                            <span th:text="${s.nombreBovins}"></span>
+                        </span>
+                    </td>
+
+                    <td th:text="${s.derniereVaccinationFormatted}"></td>
+
+                    <td th:text="${s.prochaineDateFormatted}"></td>
+
+                    <td>
+                        <span th:if="${s.rappelUrgent}" class="badge badge-danger">URGENT</span>
+
+                        <span th:if="${s.rappelProche}" class="badge"
+                              style="background:#FFF3E0; color:#F57C00;">PROCHE</span>
+
+                        <span th:if="${s.rappelNormal}" class="badge badge-success">OK</span>
+                    </td>
+
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(stats)}">
+                    <td colspan="5" class="text-center" style="padding:20px;">
+                        Aucun vaccin trouvé
+                    </td>
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+    
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const input = document.querySelector(".filter-search");
+    const table = document.getElementById("statsTable");
+
+    if (!input || !table) return;
+
+    input.addEventListener("keyup", function () {
+
+        const filter = this.value.toLowerCase();
+        const rows = table.querySelectorAll("tbody tr");
+
+        rows.forEach(row => {
+
+            const text = row.textContent.toLowerCase();
+
+            if (row.children.length === 1) return;
+            
+            row.style.display = text.includes(filter) ? "" : "none";
+        });
+    });
+});
+</script>
+</div>
+
+</body>
+</html>
