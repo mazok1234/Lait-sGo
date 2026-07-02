@@ -3,7 +3,8 @@
       th:replace="~{index :: layout(~{::mainContent})}">
 <head><title>Détail alerte</title></head>
 <body>
-<div th:fragment="mainContent">
+<div th:fragment="mainContent" class="page-content">
+    <div id="mainContent">
 
   <div class="page-header">
     <a th:href="@{/alertes}" class="back-link">
@@ -88,6 +89,7 @@
     </div>
   </div>
 
+    </div>
 </div>
 </body>
 </html>
