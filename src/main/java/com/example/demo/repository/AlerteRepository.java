@@ -13,6 +13,12 @@ public interface AlerteRepository extends JpaRepository<Alerte, Long> {
     List<Alerte> findByAcquitteeFalseAndType_IdOrderByCreatedAtDesc(Integer typeId);
 
     List<Alerte> findByAcquitteeFalseAndNiveau_CodeAndType_IdOrderByCreatedAtDesc(
-        String niveauCode, Integer typeId
-    );
+            String niveauCode, Integer typeId);
+
+    // Vérifier si une alerte non acquittée du même type existe déjà pour cette
+    // vache
+    boolean existsByVacheIdAndType_CodeAndAcquitteeFalse(Long vacheId, String typeCode);
+
+    // Pour les alertes globales (vache_id null) — ex: stock
+    boolean existsByVacheIdIsNullAndType_CodeAndAcquitteeFalse(String typeCode);
 }

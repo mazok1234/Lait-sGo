@@ -20,11 +20,13 @@ public class VaccinService {
 
     private final VacheRepository vacheRepository;
     private final HistoriqueVaccinRepository historiqueRepository;
+    private final AlerteService alerteService;
 
-    public VaccinService(VacheRepository vacheRepository,
-                         HistoriqueVaccinRepository historiqueRepository) {
+    public VaccinService(VacheRepository vacheRepository, AlerteService alerteService,
+            HistoriqueVaccinRepository historiqueRepository) {
         this.vacheRepository = vacheRepository;
         this.historiqueRepository = historiqueRepository;
+        this.alerteService = alerteService;
     }
 
     // ------------------3
@@ -47,6 +49,14 @@ public class VaccinService {
 
             if (prochaineDate.isBefore(today)) {
                 enRetard.add(h);
+
+                alerteService.envoyerAlerte(
+                        "vaccin_en_retard",
+                        "urgent",
+                        "Vaccin en retard — " + h.getVache().getNumeroBoucle(),
+                        "Vaccin " + h.getProtocoleVaccin().getNomVaccin()
+                                + " en retard depuis le " + prochaineDate + ".",
+                        h.getVache().getId());
             }
         }
 
@@ -66,8 +76,17 @@ public class VaccinService {
                     .plusDays(h.getProtocoleVaccin().getDureeRappelJours());
 
             if (prochaineDate.getMonthValue() == mois &&
-                prochaineDate.getYear() == annee) {
+                    prochaineDate.getYear() == annee) {
                 result.add(h);
+
+                alerteService.envoyerAlerte(
+                        "rappel_vaccin",
+                        "info",
+                        "Rappel vaccin — " + h.getVache().getNumeroBoucle(),
+                        "Vaccin " + h.getProtocoleVaccin().getNomVaccin()
+                                + " à revoir le " + prochaineDate + ".",
+                        h.getVache().getId());
+
             }
         }
 
@@ -76,62 +95,70 @@ public class VaccinService {
 
     // ------------------1
     public List<HistoriqueVaccin> getVaccinsPrioritaires() {
-
         List<HistoriqueVaccin> derniers = historiqueRepository.findLastByVaccin();
-
         LocalDate today = LocalDate.now();
 
-        return derniers.stream()
+        List<HistoriqueVaccin> sorted = derniers.stream()
                 .sorted((a, b) -> {
-
                     LocalDate dateA = a.getDateVaccination()
                             .plusDays(a.getProtocoleVaccin().getDureeRappelJours());
-
                     LocalDate dateB = b.getDateVaccination()
                             .plusDays(b.getProtocoleVaccin().getDureeRappelJours());
-
-                    return dateA.compareTo(dateB); // le plus urgent en premier
+                    return dateA.compareTo(dateB);
                 })
                 .toList();
+
+        // envoyer une alerte pour chaque vaccin prioritaire
+        sorted.forEach(h -> {
+            LocalDate prochaineDate = h.getDateVaccination()
+                    .plusDays(h.getProtocoleVaccin().getDureeRappelJours());
+            alerteService.envoyerAlerte(
+                    "vaccin_prioritaire",
+                    "attention",
+                    "Vaccin prioritaire — " + h.getVache().getNumeroBoucle(),
+                    "Vaccin " + h.getProtocoleVaccin().getNomVaccin()
+                            + " prévu le " + prochaineDate + ".",
+                    h.getVache().getId());
+        });
+
+        return sorted;
     }
 
     public List<VaccinStatDTO> getStatistiquesVaccins() {
 
         return historiqueRepository.findAll()
-            .stream()
-            .collect(Collectors.groupingBy(
-                    h -> h.getProtocoleVaccin().getNomVaccin()
-            ))
-            .entrySet()
-            .stream()
-            .map(entry -> {
+                .stream()
+                .collect(Collectors.groupingBy(
+                        h -> h.getProtocoleVaccin().getNomVaccin()))
+                .entrySet()
+                .stream()
+                .map(entry -> {
 
-                List<HistoriqueVaccin> list = entry.getValue();
+                    List<HistoriqueVaccin> list = entry.getValue();
 
-                long nombreBovins = list.stream()
-                        .map(h -> h.getVache().getId())
-                        .distinct()
-                        .count();
+                    long nombreBovins = list.stream()
+                            .map(h -> h.getVache().getId())
+                            .distinct()
+                            .count();
 
-                HistoriqueVaccin last = list.stream()
-                        .max(Comparator.comparing(HistoriqueVaccin::getDateVaccination))
-                        .orElse(null);
+                    HistoriqueVaccin last = list.stream()
+                            .max(Comparator.comparing(HistoriqueVaccin::getDateVaccination))
+                            .orElse(null);
 
-                LocalDate lastDate = (last != null)
-                        ? last.getDateVaccination()
-                        : null;
+                    LocalDate lastDate = (last != null)
+                            ? last.getDateVaccination()
+                            : null;
 
-                LocalDate nextDate = (last != null)
-                        ? lastDate.plusDays(last.getProtocoleVaccin().getDureeRappelJours())
-                        : null;
+                    LocalDate nextDate = (last != null)
+                            ? lastDate.plusDays(last.getProtocoleVaccin().getDureeRappelJours())
+                            : null;
 
-                return new VaccinStatDTO(
-                        entry.getKey(),
-                        nombreBovins,
-                        lastDate,
-                        nextDate
-                );
-            })
-            .toList();
+                    return new VaccinStatDTO(
+                            entry.getKey(),
+                            nombreBovins,
+                            lastDate,
+                            nextDate);
+                })
+                .toList();
     }
 }

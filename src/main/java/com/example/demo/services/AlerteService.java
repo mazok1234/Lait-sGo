@@ -69,7 +69,7 @@ public class AlerteService {
         alertes.sort(Comparator
                 .comparingInt((Alerte a) -> a.getNiveau().getOrdre())
                 .thenComparing(Comparator.comparing(Alerte::getCreatedAt).reversed()));
-                
+
         return alertes.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
@@ -123,20 +123,33 @@ public class AlerteService {
         return dto;
     }
 
-    // methode util a injecter par les autres modules
     public void envoyerAlerte(String typeCode, String niveauCode,
             String titre, String description, Long vacheId) {
         try {
+            // Vérifier doublon avant d'insérer
+            boolean dejaPresente;
+            if (vacheId != null) {
+                dejaPresente = alerteRepo
+                        .existsByVacheIdAndType_CodeAndAcquitteeFalse(vacheId, typeCode);
+            } else {
+                dejaPresente = alerteRepo
+                        .existsByVacheIdIsNullAndType_CodeAndAcquitteeFalse(typeCode);
+            }
+
+            if (dejaPresente) {
+                System.out.println("[Alertes] Doublon ignoré : " + typeCode
+                        + (vacheId != null ? " — vache " + vacheId : " — ferme"));
+                return;
+            }
+
             RefTypeAlerte type = typeRepo.findByCode(typeCode)
                     .orElseThrow(() -> new IllegalArgumentException("Type inconnu : " + typeCode));
-
             RefNiveauAlerte niveau = niveauRepo.findByCode(niveauCode)
                     .orElseThrow(() -> new IllegalArgumentException("Niveau inconnu : " + niveauCode));
 
             creerAlerte(type.getId(), niveau.getId(), titre, description, vacheId);
 
         } catch (Exception e) {
-            // Ne pas faire planter le module appelant si l'alerte échoue
             System.err.println("[Alertes] Alerte non envoyée : " + e.getMessage());
         }
     }
