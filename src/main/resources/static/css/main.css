@@ -1028,3 +1028,36 @@ ul {
 .hidden {
     display: none !important;
 }
+
+
+/* submenu */
+.has-submenu .submenu{
+    display:none;
+    list-style:none;
+    padding-left:18px;
+    margin-top:6px;
+}
+
+.has-submenu.open .submenu{
+    display:block;
+}
+
+.submenu li a{
+    padding:10px 16px;
+    font-size:.95rem;
+}
+
+.submenu-toggle{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    width:100%;
+}
+
+.submenu-arrow{
+    transition:transform .25s ease;
+}
+
+.has-submenu.open .submenu-arrow{
+    transform:rotate(180deg);
+}

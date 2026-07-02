@@ -10,7 +10,9 @@
 <body>
 
 <div th:fragment="mainContent" class="page-content">
-
+    <a th:href="@{/vaccins}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Retour
+    </a>
     <div class="page-header">
         <h1 class="page-title">Statistiques Vaccination</h1>
         <p class="page-subtitle">Analyse des vaccins et rappels du troupeau</p>
