@@ -33,8 +33,9 @@ CREATE TABLE ref_type_evenement_sante (
 
 CREATE TABLE ref_niveau_alerte (
     id      SERIAL PRIMARY KEY,
-    code    VARCHAR(20)  NOT NULL UNIQUE,   -- danger, warning, info
-    libelle VARCHAR(50)  NOT NULL
+    code    VARCHAR(20)  NOT NULL UNIQUE,
+    libelle VARCHAR(50)  NOT NULL,
+    ordre   SMALLINT     NOT NULL  
 );
 
 CREATE TABLE ref_type_alerte (
@@ -227,10 +228,10 @@ CREATE TABLE vente (
 );
 
 
-INSERT INTO ref_niveau_alerte (code, libelle) VALUES
-('danger',  'Danger'),
-('warning', 'Warning'),
-('info',    'Info');
+INSERT INTO ref_niveau_alerte (code, libelle, ordre) VALUES
+('urgent',    'Urgent',    1),
+('attention', 'Attention', 2),
+('info',      'Info',      3);
 
 INSERT INTO ref_type_alerte (code, libelle) VALUES
 ('ncs_eleve',        'NCS élevé — suspicion mammite'),
@@ -324,3 +325,11 @@ LEFT JOIN (
     GROUP BY date_vente
 ) vente ON vente.date = jours.date
 ORDER BY jours.date;
+
+-- Données de test — à supprimer avant le rendu final
+INSERT INTO alerte (id_niveau, id_type, titre, description, vache_id, acquittee)
+VALUES
+  (1, 1, 'NCS élevé — FR1234567890', 'Comptage cellules > seuil.', 1, false),
+  (1, 4, 'Stock bas — Concentré protéiné', 'Stock : 200 kg, seuil : 500 kg.', null, false),
+  (2, 5, 'BCS hors plage — FR9876543210', 'BCS : 1.80, plage normale : 2.0-4.5.', 2, false),
+  (3, 3, 'Vêlage prévu dans 5 jours — FR5544332211', 'Date prévue : 07/07/2026.', 3, false);

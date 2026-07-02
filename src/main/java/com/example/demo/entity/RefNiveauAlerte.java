@@ -16,6 +16,9 @@ public class RefNiveauAlerte {
     @Column(nullable = false, length = 50)
     private String libelle;
 
+    @Column(nullable = false)
+    private Integer ordre;
+
     public RefNiveauAlerte() {}
 
     public Integer getId() { return id; }
@@ -24,4 +27,6 @@ public class RefNiveauAlerte {
     public void setCode(String code) { this.code = code; }
     public String getLibelle() { return libelle; }
     public void setLibelle(String libelle) { this.libelle = libelle; }
+    public Integer getOrdre() { return ordre; }
+    public void setOrdre(Integer ordre) { this.ordre = ordre; }
 }

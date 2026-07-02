@@ -19,13 +19,7 @@ public class AlerteService {
     private final AlerteRepository alerteRepo;
     private final RefNiveauAlerteRepository niveauRepo;
     private final RefTypeAlerteRepository typeRepo;
-    private final VacheRepository vacheRepo; // déjà disponible dans le projet
-
-    // Tri fixe : danger=1, warning=2, info=3
-    private static final Map<String, Integer> ORDRE_GRAVITE = Map.of(
-            "danger", 1,
-            "warning", 2,
-            "info", 3);
+    private final VacheRepository vacheRepo;
 
     public AlerteService(AlerteRepository alerteRepo,
             RefNiveauAlerteRepository niveauRepo,
@@ -72,11 +66,10 @@ public class AlerteService {
             alertes = alerteRepo.findByAcquitteeFalseOrderByCreatedAtDesc();
         }
 
-        // Tri danger > warning > info, puis par date décroissante
         alertes.sort(Comparator
-                .comparingInt((Alerte a) -> ORDRE_GRAVITE.getOrDefault(a.getNiveau().getCode(), 99))
+                .comparingInt((Alerte a) -> a.getNiveau().getOrdre())
                 .thenComparing(Comparator.comparing(Alerte::getCreatedAt).reversed()));
-
+                
         return alertes.stream().map(this::toDTO).collect(Collectors.toList());
     }
 

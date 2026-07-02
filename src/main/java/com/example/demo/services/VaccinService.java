@@ -27,6 +27,7 @@ public class VaccinService {
         this.historiqueRepository = historiqueRepository;
     }
 
+    // ------------------3
     public List<HistoriqueVaccin> getVaccinsEnRetard(Long vacheId) {
 
         Vache vache = vacheRepository.findById(vacheId)
@@ -52,6 +53,7 @@ public class VaccinService {
         return enRetard;
     }
 
+    // ------------------2
     public List<HistoriqueVaccin> getVaccinsARevoirParMois(int mois, int annee) {
 
         List<HistoriqueVaccin> derniers = historiqueRepository.findLastByVaccin();
@@ -72,6 +74,7 @@ public class VaccinService {
         return result;
     }
 
+    // ------------------1
     public List<HistoriqueVaccin> getVaccinsPrioritaires() {
 
         List<HistoriqueVaccin> derniers = historiqueRepository.findLastByVaccin();
