@@ -5,6 +5,8 @@ import com.example.demo.entity.Vache;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import java.util.List;
+import org.springframework.data.repository.query.Param;
+import java.time.LocalDate;
 
 public interface HistoriqueVaccinRepository extends JpaRepository<HistoriqueVaccin, Integer> {
 
@@ -19,4 +21,12 @@ public interface HistoriqueVaccinRepository extends JpaRepository<HistoriqueVacc
         )
         """)
     List<HistoriqueVaccin> findLastByVaccin();
+
+    @Query("SELECT h FROM HistoriqueVaccin h " +
+           "WHERE ( :vacheId = 0 OR h.vache.id = :vacheId ) " +
+           "AND ( :datedebut IS NULL OR h.dateVaccination >= :datedebut ) " +
+           "AND ( :datefin IS NULL OR h.dateVaccination <= :datefin )")
+    List<HistoriqueVaccin> findVaccins(@Param("vacheId") Long vacheId, 
+                                              @Param("datedebut") LocalDate datedebut, 
+                                              @Param("datefin") LocalDate datefin);
 }

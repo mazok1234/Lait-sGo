@@ -99,9 +99,8 @@
         </div>
     </div>
 
-</div>
-
-<script>
+    
+    <script>
 document.addEventListener("DOMContentLoaded", function () {
 
     const input = document.querySelector(".filter-search");
@@ -119,12 +118,13 @@ document.addEventListener("DOMContentLoaded", function () {
             const text = row.textContent.toLowerCase();
 
             if (row.children.length === 1) return;
-
+            
             row.style.display = text.includes(filter) ? "" : "none";
         });
     });
 });
 </script>
+</div>
 
 </body>
 </html>
