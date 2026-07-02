@@ -3,78 +3,75 @@
       th:replace="~{index :: layout(~{::mainContent})}">
 <head><title>Détail alerte</title></head>
 <body>
-<div th:fragment="mainContent" >
+<div th:fragment="mainContent">
 
   <div class="page-header">
-    <a href="/alertes" style="display:inline-flex;align-items:center;gap:6px;color:#007AFF;font-size:0.875rem;font-weight:500;margin-bottom:12px;">
+    <a th:href="@{/alertes}" class="back-link">
       <i class="fas fa-arrow-left"></i> Retour aux alertes
     </a>
     <h1 class="page-title" th:text="${alerte.titre}">Titre</h1>
     <p class="page-subtitle" th:text="${alerte.typeLibelle}">Type</p>
   </div>
 
-  <div style="max-width:640px;">
+  <div class="detail-wrapper">
     <div class="card">
-      <div class="card-body" style="padding:24px;display:flex;flex-direction:column;gap:20px;">
-
-        <!-- Niveau -->
-        <div style="display:flex;flex-direction:column;gap:6px;">
-          <span style="font-size:0.75rem;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Niveau</span>
-          <span th:if="${alerte.niveauCode == 'danger'}"
-                style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:12px;font-size:0.8rem;font-weight:600;background:#FEECEC;color:#DC2626;width:fit-content;">
-            <i class="fas fa-exclamation-triangle"></i>
+      <div class="card-header detail-card-header">
+        <div>
+          <h2 class="card-title" th:text="${alerte.titre}">Titre de l'alerte</h2>
+          <p class="card-subtitle" th:text="${alerte.typeLibelle}">Type</p>
+        </div>
+        <span th:switch="${alerte.niveauCode}">
+          <span th:case="'urgent'" class="badge-niveau badge-niveau-danger badge-niveau-lg">
+            <i class="fas fa-exclamation-triangle icon-danger"></i>
             <span th:text="${alerte.niveauLibelle}"></span>
           </span>
-          <span th:if="${alerte.niveauCode == 'warning'}"
-                style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:12px;font-size:0.8rem;font-weight:600;background:#FFF7ED;color:#F59E0B;width:fit-content;">
-            <i class="fas fa-exclamation-circle"></i>
+          <span th:case="'attention'" class="badge-niveau badge-niveau-warning badge-niveau-lg">
+            <i class="fas fa-exclamation-circle icon-warning"></i>
             <span th:text="${alerte.niveauLibelle}"></span>
           </span>
-          <span th:if="${alerte.niveauCode == 'info'}"
-                style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:12px;font-size:0.8rem;font-weight:600;background:#EFF6FF;color:#007AFF;width:fit-content;">
-            <i class="fas fa-info-circle"></i>
+          <span th:case="*" class="badge-niveau badge-niveau-info badge-niveau-lg">
+            <i class="fas fa-info-circle icon-info"></i>
             <span th:text="${alerte.niveauLibelle}"></span>
           </span>
+        </span>
+      </div>
+      <div class="card-body detail-body">
+
+        <div class="detail-grid">
+          <div class="detail-info-card">
+            <span class="detail-info-label">Concerne</span>
+            <span th:if="${alerte.vacheId != null}" class="detail-info-value detail-link">
+              <i class="fas fa-paw"></i>
+              <a th:href="@{/cheptel/{id}(id=${alerte.vacheId})}" th:text="${alerte.vacheBoucle != null ? alerte.vacheBoucle : 'Vache #' + alerte.vacheId}"></a>
+            </span>
+            <span th:if="${alerte.vacheId == null}" class="detail-info-value detail-ferme">
+              <i class="fas fa-warehouse"></i> Alerte ferme
+            </span>
+          </div>
+          <div class="detail-info-card">
+            <span class="detail-info-label">Reçue le</span>
+            <span class="detail-info-value detail-date">
+              <i class="fas fa-clock detail-date-icon"></i>
+              <span th:text="${#temporals.format(alerte.createdAt, 'dd/MM/yyyy à HH:mm')}"></span>
+            </span>
+          </div>
+          <div class="detail-info-card">
+            <span class="detail-info-label">Statut</span>
+            <span class="detail-info-value">
+              <span class="status-badge" th:classappend="${alerte.acquittee} ? ' status-badge-success' : ' status-badge-pending'"
+                    th:text="${alerte.acquittee} ? 'Acquittée' : 'En attente'"></span>
+            </span>
+          </div>
         </div>
 
-        <div style="border-top:1px solid #F0EEF0;"></div>
+        <div class="detail-divider"></div>
 
-        <!-- Concerne (FA-05) -->
-        <div style="display:flex;flex-direction:column;gap:6px;">
-          <span style="font-size:0.75rem;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Concerne</span>
-          <a th:if="${alerte.vacheId != null}"
-             th:href="@{/cheptel/{id}(id=${alerte.vacheId})}"
-             style="display:inline-flex;align-items:center;gap:6px;color:#007AFF;font-weight:500;font-size:0.9rem;">
-            <i class="fas fa-paw"></i>
-            <span th:text="${alerte.vacheBoucle != null ? alerte.vacheBoucle : 'Vache #' + alerte.vacheId}"></span>
-          </a>
-          <span th:if="${alerte.vacheId == null}"
-                style="display:inline-flex;align-items:center;gap:6px;color:#6B7280;font-size:0.9rem;">
-            <i class="fas fa-warehouse"></i> Alerte ferme
-          </span>
+        <div th:if="${alerte.description != null and !alerte.description.isEmpty()}" class="detail-field">
+          <span class="detail-field-label">Description</span>
+          <p th:text="${alerte.description}" class="detail-description"></p>
         </div>
 
-        <!-- Reçue le -->
-        <div style="display:flex;flex-direction:column;gap:6px;">
-          <span style="font-size:0.75rem;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Reçue le</span>
-          <span style="font-size:0.9rem;color:#1A1A2E;display:flex;align-items:center;gap:6px;">
-            <i class="fas fa-clock" style="color:#9CA3AF;"></i>
-            <span th:text="${#temporals.format(alerte.createdAt, 'dd/MM/yyyy à HH:mm')}"></span>
-          </span>
-        </div>
-
-        <!-- Description -->
-        <div th:if="${alerte.description != null and !alerte.description.isEmpty()}"
-             style="display:flex;flex-direction:column;gap:6px;">
-          <span style="font-size:0.75rem;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Description</span>
-          <p th:text="${alerte.description}"
-             style="font-size:0.9rem;color:#4B5563;line-height:1.7;background:#F9FAFB;border:1px solid #F0EEF0;border-radius:8px;padding:14px;">
-          </p>
-        </div>
-
-        <div style="border-top:1px solid #F0EEF0;padding-top:16px;">
-
-          <!-- FA-03 : Bouton acquittement -->
+        <div class="detail-divider detail-actions-divider">
           <form th:if="${!alerte.acquittee}"
                 th:action="@{/alertes/{id}/acquitter(id=${alerte.id})}" method="post">
             <button type="submit" class="btn btn-primary">
@@ -82,12 +79,9 @@
             </button>
           </form>
 
-          <!-- Déjà acquittée -->
-          <div th:if="${alerte.acquittee}"
-               style="display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:8px;background:#E8F5E9;color:#2E7D32;font-size:0.875rem;font-weight:600;">
+          <div th:if="${alerte.acquittee}" class="acquit-badge">
             <i class="fas fa-check-circle"></i> Alerte déjà acquittée
           </div>
-
         </div>
 
       </div>

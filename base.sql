@@ -33,8 +33,8 @@ CREATE TABLE ref_type_evenement_sante (
 
 CREATE TABLE ref_niveau_alerte (
     id      SERIAL PRIMARY KEY,
-    code    VARCHAR(20)  NOT NULL UNIQUE,
-    libelle VARCHAR(50)  NOT NULL,
+    code    VARCHAR(20)  NOT NULL UNIQUE,       --urgent, attention, info
+    libelle VARCHAR(50)  NOT NULL,      
     ordre   SMALLINT     NOT NULL  
 );
 
@@ -227,21 +227,6 @@ CREATE TABLE vente (
     created_at      TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
 
-
-INSERT INTO ref_niveau_alerte (code, libelle, ordre) VALUES
-('urgent',    'Urgent',    1),
-('attention', 'Attention', 2),
-('info',      'Info',      3);
-
-INSERT INTO ref_type_alerte (code, libelle) VALUES
-('ncs_eleve',        'NCS élevé — suspicion mammite'),
-('chute_production', 'Chute de production anormale'),
-('velage_proche',    'Vêlage proche'),
-('stock_aliment_bas',        'Stock aliment sous le seuil critique'),
-('bcs_hors_plage',   'Score BCS hors plage'),
-('stock_lait_bas', 'Stock de lait bas après vente');
-
-
 CREATE VIEW v_lactation_total AS
 SELECT
     l.id AS lactation_id,
@@ -326,10 +311,73 @@ LEFT JOIN (
 ) vente ON vente.date = jours.date
 ORDER BY jours.date;
 
+
+-- Donnees initiales
+-- Niveaux avec ordre de priorité
+INSERT INTO ref_niveau_alerte (code, libelle, ordre) VALUES
+('urgent',    'Urgent',    1),
+('attention', 'Attention', 2),
+('info',      'Info',      3);
+
+-- Types d'alertes par module
+INSERT INTO ref_type_alerte (code, libelle) VALUES
+-- Santé
+('vaccin_en_retard',   'Vaccin en retard'),
+('rappel_vaccin',      'Rappel vaccin'),
+('vaccin_prioritaire', 'Vaccin prioritaire'),
+-- Vente & Production
+('stock_lait_bas',     'Stock de lait insuffisant'),
+-- Reproduction
+('rappel_velage',      'Rappel vêlage'),
+('rappel_chaleur',     'Rappel vache en chaleur'),
+-- Alimentation
+('stock_aliment_bas',  'Stock aliment insuffisant'),
+-- Cheptel
+('bcs_hors_plage',     'Score BCS hors plage');
+
+
 -- Données de test — à supprimer avant le rendu final
 INSERT INTO alerte (id_niveau, id_type, titre, description, vache_id, acquittee)
 VALUES
-  (1, 1, 'NCS élevé — FR1234567890', 'Comptage cellules > seuil.', 1, false),
-  (1, 4, 'Stock bas — Concentré protéiné', 'Stock : 200 kg, seuil : 500 kg.', null, false),
-  (2, 5, 'BCS hors plage — FR9876543210', 'BCS : 1.80, plage normale : 2.0-4.5.', 2, false),
-  (3, 3, 'Vêlage prévu dans 5 jours — FR5544332211', 'Date prévue : 07/07/2026.', 3, false);
+-- Urgent
+((SELECT id FROM ref_niveau_alerte WHERE code = 'urgent'),
+ (SELECT id FROM ref_type_alerte WHERE code = 'vaccin_en_retard'),
+ 'Vaccin en retard — FR1234567890',
+ 'Vaccin IBR en retard de 3 jours.', null, false),
+
+((SELECT id FROM ref_niveau_alerte WHERE code = 'urgent'),
+ (SELECT id FROM ref_type_alerte WHERE code = 'stock_aliment_bas'),
+ 'Stock aliment insuffisant',
+ 'Stock foin : 150 kg, seuil : 500 kg.', null, false),
+
+-- Attention
+((SELECT id FROM ref_niveau_alerte WHERE code = 'attention'),
+ (SELECT id FROM ref_type_alerte WHERE code = 'vaccin_prioritaire'),
+ 'Vaccin prioritaire — FR9876543210',
+ 'Vaccin BVD à administrer dans les 48h.', null, false),
+
+((SELECT id FROM ref_niveau_alerte WHERE code = 'attention'),
+ (SELECT id FROM ref_type_alerte WHERE code = 'rappel_chaleur'),
+ 'Rappel vache en chaleur — FR5544332211',
+ 'Fenêtre d''insémination ouverte aujourd''hui.', null, false),
+
+((SELECT id FROM ref_niveau_alerte WHERE code = 'attention'),
+ (SELECT id FROM ref_type_alerte WHERE code = 'bcs_hors_plage'),
+ 'BCS hors plage — FR5544332211',
+ 'BCS : 1.80, plage normale : 2.0 – 4.5.', null, false),
+
+((SELECT id FROM ref_niveau_alerte WHERE code = 'attention'),
+ (SELECT id FROM ref_type_alerte WHERE code = 'stock_lait_bas'),
+ 'Stock de lait insuffisant',
+ 'Stock lait restant : 120 L après dernière vente.', null, false),
+
+-- Info
+((SELECT id FROM ref_niveau_alerte WHERE code = 'info'),
+ (SELECT id FROM ref_type_alerte WHERE code = 'rappel_vaccin'),
+ 'Rappel vaccin — FR1122334455',
+ 'Vaccin Fièvre Q prévu dans 7 jours.', null, false),
+
+((SELECT id FROM ref_niveau_alerte WHERE code = 'info'),
+ (SELECT id FROM ref_type_alerte WHERE code = 'rappel_velage'),
+ 'Rappel vêlage — FR6677889900',
+ 'Vêlage prévu le 07/07/2026.', null, false);
