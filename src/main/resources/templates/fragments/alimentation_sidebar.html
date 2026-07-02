@@ -5,7 +5,7 @@
 <!--
     Fragment réutilisable : injecte la sidebar Alimentation dans toutes les pages /aliments
     Usage: <div th:replace="~{fragments/alimentation_sidebar :: sidebar(activeItem)}"></div>
-    activeItem : 'alimentation' | 'types' | 'mouvements' | 'rations' | 'stades'
+    activeItem : 'alimentation' | 'types' | 'mouvements' | 'rations' | 'stades' | 'affectations'
 -->
 <script th:fragment="sidebarScript(activeItem)" th:inline="javascript">
     document.addEventListener('DOMContentLoaded', function() {
@@ -27,6 +27,9 @@
             '</li>' +
             '<li class="' + (active === 'stades' ? 'active' : '') + '">' +
                 '<a href="/stades-physiologiques"><i class="fas fa-calendar-alt"></i><span>Stades</span></a>' +
+            '</li>' +
+            '<li class="' + (active === 'affectations' ? 'active' : '') + '">' +
+                '<a href="/affectations-rations"><i class="fas fa-link"></i><span>Affectations</span></a>' +
             '</li>';
     });
 </script>

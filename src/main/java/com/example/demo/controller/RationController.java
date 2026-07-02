@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -51,21 +52,52 @@ public class RationController {
     @GetMapping("/new")
     public String formAjoutRation(Model model) {
         model.addAttribute("ration", new Ration());
-        model.addAttribute("stades", rationService.getStades());
+        model.addAttribute("stades", rationService.getStadesDisponibles());
         return "rations/ajout";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String formModifierRation(@PathVariable Long id, Model model) {
+        Ration ration = rationService.findById(id);
+        if (ration == null) {
+            return "redirect:/rations";
+        }
+
+        model.addAttribute("ration", ration);
+        model.addAttribute("stades", rationService.getStadesPourEdition(id));
+        return "rations/modifier";
     }
 
     @PostMapping("/save")
     public String saveRation(@Valid @ModelAttribute("ration") Ration ration,
                              BindingResult result,
                              Model model) {
+        if (rationService.isStadeDejaAssocieARation(ration.getIdStadePhysiologique(), ration.getId())) {
+            result.rejectValue("idStadePhysiologique", "ration.stade.deja.utilise",
+                    "Ce stade physiologique a deja une ration");
+        }
+
         if (result.hasErrors()) {
-            model.addAttribute("stades", rationService.getStades());
-            return "rations/ajout";
+            model.addAttribute("stades", ration.getId() == null
+                    ? rationService.getStadesDisponibles()
+                    : rationService.getStadesPourEdition(ration.getId()));
+            return ration.getId() == null ? "rations/ajout" : "rations/modifier";
         }
 
         Ration saved = rationService.saveRation(ration);
         return "redirect:/rations?rationId=" + saved.getId();
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteRation(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        Ration ration = rationService.findById(id);
+        if (ration == null) {
+            return "redirect:/rations";
+        }
+
+        rationService.deleteRationById(id);
+        redirectAttributes.addFlashAttribute("successMessage", "Ration supprimee avec succes");
+        return "redirect:/rations";
     }
 
     @GetMapping("/aliments/new")

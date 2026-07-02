@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+<head><title>Nouvelle affectation ration-vache</title></head>
+<body>
+<div th:fragment="mainContent" class="page-content">
+
+    <div class="page-header">
+        <h1 class="page-title">Nouvelle affectation</h1>
+        <p class="page-subtitle">Associer une ration a une vache</p>
+    </div>
+
+    <div class="card" style="max-width:620px;margin:0 auto;">
+        <div class="card-body" style="padding:24px;">
+            <form th:action="@{/affectations-rations/save}" th:object="${affectation}" method="post"
+                  style="display:flex;flex-direction:column;gap:16px;">
+
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    <label for="vache" style="font-size:0.875rem;font-weight:600;">Vache</label>
+                    <select id="vache" th:field="*{vache}" style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;">
+                        <option value="">-- Selectionner une vache --</option>
+                        <option th:each="v : ${vaches}" th:value="${v.id}" th:text="${v.numeroBoucle}"></option>
+                    </select>
+                    <span th:if="${#fields.hasErrors('vache')}" th:errors="*{vache}" style="color:#DC2626;font-size:0.8rem;"></span>
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    <label for="ration" style="font-size:0.875rem;font-weight:600;">Ration</label>
+                    <select id="ration" th:field="*{ration}" style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;">
+                        <option value="">-- Selectionner une ration --</option>
+                        <option th:each="r : ${rations}" th:value="${r.id}" th:text="${r.nom}"></option>
+                    </select>
+                    <span th:if="${#fields.hasErrors('ration')}" th:errors="*{ration}" style="color:#DC2626;font-size:0.8rem;"></span>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                        <label for="dateDebut" style="font-size:0.875rem;font-weight:600;">Date debut</label>
+                        <input type="date" id="dateDebut" th:field="*{dateDebut}" style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;">
+                        <span th:if="${#fields.hasErrors('dateDebut')}" th:errors="*{dateDebut}" style="color:#DC2626;font-size:0.8rem;"></span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                        <label for="dateFin" style="font-size:0.875rem;font-weight:600;">Date fin</label>
+                        <input type="date" id="dateFin" th:field="*{dateFin}" style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;">
+                        <span th:if="${#fields.hasErrors('dateFin')}" th:errors="*{dateFin}" style="color:#DC2626;font-size:0.8rem;"></span>
+                    </div>
+                </div>
+
+                <label style="display:flex;align-items:center;gap:8px;">
+                    <input type="checkbox" th:field="*{actif}"> Actif
+                </label>
+
+                <div style="display:flex;justify-content:space-between;margin-top:10px;">
+                    <a th:href="@{/affectations-rations}" class="btn" style="border:1px solid #D1D5DB;background:white;color:#1A1A2E;">Retour</a>
+                    <button type="submit" class="btn btn-primary">Valider</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/alimentation_sidebar :: sidebarScript('affectations')}"></div>
+</div>
+</body>
+</html>

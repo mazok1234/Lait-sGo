@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface RationAlimentRepository extends JpaRepository<RationAliment, Long> {
     List<RationAliment> findByRationIdOrderByIdAsc(Long rationId);
+
+    void deleteByRationId(Long rationId);
 }

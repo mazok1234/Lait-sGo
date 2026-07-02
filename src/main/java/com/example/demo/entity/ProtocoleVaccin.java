@@ -76,4 +76,9 @@ public class ProtocoleVaccin {
     public void setHistoriques(List<HistoriqueVaccin> historiques) {
         this.historiques = historiques;
     }
+
+    @Override
+    public String toString() {
+        return this.nomVaccin != null ? this.nomVaccin : "Protocole #" + this.idProtocoleVaccin;
+    }
 }
