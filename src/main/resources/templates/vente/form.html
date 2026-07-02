@@ -75,6 +75,10 @@
             <h2>Nouvelle vente</h2>
 
             <form th:action="@{/vente}" th:object="${vente}" method="post">
+                
+                <a th:if="${success}" th:href="@{/vente/{id}/pdf(id=${lastVenteId})}" class = "btn">
+                    Télécharger le reçu PDF
+                </a>
 
                 <label>Date de vente</label>
                 <input type="date" th:field="*{dateVente}">

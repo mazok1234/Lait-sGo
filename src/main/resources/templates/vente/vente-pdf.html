@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <style>
+        .box { background: #ddd; }
+    </style>
+</head>
+<body>
+
+<h2>Detail de vente :</h2>
+
+    <div class="box">
+        <p>Date de la vente : </p><p th:text="${vente.dateVente}"></p>
+        <p>Quantité de lait vendue : </p><p th:text="${vente.quantiteLait + ' litres'}"></p>
+        <p>Prix par litre du lait:</p><p th:text="${vente.prixUnitaire + ' Ar'}"></p>
+        <p>Montant total de la vente : </p><p th:text="${vente.prixUnitaire.multiply(vente.quantiteLait) + ' Ar'}"></p>
+         
+    </div>
+
+</body>
+</html>
