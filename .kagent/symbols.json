@@ -263,12 +263,12 @@
     },
     "src/main/resources/templates/cheptel/dashboard.html": {
       "ipo_ts": 1783014609009,
-      "edit_count": 18,
-      "last_lines": 628,
-      "last_ts": 1783019004154,
+      "edit_count": 20,
+      "last_lines": 629,
+      "last_ts": 1783020853396,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "2f116465"
+      "last_content_hash": "2eaf3779"
     },
     "src/main/resources/templates/cheptel/vaches.html": {
       "ipo_ts": 1783014609209,
@@ -281,12 +281,12 @@
     },
     "target/classes/templates/cheptel/dashboard.html": {
       "ipo_ts": 1783014609756,
-      "edit_count": 17,
-      "last_lines": 628,
-      "last_ts": 1783019005107,
+      "edit_count": 19,
+      "last_lines": 629,
+      "last_ts": 1783020854500,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "2f116465"
+      "last_content_hash": "2eaf3779"
     },
     "target/classes/templates/cheptel/vaches.html": {
       "ipo_ts": 1783014609787,
@@ -440,6 +440,24 @@
       "delisted": false,
       "last_source": "onEdit",
       "last_content_hash": "36e0ed61"
+    },
+    "target/surefire-reports/com.example.demo.DemoApplicationTests.txt": {
+      "ipo_ts": 1783020220015,
+      "edit_count": 3,
+      "last_lines": 4,
+      "last_ts": 1783020282819,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "b1a414f5"
+    },
+    "target/surefire-reports/TEST-com.example.demo.DemoApplicationTests.xml": {
+      "ipo_ts": 1783020220246,
+      "edit_count": 3,
+      "last_lines": 120,
+      "last_ts": 1783020282976,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "b144aac"
     }
   }
 }

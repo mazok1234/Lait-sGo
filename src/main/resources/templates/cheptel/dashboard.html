@@ -529,7 +529,8 @@
                 <span class="badge-sub"><i class="far fa-clock"></i> Nouvel enregistrement</span>
             </div>
 
-            <form class="form-grid" action="/cheptel/vaches" method="post">
+
+            <form class="form-grid" th:action="@{/cheptel/vaches/nouveau}" method="post">
                 <div class="form-group">
                     <label for="numeroBoucle"><i class="fas fa-tag"></i> Numéro de boucle</label>
                     <input type="text" id="numeroBoucle" name="numeroBoucle" placeholder="Ex: BOV-001" value="" />
