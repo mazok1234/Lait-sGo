@@ -87,16 +87,32 @@
             <a th:href="@{/vente/liste(order='desc')}" class="btn">
                 Date ↓
             </a>
-            </br>
 
-            
+            <form method="get" th:action="@{/vente/liste}">
+
+                <input type="number"
+                    name="min"
+                    placeholder="Min"
+                    th:value="${min}"/>
+
+                <input type="number"
+                    name="max"
+                    placeholder="Max"
+                    th:value="${max}"/>
+
+                <button type="submit" class="btn">Filter</button>
+
+                <input type="hidden" name="page" value="0"/>
+
+            </form>
+
             <table>
 
                 <thead>
                 <tr>
                     <th>Date</th>
                     <th>Quantité (L)</th>
-                    <th>Prix unitaire</th>
+                    <th>Prix du litre</th>
                     <th>Montant</th>
                 </tr>
                 </thead>
@@ -115,11 +131,14 @@
             </table>
         </br>
         <a th:if="${!page.first}"
-            th:href="@{/vente/liste(page=${page.number-1})}" class ="btn">
+        th:href="@{/vente/liste(page=${page.number-1}, min=${min}, max=${max})}"
+        class="btn">
             Previous
         </a>
+
         <a th:if="${!page.last}"
-            th:href="@{/vente/liste(page=${page.number+1})}" class = "btn">
+        th:href="@{/vente/liste(page=${page.number+1}, min=${min}, max=${max})}"
+        class="btn">
             Next
         </a>
 

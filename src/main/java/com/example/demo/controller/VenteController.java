@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.math.BigDecimal;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -49,13 +50,15 @@ public String save(@ModelAttribute Vente vente,
 }
 
 @GetMapping("/vente/liste")
-public String listeVente(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="desc") String order, Model model){
+public String listeVente(@RequestParam(required = false ) BigDecimal min,@RequestParam(required = false ) BigDecimal max ,@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="desc") String order, Model model){
 
     if(order.equals("asc")) {
         model.addAttribute("page", venteService.getOldestVentes(page, 10));
     } else {
-        model.addAttribute("page", venteService.getMostRecentVentes(page , 10));
+        model.addAttribute("page", venteService.findByPrixTotalBetweenDateDesc( min, max, page , 10));
     }
+    model.addAttribute("min", min);
+    model.addAttribute("max", max);
 
     return "vente/liste";
 }

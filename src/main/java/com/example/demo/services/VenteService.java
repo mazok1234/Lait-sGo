@@ -106,4 +106,8 @@ public class VenteService {
     public Page<Vente> getOldestVentes(int page, int size){
         return venteRepository.findAllByOrderByDateVenteAsc(Pageable.ofSize(size).withPage(page));
     }
+
+    public Page<Vente> findByPrixTotalBetweenDateDesc( BigDecimal min, BigDecimal max, int page , int size){
+        return venteRepository.findByPrixTotalBetweenDateDesc(min, max, Pageable.ofSize(size).withPage(page));
+    }
 }
