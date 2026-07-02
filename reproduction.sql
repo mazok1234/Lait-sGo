@@ -1,40 +1,30 @@
-CREATE DATABASE laitgo1;
-\c laitgo1;
-
--- 1. Tables de référence (Dictionnaires)
-CREATE TABLE ref_race (
-    id      SERIAL PRIMARY KEY,
-    code    VARCHAR(30)  NOT NULL UNIQUE,
-    libelle VARCHAR(100) NOT NULL
-);
-
-CREATE TABLE ref_statut_vache (
-    id      SERIAL PRIMARY KEY,
-    code    VARCHAR(30)  NOT NULL UNIQUE,   -- en_lactation, tarie, gestante, reformee
-    libelle VARCHAR(100) NOT NULL
-);
-
--- 2. Table principale Vache
-CREATE TABLE vache (
-    id               BIGSERIAL    PRIMARY KEY,
-    numero_boucle    VARCHAR(20)  NOT NULL UNIQUE,  
-    id_race          INT          NOT NULL,
-    date_naissance   DATE         NOT NULL,
-    poids_kg         DECIMAL(6,1),
-    mere_id          BIGINT, 
-    score_bcs        DECIMAL(3,2),     
-    score_locomotion SMALLINT,           
-    created_at       TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
-    CONSTRAINT fk_vache_race FOREIGN KEY (id_race) REFERENCES ref_race(id),
-    CONSTRAINT fk_vache_mere FOREIGN KEY (mere_id) REFERENCES vache(id)
-);
-
--- 3. Table d'historique des statuts (vache_status)
-CREATE TABLE vache_status (
-    id        BIGSERIAL PRIMARY KEY,
-    id_vache  BIGINT NOT NULL,
-    id_status INT NOT NULL,
-    id_debut  DATE NOT NULL, -- Date de début du statut actuel
-    CONSTRAINT fk_status_vache  FOREIGN KEY (id_vache)  REFERENCES vache(id) ON DELETE CASCADE,
-    CONSTRAINT fk_status_ref    FOREIGN KEY (id_status) REFERENCES ref_statut_vache(id)
-);
+CREATE OR REPLACE VIEW v_dashboard_suivi_chaleurs AS
+WITH dates_ia AS (
+    -- 1. On récupère les inséminations réelles passées ou à venir
+    SELECT 
+        v.id AS vache_id,
+        v.numero_boucle,
+        r.date_ia AS date_evenement,
+        'Insémination Artificielle'::varchar(50) AS type_evenement,
+        r.gestation_confirmee
+    FROM reproduction r
+    JOIN vache v ON v.id = r.vache_id
+    WHERE r.date_velage_reel IS NULL -- On ne suit que la reproduction en cours
+),
+prochaines_chaleurs_theoriques AS (
+    -- 2. On calcule le retour en chaleur théorique (J+21) si la gestation n'est pas encore confirmée
+    SELECT 
+        v.id AS vache_id,
+        v.numero_boucle,
+        (r.date_ia + INTERVAL '21 days')::date AS date_evenement,
+        'Vigilance Retour Chaleurs (J+21)'::varchar(50) AS type_evenement,
+        r.gestation_confirmee
+    FROM reproduction r
+    JOIN vache v ON v.id = r.vache_id
+    WHERE r.date_velage_reel IS NULL 
+      AND (r.gestation_confirmee IS NULL OR r.gestation_confirmee = FALSE)
+)
+-- On fusionne le tout pour alimenter le calendrier du Dashboard
+SELECT vache_id, numero_boucle, date_evenement, type_evenement FROM dates_ia
+UNION ALL
+SELECT vache_id, numero_boucle, date_evenement, type_evenement FROM prochaines_chaleurs_theoriques;
