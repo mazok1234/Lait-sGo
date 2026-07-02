@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.entity.Vente;
@@ -44,8 +45,19 @@ public String save(@ModelAttribute Vente vente,
         return "redirect:/vente/nouveau";
     }
 
-    return "redirect:/vente";
+    return "redirect:/vente/nouveau";
 }
 
+@GetMapping("/vente/liste")
+public String listeVente(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="desc") String order, Model model){
+
+    if(order.equals("asc")) {
+        model.addAttribute("page", venteService.getOldestVentes(page, 10));
+    } else {
+        model.addAttribute("page", venteService.getMostRecentVentes(page , 10));
+    }
+
+    return "vente/liste";
+}
 
 }
