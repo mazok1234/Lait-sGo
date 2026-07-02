@@ -154,4 +154,9 @@ public class Vache {
             createdAt = LocalDateTime.now();
         }
     }
+
+    @Override
+    public String toString() {
+        return this.numeroBoucle != null ? this.numeroBoucle : "Inconnu";
+    }
 }
