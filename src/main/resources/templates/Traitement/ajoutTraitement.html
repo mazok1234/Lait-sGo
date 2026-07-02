@@ -1,117 +1,107 @@
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
 <head>
-	<title th:text="${traitement.id != null ? 'Modifier un traitement' : 'Nouveau traitement'}">Nouveau traitement</title>
+    <title th:text="${traitement.id != null ? 'Modifier un traitement' : 'Nouveau traitement'}">Nouveau traitement</title>
 </head>
 <body>
 <div th:fragment="mainContent" class="page-content">
 
-	<div class="page-header">
-		<h1 class="page-title" th:text="${traitement.id != null ? 'Modifier un traitement' : 'Nouveau traitement'}">Nouveau traitement</h1>
-		<p class="page-subtitle">Enregistrer un traitement de santé pour une vache</p>
-	</div>
+    <div class="page-header">
+        <h1 class="page-title" th:text="${traitement.id != null ? 'Modifier un traitement' : 'Nouveau traitement'}">Nouveau traitement</h1>
+        <p class="page-subtitle">Enregistrer un traitement de santé pour une vache</p>
+    </div>
 
-	<div class="card" style="max-width:760px;margin:0 auto;">
-		<div class="card-header">
-			<h2 class="card-title" th:text="${traitement.id != null ? 'Edition du traitement' : 'Saisie du traitement'}">Saisie du traitement</h2>
-		</div>
+    <div class="card" style="max-width:760px;margin:0 auto;">
+        <div class="card-header">
+            <h2 class="card-title" th:text="${traitement.id != null ? 'Edition du traitement' : 'Saisie du traitement'}">Saisie du traitement</h2>
+        </div>
 
-		<div class="card-body" style="padding:28px;">
-			<form th:action="@{/traitements/save}" th:object="${traitement}" method="post"
-				  style="display:flex;flex-direction:column;gap:18px;">
+        <div class="card-body" style="padding:28px;">
+            <form th:action="@{/traitements/save}" th:object="${traitement}" method="post"
+                  style="display:flex;flex-direction:column;gap:18px;">
 
-				<input type="hidden" th:field="*{id}">
+                <input type="hidden" th:field="*{id}">
 
-				<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-					<div style="display:flex;flex-direction:column;gap:6px;">
-						<label for="vacheId" style="font-size:0.875rem;font-weight:600;">Vache</label>
-						<select id="vacheId" th:field="*{vacheId}"
-								style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;background:white;width:100%;">
-							<option value="">-- Selectionner une vache --</option>
-							<option th:each="v : ${vaches}" th:value="${v.id}" th:text="${v.numeroBoucle}"></option>
-						</select>
-						<span th:if="${#fields.hasErrors('vacheId')}" th:errors="*{vacheId}"
-							  style="color:#DC2626;font-size:0.8rem;"></span>
-					</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                        <label for="vacheId" style="font-size:0.875rem;font-weight:600;">Vache</label>
+                        <select id="vacheId" th:field="*{vacheId}"
+                                style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;background:white;width:100%;">
+                            <option value="">-- Sélectionner une vache --</option>
+                            <option th:each="v : ${vaches}" th:value="${v.id}" th:text="${v.numeroBoucle}"></option>
+                        </select>
+                        <span th:if="${#fields.hasErrors('vacheId')}" th:errors="*{vacheId}" style="color:#DC2626;font-size:0.8rem;"></span>
+                    </div>
 
-					<div style="display:flex;flex-direction:column;gap:6px;">
-						<label for="maladieId" style="font-size:0.875rem;font-weight:600;">Maladie</label>
-						<select id="maladieId" th:field="*{maladieId}"
-								style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;background:white;width:100%;">
-							<option value="">-- Selectionner une maladie --</option>
-							<option th:each="m : ${maladies}" th:value="${m.id}" th:text="${m.nom}"></option>
-						</select>
-						<span th:if="${#fields.hasErrors('maladieId')}" th:errors="*{maladieId}"
-							  style="color:#DC2626;font-size:0.8rem;"></span>
-					</div>
-				</div>
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                        <label for="maladieId" style="font-size:0.875rem;font-weight:600;">Maladie</label>
+                        <select id="maladieId" th:field="*{maladieId}"
+                                style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;background:white;width:100%;">
+                            <option value="">-- Sélectionner une maladie --</option>
+                            <option th:each="m : ${maladies}" th:value="${m.id}" th:text="${m.nom}"></option>
+                        </select>
+                        <span th:if="${#fields.hasErrors('maladieId')}" th:errors="*{maladieId}" style="color:#DC2626;font-size:0.8rem;"></span>
+                    </div>
+                </div>
 
-				<div style="display:flex;flex-direction:column;gap:6px;">
-					<label for="medicamentId" style="font-size:0.875rem;font-weight:600;">Médicament</label>
-					<select id="medicamentId" th:field="*{medicamentId}"
-							style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;background:white;width:100%;">
-						<option value="">-- Selectionner un medicament --</option>
-						<option th:each="med : ${medicaments}" th:value="${med.id}" th:text="${med.nom}"></option>
-					</select>
-					<span th:if="${#fields.hasErrors('medicamentId')}" th:errors="*{medicamentId}"
-						  style="color:#DC2626;font-size:0.8rem;"></span>
-				</div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label for="medicamentId" style="font-size:0.875rem;font-weight:600;">Médicament</label>
+                    <select id="medicamentId" th:field="*{medicamentId}"
+                            style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;background:white;width:100%;">
+                        <option value="">-- Sélectionner un médicament --</option>
+                        <option th:each="med : ${medicaments}" th:value="${med.id}" th:text="${med.nom}"></option>
+                    </select>
+                    <span th:if="${#fields.hasErrors('medicamentId')}" th:errors="*{medicamentId}" style="color:#DC2626;font-size:0.8rem;"></span>
+                </div>
 
-				<div style="display:grid;grid-template-columns:1fr 180px;gap:16px;">
-					<div style="display:flex;flex-direction:column;gap:6px;">
-						<label for="dose" style="font-size:0.875rem;font-weight:600;">Dose</label>
-						<input type="number" step="0.01" min="0.01" id="dose" th:field="*{dose}"
-							   style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
-						<span th:if="${#fields.hasErrors('dose')}" th:errors="*{dose}"
-							  style="color:#DC2626;font-size:0.8rem;"></span>
-					</div>
+                <div style="display:grid;grid-template-columns:1fr 180px;gap:16px;">
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                        <label for="dose" style="font-size:0.875rem;font-weight:600;">Dose</label>
+                        <input type="number" step="0.01" min="0.01" id="dose" th:field="*{dose}"
+                               style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
+                        <span th:if="${#fields.hasErrors('dose')}" th:errors="*{dose}" style="color:#DC2626;font-size:0.8rem;"></span>
+                    </div>
 
-					<div style="display:flex;flex-direction:column;gap:6px;">
-						<label for="unite" style="font-size:0.875rem;font-weight:600;">Unité</label>
-						<input type="text" id="unite" th:field="*{unite}"
-							   placeholder="ml, g, comprimés..."
-							   style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
-						<span th:if="${#fields.hasErrors('unite')}" th:errors="*{unite}"
-							  style="color:#DC2626;font-size:0.8rem;"></span>
-					</div>
-				</div>
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                        <label for="unite" style="font-size:0.875rem;font-weight:600;">Unité</label>
+                        <input type="text" id="unite" th:field="*{unite}" placeholder="ml, g, comprimés..."
+                               style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
+                        <span th:if="${#fields.hasErrors('unite')}" th:errors="*{unite}" style="color:#DC2626;font-size:0.8rem;"></span>
+                    </div>
+                </div>
 
-				<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-					<div style="display:flex;flex-direction:column;gap:6px;">
-						<label for="dureeTraitement" style="font-size:0.875rem;font-weight:600;">Durée traitement</label>
-						<input type="number" min="1" step="1" id="dureeTraitement" th:field="*{dureeTraitement}"
-							   style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
-						<span th:if="${#fields.hasErrors('dureeTraitement')}" th:errors="*{dureeTraitement}"
-							  style="color:#DC2626;font-size:0.8rem;"></span>
-					</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                        <label for="dureeTraitement" style="font-size:0.875rem;font-weight:600;">Durée traitement (jours)</label>
+                        <input type="number" min="1" step="1" id="dureeTraitement" th:field="*{dureeTraitement}"
+                               style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
+                        <span th:if="${#fields.hasErrors('dureeTraitement')}" th:errors="*{dureeTraitement}" style="color:#DC2626;font-size:0.8rem;"></span>
+                    </div>
 
-					<div style="display:flex;flex-direction:column;gap:6px;">
-						<label for="delaiAttenteJ" style="font-size:0.875rem;font-weight:600;">Délai d'attente (j)</label>
-						<input type="number" min="0" step="1" id="delaiAttenteJ" th:field="*{delaiAttenteJ}"
-							   style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
-						<span th:if="${#fields.hasErrors('delaiAttenteJ')}" th:errors="*{delaiAttenteJ}"
-							  style="color:#DC2626;font-size:0.8rem;"></span>
-					</div>
-				</div>
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                        <label for="delaiAttenteJ" style="font-size:0.875rem;font-weight:600;">Délai d'attente (j)</label>
+                        <input type="number" min="0" step="1" id="delaiAttenteJ" th:field="*{delaiAttenteJ}"
+                               style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
+                        <span th:if="${#fields.hasErrors('delaiAttenteJ')}" th:errors="*{delaiAttenteJ}" style="color:#DC2626;font-size:0.8rem;"></span>
+                    </div>
+                </div>
 
-				<div style="display:flex;flex-direction:column;gap:6px;max-width:220px;">
-					<label for="dateDebut" style="font-size:0.875rem;font-weight:600;">Date début</label>
-					<input type="date" id="dateDebut" th:field="*{dateDebut}"
-						   style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
-					<span th:if="${#fields.hasErrors('dateDebut')}" th:errors="*{dateDebut}"
-						  style="color:#DC2626;font-size:0.8rem;"></span>
-				</div>
+                <div style="display:flex;flex-direction:column;gap:6px;max-width:220px;">
+                    <label for="dateDebut" style="font-size:0.875rem;font-weight:600;">Date de début</label>
+                    <input type="date" id="dateDebut" th:field="*{dateDebut}"
+                           style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
+                    <span th:if="${#fields.hasErrors('dateDebut')}" th:errors="*{dateDebut}" style="color:#DC2626;font-size:0.8rem;"></span>
+                </div>
 
-				<div style="display:flex;justify-content:space-between;margin-top:8px;">
-					<a th:href="@{/traitements}" class="btn"
-					   style="border:1px solid #D1D5DB;background:white;color:#1A1A2E;">
-						Annuler
-					</a>
-					<button type="submit" class="btn btn-primary">Enregistrer</button>
-				</div>
-			</form>
-		</div>
-	</div>
+                <div style="display:flex;justify-content:space-between;margin-top:8px;">
+                    <a th:href="@{/traitements}" class="btn" style="border:1px solid #D1D5DB;background:white;color:#1A1A2E;">
+                        Annuler
+                    </a>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 </body>
 </html>

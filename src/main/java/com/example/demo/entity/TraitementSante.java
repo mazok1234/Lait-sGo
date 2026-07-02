@@ -1,5 +1,8 @@
 package com.example.demo.entity;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,9 +18,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
 @Entity
 @Table(name = "traitement_sante")
 public class TraitementSante {
@@ -30,7 +30,10 @@ public class TraitementSante {
     @JoinColumn(name = "evenement_sante_id", nullable = false)
     private EvenementSante evenementSante;
 
-    @NotNull(message = "Le medicament est obligatoire")
+    // Pas de @NotNull ici : ce champ n'est jamais rempli directement par le
+    // formulaire (le <select> soumet medicamentId, pas medicament.id).
+    // Il est peuplé par le service (TraitementSanteService.save()).
+    // La validation du choix utilisateur se fait sur medicamentId ci-dessous.
     @ManyToOne
     @JoinColumn(name = "medicament_id", nullable = false)
     private Medicament medicament;
