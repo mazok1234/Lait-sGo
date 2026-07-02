@@ -129,13 +129,45 @@ CREATE TABLE reproduction (
     sexe_veau              CHAR(1)              
 );
 
+
+CREATE TABLE maladie (
+    id          BIGSERIAL    PRIMARY KEY,
+    nom         VARCHAR(150) NOT NULL,
+    description TEXT
+);
+
+CREATE TABLE medicament (
+    id                         BIGSERIAL    PRIMARY KEY,
+    nom                        VARCHAR(150) NOT NULL,
+    delai_attente_lait_defaut  INT DEFAULT 0,
+    delai_attente_viande_defaut INT DEFAULT 0
+);
+
+CREATE TABLE maladie_medicament (
+    maladie_id    BIGINT NOT NULL REFERENCES maladie(id) ON DELETE CASCADE,
+    medicament_id BIGINT NOT NULL REFERENCES medicament(id) ON DELETE CASCADE,
+    PRIMARY KEY (maladie_id, medicament_id)
+);
+
 CREATE TABLE evenement_sante (
     id                BIGSERIAL   PRIMARY KEY,
     vache_id          BIGINT      NOT NULL REFERENCES vache(id),
+    maladie_id     BIGINT       NOT NULL REFERENCES maladie(id),
     date_evenement    DATE        NOT NULL,
-    id_type_evenement INT         NOT NULL REFERENCES ref_type_evenement_sante(id),
     description       TEXT,      
     created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE traitement_sante (
+    id                 BIGSERIAL  PRIMARY KEY,
+    evenement_sante_id BIGINT     NOT NULL REFERENCES evenement_sante(id) ON DELETE CASCADE,
+    medicament_id      BIGINT     NOT NULL REFERENCES medicament(id),
+    dose               DECIMAL(10,2) NOT NULL,
+    unite              VARCHAR(50)   NOT NULL,
+    duree_traitement   INT           NOT NULL,
+    delai_attente_j    INT           NOT NULL DEFAULT 0,
+    date_debut         DATE       NOT NULL,
+    date_fin           DATE       NOT NULL
 );
 
 CREATE TABLE aliment (
