@@ -11,6 +11,17 @@ import java.util.List;
 @Repository
 public interface RationRepository extends JpaRepository<Ration, Long> {
 
+        boolean existsByIdStadePhysiologique(Integer idStadePhysiologique);
+
+        @Query(value = """
+                SELECT COUNT(*) > 0
+                FROM ration r
+                WHERE r.id_stade_physiologique = :stadeId
+                    AND (:rationId IS NULL OR r.id <> :rationId)
+        """, nativeQuery = true)
+        boolean existsByStadeForOtherRation(@Param("stadeId") Integer stadeId,
+                                                                                @Param("rationId") Long rationId);
+
     @Query(value = """
         SELECT r.id AS id, r.nom AS nom, sp.libelle AS stade
         FROM ration r
@@ -32,6 +43,15 @@ public interface RationRepository extends JpaRepository<Ration, Long> {
         ORDER BY sp.id
     """, nativeQuery = true)
     List<StadeProjection> findAllStades();
+
+    @Query(value = """
+        SELECT sp.id AS id, sp.libelle AS libelle, sp.jour_min AS jourMin, sp.jour_max AS jourMax
+        FROM ref_stade_physiologique sp
+        LEFT JOIN ration r ON r.id_stade_physiologique = sp.id
+        WHERE r.id IS NULL
+        ORDER BY sp.id
+    """, nativeQuery = true)
+    List<StadeProjection> findAvailableStades();
 
     @Query(value = """
         SELECT COALESCE(v.ufl_total, 0) AS uflTotal, COALESCE(v.cout_j_eur, 0) AS coutTotalAr

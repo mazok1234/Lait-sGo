@@ -2,6 +2,7 @@ package com.example.demo.services;
 
 import com.example.demo.entity.RefStadePhysiologique;
 import com.example.demo.repository.RefStadePhysiologiqueRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,5 +32,19 @@ public class RefStadePhysiologiqueService {
 
     public void deleteById(Integer id) {
         stadeRepository.deleteById(id);
+    }
+
+    public boolean deleteIfNotUsed(Integer id) {
+        if (stadeRepository.isUsedByRation(id)) {
+            return false;
+        }
+
+        try {
+            stadeRepository.deleteById(id);
+            return true;
+        } catch (DataIntegrityViolationException ex) {
+            // Protection supplémentaire en cas de concurrence.
+            return false;
+        }
     }
 }

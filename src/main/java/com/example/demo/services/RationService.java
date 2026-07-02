@@ -7,6 +7,7 @@ import com.example.demo.repository.RationRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -46,6 +47,36 @@ public class RationService {
                 .toList();
     }
 
+    public List<StadeVm> getStadesDisponibles() {
+        return rationRepository.findAvailableStades().stream()
+                .map(s -> new StadeVm(s.getId(), s.getLibelle(), s.getJourMin(), s.getJourMax()))
+                .toList();
+    }
+
+    public boolean isStadeDejaAssocieARation(Integer stadeId, Long rationId) {
+        if (stadeId == null) {
+            return false;
+        }
+        return rationRepository.existsByStadeForOtherRation(stadeId, rationId);
+    }
+
+    public List<StadeVm> getStadesPourEdition(Long rationId) {
+        List<StadeVm> stades = new ArrayList<>(getStadesDisponibles());
+        Ration ration = findById(rationId);
+        if (ration == null || ration.getIdStadePhysiologique() == null) {
+            return stades;
+        }
+
+        boolean present = stades.stream().anyMatch(s -> s.id().equals(ration.getIdStadePhysiologique()));
+        if (!present) {
+            getStades().stream()
+                    .filter(s -> s.id().equals(ration.getIdStadePhysiologique()))
+                    .findFirst()
+                    .ifPresent(stades::add);
+        }
+        return stades;
+    }
+
     public List<RationAliment> findAlimentsByRationId(Long rationId) {
         return rationAlimentRepository.findByRationIdOrderByIdAsc(rationId);
     }
@@ -56,6 +87,11 @@ public class RationService {
 
     public void deleteRationAliment(Long id) {
         rationAlimentRepository.deleteById(id);
+    }
+
+    public void deleteRationById(Long rationId) {
+        rationAlimentRepository.deleteByRationId(rationId);
+        rationRepository.deleteById(rationId);
     }
 
     public NutritionVm calculateNutrition(Long rationId) {
