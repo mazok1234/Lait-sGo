@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
-<head><title>Ajout ration</title></head>
+<head><title>Modifier ration</title></head>
 <body>
 <div th:fragment="mainContent" class="page-content">
 
     <div class="page-header">
-        <h1 class="page-title">Ajout ration</h1>
-        <p class="page-subtitle">Creer une ration pour un stade physiologique</p>
+        <h1 class="page-title">Modifier ration</h1>
+        <p class="page-subtitle">Mettre a jour la ration du stade physiologique</p>
     </div>
 
     <div class="card" style="max-width:540px;margin:0 auto;">
         <div class="card-header">
-            <h2 class="card-title">Nouvelle ration</h2>
+            <h2 class="card-title">Edition ration</h2>
         </div>
 
         <div class="card-body" style="padding:28px;">
             <form th:action="@{/rations/save}" th:object="${ration}" method="post"
                   style="display:flex;flex-direction:column;gap:18px;">
+
+                <input type="hidden" th:field="*{id}">
 
                 <div style="display:flex;flex-direction:column;gap:6px;">
                     <label for="nom" style="font-size:0.875rem;font-weight:600;">Nom</label>
@@ -27,33 +29,24 @@
                 </div>
 
                 <div style="display:flex;flex-direction:column;gap:6px;">
-                    <label for="idStadePhysiologique" style="font-size:0.875rem;font-weight:600;">Stade physiologique disponible</label>
+                    <label for="idStadePhysiologique" style="font-size:0.875rem;font-weight:600;">Stade physiologique</label>
                     <select id="idStadePhysiologique" th:field="*{idStadePhysiologique}"
                             style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;background:white;width:100%;">
                         <option value="">-- Selectionner un stade --</option>
                         <option th:each="s : ${stades}" th:value="${s.id}"
                                 th:text="${s.libelle + ' (jours ' + s.jourMin + ' a ' + s.jourMax + ')'}"></option>
                     </select>
-                    <small style="color:#6B7280;font-size:0.8rem;">
-                        Un seul ration par stade. jour min = premier jour en lait, jour max = dernier jour en lait du stade.
-                    </small>
                     <span th:if="${#fields.hasErrors('idStadePhysiologique')}" th:errors="*{idStadePhysiologique}"
                           style="color:#DC2626;font-size:0.8rem;"></span>
                 </div>
 
-                <div style="display:flex;justify-content:flex-end;">
-                    <a th:href="@{/stades-physiologiques}" class="btn"
+                <div style="display:flex;justify-content:space-between;margin-top:8px;">
+                    <a th:href="@{/rations(rationId=${ration.id})}" class="btn"
                        style="border:1px solid #D1D5DB;background:white;color:#1A1A2E;">
-                        <i class="fas fa-cog"></i> Gerer les stades
+                        Retour
                     </a>
-                </div>
-
-                <div style="display:flex;justify-content:flex-end;margin-top:8px;">
-                    <button type="button" class="btn btn-secondary" onclick="window.history.back();">
-                        <i class="fas fa-times"></i> Annuler
-                    </button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-check"></i> Valider
+                        <i class="fas fa-check"></i> Mettre a jour
                     </button>
                 </div>
             </form>

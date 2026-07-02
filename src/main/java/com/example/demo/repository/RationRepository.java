@@ -11,6 +11,17 @@ import java.util.List;
 @Repository
 public interface RationRepository extends JpaRepository<Ration, Long> {
 
+        boolean existsByIdStadePhysiologique(Integer idStadePhysiologique);
+
+        @Query(value = """
+                SELECT COUNT(*) > 0
+                FROM ration r
+                WHERE r.id_stade_physiologique = :stadeId
+                    AND (:rationId IS NULL OR r.id <> :rationId)
+        """, nativeQuery = true)
+        boolean existsByStadeForOtherRation(@Param("stadeId") Integer stadeId,
+                                                                                @Param("rationId") Long rationId);
+
     @Query(value = """
         SELECT r.id AS id, r.nom AS nom, sp.libelle AS stade
         FROM ration r
@@ -33,6 +44,34 @@ public interface RationRepository extends JpaRepository<Ration, Long> {
     """, nativeQuery = true)
     List<StadeProjection> findAllStades();
 
+    @Query(value = """
+        SELECT sp.id AS id, sp.libelle AS libelle, sp.jour_min AS jourMin, sp.jour_max AS jourMax
+        FROM ref_stade_physiologique sp
+        LEFT JOIN ration r ON r.id_stade_physiologique = sp.id
+        WHERE r.id IS NULL
+        ORDER BY sp.id
+    """, nativeQuery = true)
+    List<StadeProjection> findAvailableStades();
+
+    @Query(value = """
+        SELECT COALESCE(v.ufl_total, 0) AS uflTotal, COALESCE(v.cout_j_eur, 0) AS coutTotalAr
+        FROM v_ration_nutrition v
+        WHERE v.ration_id = :rationId
+    """, nativeQuery = true)
+    NutritionProjection findNutritionByRationId(@Param("rationId") Long rationId);
+
+    @Query(value = """
+        SELECT vr.vache_id AS vacheId,
+               vr.numero_boucle AS numeroBoucle,
+               vr.jours_en_lait AS joursEnLait,
+               vr.phase_actuelle AS phaseActuelle,
+               vr.ration_id AS rationId,
+               vr.ration_recommandee AS rationRecommandee
+        FROM v_ration_recommandee vr
+        ORDER BY vr.numero_boucle
+    """, nativeQuery = true)
+    List<RationActiveVacheProjection> findRationsActivesVaches();
+
     interface RationCardProjection {
         Long getId();
         String getNom();
@@ -44,5 +83,19 @@ public interface RationRepository extends JpaRepository<Ration, Long> {
         String getLibelle();
         Integer getJourMin();
         Integer getJourMax();
+    }
+
+    interface NutritionProjection {
+        java.math.BigDecimal getUflTotal();
+        java.math.BigDecimal getCoutTotalAr();
+    }
+
+    interface RationActiveVacheProjection {
+        Long getVacheId();
+        String getNumeroBoucle();
+        Integer getJoursEnLait();
+        String getPhaseActuelle();
+        Long getRationId();
+        String getRationRecommandee();
     }
 }

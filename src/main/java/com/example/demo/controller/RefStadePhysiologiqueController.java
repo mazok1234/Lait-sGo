@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/stades-physiologiques")
@@ -52,8 +53,15 @@ public class RefStadePhysiologiqueController {
     }
 
     @GetMapping("/delete/{id}")
-    public String delete(@PathVariable Integer id) {
-        stadeService.deleteById(id);
+    public String delete(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        boolean deleted = stadeService.deleteIfNotUsed(id);
+        if (!deleted) {
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Suppression impossible: ce stade est deja utilise par une ration");
+            return "redirect:/stades-physiologiques";
+        }
+
+        redirectAttributes.addFlashAttribute("successMessage", "Stade supprime avec succes");
         return "redirect:/stades-physiologiques";
     }
 }

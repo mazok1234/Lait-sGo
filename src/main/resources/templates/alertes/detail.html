@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{index :: layout(~{::mainContent})}">
+<head><title>Détail alerte</title></head>
+<body>
+<div th:fragment="mainContent">
+
+  <div class="page-header">
+    <a th:href="@{/alertes}" class="back-link">
+      <i class="fas fa-arrow-left"></i> Retour aux alertes
+    </a>
+    <h1 class="page-title" th:text="${alerte.titre}">Titre</h1>
+    <p class="page-subtitle" th:text="${alerte.typeLibelle}">Type</p>
+  </div>
+
+  <div class="detail-wrapper">
+    <div class="card">
+      <div class="card-header detail-card-header">
+        <div>
+          <h2 class="card-title" th:text="${alerte.titre}">Titre de l'alerte</h2>
+          <p class="card-subtitle" th:text="${alerte.typeLibelle}">Type</p>
+        </div>
+        <span th:switch="${alerte.niveauCode}">
+          <span th:case="'urgent'" class="badge-niveau badge-niveau-danger badge-niveau-lg">
+            <i class="fas fa-exclamation-triangle icon-danger"></i>
+            <span th:text="${alerte.niveauLibelle}"></span>
+          </span>
+          <span th:case="'attention'" class="badge-niveau badge-niveau-warning badge-niveau-lg">
+            <i class="fas fa-exclamation-circle icon-warning"></i>
+            <span th:text="${alerte.niveauLibelle}"></span>
+          </span>
+          <span th:case="*" class="badge-niveau badge-niveau-info badge-niveau-lg">
+            <i class="fas fa-info-circle icon-info"></i>
+            <span th:text="${alerte.niveauLibelle}"></span>
+          </span>
+        </span>
+      </div>
+      <div class="card-body detail-body">
+
+        <div class="detail-grid">
+          <div class="detail-info-card">
+            <span class="detail-info-label">Concerne</span>
+            <span th:if="${alerte.vacheId != null}" class="detail-info-value detail-link">
+              <i class="fas fa-paw"></i>
+              <a th:href="@{/cheptel/{id}(id=${alerte.vacheId})}" th:text="${alerte.vacheBoucle != null ? alerte.vacheBoucle : 'Vache #' + alerte.vacheId}"></a>
+            </span>
+            <span th:if="${alerte.vacheId == null}" class="detail-info-value detail-ferme">
+              <i class="fas fa-warehouse"></i> Alerte ferme
+            </span>
+          </div>
+          <div class="detail-info-card">
+            <span class="detail-info-label">Reçue le</span>
+            <span class="detail-info-value detail-date">
+              <i class="fas fa-clock detail-date-icon"></i>
+              <span th:text="${#temporals.format(alerte.createdAt, 'dd/MM/yyyy à HH:mm')}"></span>
+            </span>
+          </div>
+          <div class="detail-info-card">
+            <span class="detail-info-label">Statut</span>
+            <span class="detail-info-value">
+              <span class="status-badge" th:classappend="${alerte.acquittee} ? ' status-badge-success' : ' status-badge-pending'"
+                    th:text="${alerte.acquittee} ? 'Acquittée' : 'En attente'"></span>
+            </span>
+          </div>
+        </div>
+
+        <div class="detail-divider"></div>
+
+        <div th:if="${alerte.description != null and !alerte.description.isEmpty()}" class="detail-field">
+          <span class="detail-field-label">Description</span>
+          <p th:text="${alerte.description}" class="detail-description"></p>
+        </div>
+
+        <div class="detail-divider detail-actions-divider">
+          <form th:if="${!alerte.acquittee}"
+                th:action="@{/alertes/{id}/acquitter(id=${alerte.id})}" method="post">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-check"></i> Acquitter l'alerte
+            </button>
+          </form>
+
+          <div th:if="${alerte.acquittee}" class="acquit-badge">
+            <i class="fas fa-check-circle"></i> Alerte déjà acquittée
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
