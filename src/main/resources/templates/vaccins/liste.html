@@ -104,130 +104,56 @@
                 </div>
             </div>
         </div>
-        <div id="modalOverlay" class="hidden">
+
+        <div id="modalOverlay" class="hidden" style=" margin-bottom:30px;">
             <div class="modal-card">
-                <h2 style="margin-top: 0; margin-bottom: 20px; font-size: 1.25rem; font-weight: 700;">Options d'export
-                    Excel</h2>
+                <h2 style="margin-top: 0; margin-bottom: 20px; font-size: 1.25rem; font-weight: 700;">Options d'export Excel</h2>
 
                 <form th:action="@{/vaccins/exportHistorique}" method="GET">
-
                     <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px;">
-                        <label
-                            style="font-size: 0.8rem; color: #6B7280; font-weight: 600; text-transform: uppercase;">Sélectionner
-                            une Vache :</label>
-                        <select name="vacheId"
-                            style="padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-family: 'Inter', sans-serif; outline: none;">
+                        <label style="font-size: 0.8rem; color: #6B7280; font-weight: 600; text-transform: uppercase;">Sélectionner une Vache :</label>
+                        <select name="vacheId" style="padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-family: 'Inter', sans-serif; outline: none;">
                             <option value="">-- Tout le troupeau --</option>
                             <option th:each="v : ${vaches}" th:value="${v.id}" th:text="${v.numeroBoucle}"></option>
                         </select>
                     </div>
 
                     <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px;">
-                        <label
-                            style="font-size: 0.8rem; color: #6B7280; font-weight: 600; text-transform: uppercase;">Date
-                            de début :</label>
-                        <input type="date" name="datedebut"
-                            style="padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-family: 'Inter', sans-serif; width: 100%;">
+                        <label style="font-size: 0.8rem; color: #6B7280; font-weight: 600; text-transform: uppercase;">Date de début :</label>
+                        <input type="date" name="datedebut" style="padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-family: 'Inter', sans-serif; width: 100%;">
                     </div>
 
                     <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px;">
-                        <label
-                            style="font-size: 0.8rem; color: #6B7280; font-weight: 600; text-transform: uppercase;">Date
-                            de fin :</label>
-                        <input type="date" name="datefin"
-                            style="padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-family: 'Inter', sans-serif; width: 100%;">
+                        <label style="font-size: 0.8rem; color: #6B7280; font-weight: 600; text-transform: uppercase;">Date de fin :</label>
+                        <input type="date" name="datefin" style="padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-family: 'Inter', sans-serif; width: 100%;">
                     </div>
 
                     <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                        <button type="button" id="closeBtn" class="btn"
-                            style="background: #9CA3AF; color: white;">Annuler</button>
-                        <button type="submit" class="btn btn-primary"
-                            style="background-color: #10B981;">Télécharger</button>
+                        <button type="button" id="closeBtn" class="btn" style="background: #9CA3AF; color: white;">Annuler</button>
+                        <button type="submit" class="btn btn-primary" style="background-color: #10B981;">Télécharger</button>
                     </div>
                 </form>
             </div>
         </div>
+
         <div id="modalOverlay1" class="hidden">
             <div class="card" style="margin-top: 20px; padding: 20px;">
                 <h3 class="card-title" style="margin-bottom: 12px;"> Importer un historique de vaccinations</h3>
 
-                <div th:if="${success}"
-                    style="color: #155724; background: #d4edda; padding: 10px; border-radius: 4px; margin-bottom: 10px;"
-                    th:text="${success}"></div>
-                <div th:if="${error}"
-                    style="color: #721c24; background: #f8d7da; padding: 10px; border-radius: 4px; margin-bottom: 10px;"
-                    th:text="${error}"></div>
+                <div th:if="${success}" style="color: #155724; background: #d4edda; padding: 10px; border-radius: 4px; margin-bottom: 10px;" th:text="${success}"></div>
+                <div th:if="${error}" style="color: #721c24; background: #f8d7da; padding: 10px; border-radius: 4px; margin-bottom: 10px;" th:text="${error}"></div>
 
-                <form th:action="@{/vaccins/importHistorique}" method="POST" enctype="multipart/form-data"
-                    style="display: flex; gap: 12px; align-items: center;">
-                    <input type="file" name="file" accept=".xlsx, .xls"
-                        style="padding: 8px; border: 1px dashed #D1D5DB; border-radius: 6px; flex: 1;" required>
+                <form th:action="@{/vaccins/importHistorique}" method="POST" enctype="multipart/form-data" style="display: flex; gap: 12px; align-items: center;">
+                    <input type="file" name="file" accept=".xlsx, .xls" style="padding: 8px; border: 1px dashed #D1D5DB; border-radius: 6px; flex: 1;" required>
                     <button type="submit" class="btn btn-primary" style="background-color: #007AFF;">
                         <i class="fas fa-upload"></i> Lancer l'import
                     </button>
-                    <button type="button" id="closeBtn1" class="btn"
-                        style="background: #9CA3AF; color: white;">Annuler</button>
+                    <button type="button" id="closeBtn1" class="btn" style="background: #9CA3AF; color: white;">Annuler</button>
                 </form>
             </div>
         </div>
 
-
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-
-                const input = document.querySelector(".filter-search");
-                const table = document.getElementById("vaccinTable");
-
-                if (!input || !table) return;
-
-                input.addEventListener("keyup", function () {
-
-                    const filter = this.value.toLowerCase();
-                    const rows = table.querySelectorAll("tbody tr");
-
-                    rows.forEach(row => {
-
-                        const text = row.textContent.toLowerCase();
-
-                        if (row.children.length === 1) return;
-
-                        row.style.display = text.includes(filter) ? "" : "none";
-                    });
-                });
-
-                const exportBtn = document.getElementById('exportBtn');
-                const closeBtn = document.getElementById('closeBtn');
-                const modalOverlay = document.getElementById('modalOverlay');
-                const modalOverlay1 = document.getElementById('modalOverlay1');
-                const mainContent = document.getElementById('mainContent');
-                const importBtn = document.getElementById('importBtn');
-                const closeBtn1 = document.getElementById('closeBtn1');
-
-                if (exportBtn && closeBtn && modalOverlay && modalOverlay1 && mainContent && importBtn && closeBtn1) {
-                    exportBtn.addEventListener('click', function () {
-                        modalOverlay.classList.remove('hidden');
-                        mainContent.classList.add('blur-background');
-                    });
-
-                    closeBtn.addEventListener('click', function () {
-                        modalOverlay.classList.add('hidden');
-                        mainContent.classList.remove('blur-background');
-                    });
-
-                    importBtn.addEventListener('click', function () {
-                        modalOverlay1.classList.remove('hidden');
-                        mainContent.classList.add('blur-background');
-                    });
-
-                    closeBtn1.addEventListener('click', function () {
-                        modalOverlay1.classList.add('hidden');
-                        mainContent.classList.remove('blur-background');
-                    });
-                }
-
-
-            });
-        </script>
+        <script th:src="@{/js/listeVaccin.js}"></script>
     </div>
 </body>
 

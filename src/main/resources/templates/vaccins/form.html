@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr"
-      xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{index :: layout(~{::mainContent})}">
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
 
 <head>
     <title>Historique Vaccin</title>
@@ -9,70 +7,105 @@
 
 <body>
 
-<div th:fragment="mainContent" class="page-content">
+    <div th:fragment="mainContent" class="page-content">
 
-    <div class="page-header">
-        <h1 class="page-title">Ajouter un vaccin</h1>
-        <p class="page-subtitle">Enregistrer une vaccination dans l'historique</p>
-    </div>
+        <div class="page-header">
+            <h1 class="page-title">Nouvelle vaccination</h1>
+        </div>
 
-    <div class="card">
-        <div class="card-body" style="padding: 24px;">
+        <div class="card" style="max-width:600px;margin:0 auto;">
 
-            <form th:action="@{/vaccins/historique/save}" method="post">
+            <div class="card-header">
+                <h2 class="card-title">Informations de la vaccination</h2>
+            </div>
 
-                <!-- VACHE -->
-                <div style="margin-bottom: 16px;">
-                    <label>Vache</label>
-                    <select name="vacheId" required style="width:100%; padding:8px;">
-                        <option value="">-- choisir une vache --</option>
-                        <option th:each="v : ${vaches}"
-                                th:value="${v.id}"
-                                th:text="${v.numeroBoucle}">
-                        </option>
-                    </select>
+            <div class="card-body" style="padding:24px;">
+
+                <div th:if="${success}" class="flash flash-success">
+                    <i class="fas fa-check-circle"></i>
+                    <span th:text="${success}"></span>
                 </div>
 
-                <!-- VACCIN -->
-                <div style="margin-bottom: 16px;">
-                    <label>Vaccin</label>
-                    <select name="protocoleId" required style="width:100%; padding:8px;">
-                        <option value="">-- choisir un vaccin --</option>
-                        <option th:each="p : ${protocoles}"
-                                th:value="${p.idProtocoleVaccin}"
+                <form th:action="@{/vaccins/historique/save}" method="post"
+                    style="display:flex;flex-direction:column;gap:16px;">
+
+                    <!-- Vache -->
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                        <label for="vacheId" style="font-size:0.875rem;font-weight:600;">
+                            Vache
+                        </label>
+
+                        <select id="vacheId" name="vacheId" required
+                            style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;background:white;">
+                            <option value="">-- Sélectionner une vache --</option>
+
+                            <option th:each="v : ${vaches}" th:value="${v.id}" th:text="${v.numeroBoucle}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Vaccin -->
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                        <label for="protocoleId" style="font-size:0.875rem;font-weight:600;">
+                            Vaccin
+                        </label>
+
+                        <select id="protocoleId" name="protocoleId" required
+                            style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;background:white;">
+                            <option value="">-- Sélectionner un vaccin --</option>
+
+                            <option th:each="p : ${protocoles}" th:value="${p.idProtocoleVaccin}"
                                 th:text="${p.nomVaccin}">
-                        </option>
-                    </select>
-                </div>
+                            </option>
+                        </select>
+                    </div>
 
-                <!-- DATE -->
-                <div style="margin-bottom: 16px;">
-                    <label>Date vaccination</label>
-                    <input type="date" name="dateVaccination"
-                           style="width:100%; padding:8px;" required>
+                    <!-- Date -->
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                        <label for="dateVaccination" style="font-size:0.875rem;font-weight:600;">
+                            Date de vaccination
+                        </label>
 
-                    
-                </div>
+                        <input type="date" id="dateVaccination" name="dateVaccination" required
+                            style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
+                    </div>
 
-                <!-- TYPE -->
-                <div style="margin-bottom: 20px;">
-                    <label>Type injection</label>
-                    <select name="typeInjection" required style="width:100%; padding:8px;">
-                        <option value="INTRAMUSCULAIRE">Intramusculaire</option>
-                        <option value="SOUS_CUTANEE">Sous-cutanée</option>
-                    </select>
-                </div>
+                    <!-- Type d'injection -->
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                        <label for="typeInjection" style="font-size:0.875rem;font-weight:600;">
+                            Type d'injection
+                        </label>
 
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Enregistrer
-                </button>
+                        <select id="typeInjection" name="typeInjection" required
+                            style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;background:white;">
+                            <option value="INTRAMUSCULAIRE">Intramusculaire</option>
+                            <option value="SOUS_CUTANEE">Sous-cutanée</option>
+                        </select>
+                    </div>
 
-            </form>
+                    <!-- Boutons -->
+                    <div style="display:flex;justify-content:space-between;margin-top:12px;">
+
+                        <a th:href="@{/vaccins}" class="btn"
+                            style="border:1px solid #D1D5DB;background:white;color:#1A1A2E;">
+                            Retour
+                        </a>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Enregistrer
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
 
         </div>
+
     </div>
 
-</div>
-
 </body>
+
 </html>
