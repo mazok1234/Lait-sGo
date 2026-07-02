@@ -22,14 +22,25 @@ INSERT INTO maladie_medicament (maladie_id, medicament_id) VALUES
 (3, 4),
 (4, 5);
 
-INSERT INTO vache (numero_boucle, id_race, date_naissance, poids_kg, id_statut, mere_id, score_bcs, score_locomotion) 
-VALUES
--- Une vache en lactation (Statut ID 1)
-('FR1234567801', 1, '2020-03-15', 680.5, 1, NULL, 3.00, 1);
-
 
 INSERT INTO ref_statut_vache (code, libelle) VALUES
 ('en_lactation', 'En lactation'),
 ('tarie',        'Tarie (période de repos avant vêlage)'),
 ('gestante',     'Gestante'),
 ('reformee',     'Réformée (sortie du troupeau)');
+
+INSERT INTO ref_race (id, code, libelle) VALUES 
+(1, 'prim_holstein', 'Prim''Holstein'),
+(2, 'normande',      'Normande'),
+(3, 'montbeliarde',  'Montbéliarde'),
+(4, 'charolaise',    'Charolaise');
+
+-- Étape de sécurité pour recalibrer le compteur SERIAL de PostgreSQL 
+-- après avoir forcé les ID manuellement :
+SELECT setval('ref_race_id_seq', COALESCE((SELECT MAX(id) FROM ref_race), 1));
+
+
+INSERT INTO vache (numero_boucle, id_race, date_naissance, poids_kg, id_statut, mere_id, score_bcs, score_locomotion) 
+VALUES
+-- Une vache en lactation (Statut ID 1)
+('FR1234567801', 1, '2020-03-15', 680.5, 1, NULL, 3.00, 1);
