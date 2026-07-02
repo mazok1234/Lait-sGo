@@ -145,9 +145,9 @@ public class VaccinController {
                                        @RequestParam(required = false) LocalDate datedebut,
                                        @RequestParam(required = false) LocalDate datefin) throws IOException {
 
-            if(Long.valueOf(vacheId) == null) {
-                vacheId = 0L;
-            }
+        //     if(Long.valueOf(vacheId) == null) {
+        //         vacheId = 0L;
+        //     }
 
             List<HistoriqueVaccin> historiques = historiqueRepo.findVaccins(vacheId, datedebut, datefin);
 
