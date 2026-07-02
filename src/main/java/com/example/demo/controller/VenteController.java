@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.entity.Vente;
-import com.example.demo.service.VenteService;
+import com.example.demo.services.VenteService;
 
 
 
