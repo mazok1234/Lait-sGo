@@ -35,7 +35,7 @@ public class VenteService {
         this.utilisateurRepository = utilisateurRepository;
     }
 
-    public void effectuerVente(BigDecimal quantite,BigDecimal prixUnitaire, LocalDate dateVente) {
+    public Vente effectuerVente(BigDecimal quantite,BigDecimal prixUnitaire, LocalDate dateVente) {
 
 
 
@@ -89,6 +89,7 @@ public class VenteService {
         vente.setCreatedBy( utilisateurRepository.findById(1L).orElseThrow());
 
         venteRepository.save(vente);
+        return vente;
     }
 
     // public List<Vente> getMostRecentVentes(){
@@ -109,5 +110,8 @@ public class VenteService {
 
     public Page<Vente> findByPrixTotalBetweenDateDesc( BigDecimal min, BigDecimal max, int page , int size){
         return venteRepository.findByPrixTotalBetweenDateDesc(min, max, Pageable.ofSize(size).withPage(page));
+    }
+    public Vente findById(Integer id) {
+        return venteRepository.findById(id).orElseThrow(() -> new RuntimeException("Vente not found"));
     }
 }
