@@ -96,7 +96,7 @@
             </div>
         </header>
 
-        <div class="page-content" th:replace="${content}">
+        <div class="page-content" th:replace="~{${page} :: content}">
         </div>
 
     </main>
