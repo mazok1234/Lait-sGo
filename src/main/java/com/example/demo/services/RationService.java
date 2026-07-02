@@ -59,22 +59,28 @@ public class RationService {
     }
 
     public NutritionVm calculateNutrition(Long rationId) {
-        List<RationAliment> lignes = findAlimentsByRationId(rationId);
-        BigDecimal uflTotal = BigDecimal.ZERO;
-        BigDecimal coutTotal = BigDecimal.ZERO;
-
-        for (RationAliment ligne : lignes) {
-            BigDecimal qte = ligne.getQuantiteKg() != null ? ligne.getQuantiteKg() : BigDecimal.ZERO;
-            BigDecimal ufl = ligne.getAliment() != null && ligne.getAliment().getUfl() != null
-                    ? ligne.getAliment().getUfl() : BigDecimal.ZERO;
-            BigDecimal prixKg = ligne.getAliment() != null && ligne.getAliment().getPrixParKilo() != null
-                    ? ligne.getAliment().getPrixParKilo() : BigDecimal.ZERO;
-
-            uflTotal = uflTotal.add(qte.multiply(ufl));
-            coutTotal = coutTotal.add(qte.multiply(prixKg));
+        RationRepository.NutritionProjection nutrition = rationRepository.findNutritionByRationId(rationId);
+        if (nutrition == null) {
+            return new NutritionVm(BigDecimal.ZERO, BigDecimal.ZERO);
         }
 
-        return new NutritionVm(uflTotal, coutTotal);
+        return new NutritionVm(
+            nutrition.getUflTotal() != null ? nutrition.getUflTotal() : BigDecimal.ZERO,
+            nutrition.getCoutTotalAr() != null ? nutrition.getCoutTotalAr() : BigDecimal.ZERO
+        );
+        }
+
+        public List<RationActiveVacheVm> getRationsActivesVaches() {
+        return rationRepository.findRationsActivesVaches().stream()
+            .map(v -> new RationActiveVacheVm(
+                v.getVacheId(),
+                v.getNumeroBoucle(),
+                v.getJoursEnLait(),
+                v.getPhaseActuelle(),
+                v.getRationId(),
+                v.getRationRecommandee()
+            ))
+            .toList();
     }
 
     public record RationCardVm(Long id, String nom, String stade, long nbVaches) {
@@ -84,5 +90,13 @@ public class RationService {
     }
 
     public record NutritionVm(BigDecimal uflTotal, BigDecimal coutTotalAr) {
+    }
+
+    public record RationActiveVacheVm(Long vacheId,
+                                      String numeroBoucle,
+                                      Integer joursEnLait,
+                                      String phaseActuelle,
+                                      Long rationId,
+                                      String rationRecommandee) {
     }
 }

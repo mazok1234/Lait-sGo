@@ -203,6 +203,18 @@ CREATE TABLE ration_aliment (
     quantite_kg DECIMAL(6,2) NOT NULL
 );
 
+CREATE TABLE affectation_ration_vache (
+    id         BIGSERIAL PRIMARY KEY,
+    vache_id   BIGINT    NOT NULL REFERENCES vache(id),
+    ration_id  BIGINT    NOT NULL REFERENCES ration(id),
+    date_debut DATE      NOT NULL,
+    date_fin   DATE,
+    actif      BOOLEAN   NOT NULL DEFAULT TRUE
+);
+
+CREATE INDEX idx_affectation_vache_actif ON affectation_ration_vache(vache_id, actif);
+CREATE INDEX idx_affectation_ration_actif ON affectation_ration_vache(ration_id, actif);
+
 
 CREATE TABLE alerte (
     id          BIGSERIAL   PRIMARY KEY,
