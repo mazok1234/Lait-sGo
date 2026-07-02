@@ -11,10 +11,24 @@
         <p class="page-subtitle">Suivi des traitements, doses et délais d'attente</p>
     </div>
 
+    <div class="stats-grid">
+        <div class="card">
+            <div class="card-icon" style="background:#FFF3E0; color:#F59E0B;">
+                <i class="fas fa-notes-medical"></i>
+            </div>
+            <div class="card-body">
+                <div class="card-label">Vache en repos maladie</div>
+                <div class="card-value" th:text="${vachesTariees}">0</div>
+            </div>
+        </div>
+    </div>
+
     <div class="card card-table">
-        <div class="card-header filters" style="justify-content:space-between;">
-            <input type="text" id="searchInput" placeholder="Recherche ..."
-                   class="filter-search" oninput="filterTable(this,'traitementsTable')">
+        <div class="card-header filters" style="justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                <input type="text" id="searchInput" placeholder="Recherche ..."
+                       class="filter-search" oninput="filterTable(this,'traitementsTable')">
+            </div>
             <a th:href="@{/traitements/new}" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Nouveau traitement
             </a>
@@ -50,11 +64,14 @@
                            class="btn btn-sm" style="border:1px solid #6B7280;color:#6B7280;">
                             <i class="fas fa-pen"></i>
                         </a>
-                        <a th:href="@{/traitements/delete/{id}(id=${traitement.id})}"
-                           class="btn btn-sm" style="border:1px solid #DC2626;color:#DC2626;"
-                           onclick="return confirm('Supprimer ce traitement ?');">
-                            <i class="fas fa-trash"></i>
-                        </a>
+                        <form th:action="@{/traitements/delete/{id}(id=${traitement.id})}" method="post" style="margin:0;">
+                            <button type="submit"
+                                    class="btn btn-sm"
+                                    style="border:1px solid #DC2626;color:#DC2626;background:transparent;"
+                                    onclick="return confirm('Supprimer ce traitement ?');">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
                     </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(traitements)}">
