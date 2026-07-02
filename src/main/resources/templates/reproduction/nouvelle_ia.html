@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nouvelle insémination</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: sans-serif;
+            background: #f2f2f2;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px 35px;
+            border-radius: 6px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+        h2 { text-align:center; margin-bottom:25px; font-weight:400; color:#333; }
+        .form-group { margin-bottom:18px; }
+        label { display:block; margin-bottom:4px; font-size:14px; color:#333; }
+        input, select {
+            width:100%;
+            padding:8px 10px;
+            border:1px solid #ccc;
+            border-radius:4px;
+            font-size:14px;
+            background:white;
+        }
+        input:focus, select:focus { border-color:#888; outline:none; }
+        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:15px; }
+        .btn-group { display:flex; gap:10px; margin-top:20px; }
+        button, .btn {
+            flex:1;
+            padding:10px;
+            border:1px solid #aaa;
+            border-radius:4px;
+            background:#eee;
+            color:#333;
+            font-size:14px;
+            cursor:pointer;
+            text-align:center;
+            text-decoration:none;
+        }
+        button:hover, .btn:hover { background:#ddd; }
+        .alert { padding:10px; margin-bottom:15px; border-radius:4px; border:1px solid #ccc; background:#f9f9f9; }
+        .alert-success { background:#e6f7e6; border-color:#b2d8b2; color:#2d6a2d; }
+        .alert-error { background:#fde8e8; border-color:#f5c6cb; color:#721c24; }
+        .required { color:#d00; }
+        .info-note { font-size:13px; color:#666; margin-bottom:18px; padding:8px 12px; background:#f7f7f7; border-left:3px solid #aaa; }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <h2>📋 Nouvelle insémination</h2>
+
+        <!-- Messages (optionnels) -->
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <div class="info-note">
+            <span class="required">*</span> Champs obligatoires
+        </div>
+
+        <!-- Formulaire corrigé : action="/reproduction/enregistrer" -->
+        <form th:action="@{/reproduction/enregistrer}" method="post">
+            <!-- Vache -->
+            <div class="form-group">
+                <label for="vacheId">Vache <span class="required">*</span></label>
+                <select id="vacheId" name="vacheId" required>
+                    <option value="">-- Sélectionner --</option>
+                    <option th:each="v : ${vaches}" 
+                            th:value="${v.id}" 
+                            th:text="${v.numeroBoucle} + ' - ' + ${v.race.libelle}">
+                    </option>
+                </select>
+            </div>
+
+            <!-- Date + Type -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="dateIA">Date d'IA <span class="required">*</span></label>
+                    <input type="date" id="dateIA" name="dateIA" required>
+                </div>
+                <div class="form-group">
+                    <label for="typeInjection">Type d'IA</label>
+                    <input type="text" id="typeInjection" name="typeInjection" placeholder="ex: IA fraîche">
+                </div>
+            </div>
+
+            <!-- Semence + Inséminateur -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="semence">Semence <span class="required">*</span></label>
+                    <input type="text" id="semence" name="semence" placeholder="Référence" required>
+                </div>
+                <div class="form-group">
+                    <label for="inseminateur">Inséminateur <span class="required">*</span></label>
+                    <input type="text" id="inseminateur" name="inseminateur"  placeholder="Nom" required>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button type="submit">Enregistrer</button>
+                <button type="button" onclick="window.history.back()">Annuler</button>
+            </div>
+        </form>
+
+    </div>
+</body>
+</html>

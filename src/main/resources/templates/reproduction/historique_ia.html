@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historique des Inséminations</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: sans-serif;
+            background: #f2f2f2;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px 35px;
+            border-radius: 6px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            font-weight: 400;
+            color: #333;
+            font-size: 24px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            background: #eee;
+            color: #333;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover {
+            background: #ddd;
+        }
+        .btn-primary {
+            background: #4CAF50;
+            border-color: #4CAF50;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #45a049;
+        }
+        .btn-secondary {
+            background: #2196F3;
+            border-color: #2196F3;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #0b7dda;
+        }
+        .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            background: #f9f9f9;
+        }
+        .alert-success {
+            background: #e6f7e6;
+            border-color: #b2d8b2;
+            color: #2d6a2d;
+        }
+        .alert-error {
+            background: #fde8e8;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .vache-info {
+            background: #f7f7f7;
+            padding: 15px 20px;
+            border-left: 3px solid #4CAF50;
+            margin-bottom: 25px;
+            border-radius: 3px;
+        }
+        .vache-info h2 {
+            font-weight: 400;
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        .vache-info p {
+            color: #555;
+            font-size: 14px;
+            margin: 2px 0;
+        }
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        thead {
+            background: #f0f0f0;
+        }
+        th {
+            padding: 12px 10px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+        }
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #ddd;
+            color: #333;
+        }
+        tr:hover {
+            background: #f9f9f9;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-attente {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .badge-gestante {
+            background: #d4edda;
+            color: #155724;
+        }
+        .badge-echouee {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+        .empty-state p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .btn-small {
+            padding: 4px 10px;
+            font-size: 12px;
+            border: 1px solid #aaa;
+            border-radius: 3px;
+            background: #eee;
+            color: #333;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-small:hover {
+            background: #ddd;
+        }
+        .btn-update {
+            background: #17a2b8;
+            border-color: #17a2b8;
+            color: white;
+        }
+        .btn-update:hover {
+            background: #138496;
+        }
+        .btn-delete {
+            background: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+        .btn-delete:hover {
+            background: #c82333;
+        }
+        /* Modal (identique à celui que tu avais) */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 6px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .modal-header h2 {
+            font-weight: 400;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .modal-buttons button {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            background: #eee;
+            cursor: pointer;
+        }
+        .modal-buttons .btn-confirm {
+            background: #4CAF50;
+            border-color: #4CAF50;
+            color: white;
+        }
+        .modal-buttons .btn-confirm:hover {
+            background: #45a049;
+        }
+        .modal-buttons .btn-cancel {
+            background: #f0f0f0;
+        }
+        .modal-buttons .btn-cancel:hover {
+            background: #ddd;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- En-tête -->
+        <div class="header">
+            <h1>📊 Historique des Inséminations</h1>
+            <div>
+                <a href="/reproduction/nouvelle" class="btn btn-primary">➕ Nouvelle IA</a>
+                <a href="/reproduction/en-attente" class="btn btn-secondary">⏳ En attente</a>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <!-- Infos vache -->
+        <div class="vache-info" th:if="${vache != null}">
+            <h2 th:text="'Vache : ' + ${vache.numeroBoucle}"></h2>
+            <p><strong>Race :</strong> <span th:text="${vache.race.libelle}"></span></p>
+            <p><strong>Date de naissance :</strong> <span th:text="${vache.dateNaissance}"></span></p>
+            <p><strong>Poids :</strong> <span th:text="${vache.poidsKg} + ' kg'"></span></p>
+        </div>
+
+        <!-- Tableau -->
+        <div class="table-responsive">
+            <div th:if="${historique.isEmpty()}" class="empty-state">
+                <p>Aucune insémination enregistrée pour cette vache</p>
+                <a href="/reproduction/nouvelle" class="btn">Enregistrer la première IA</a>
+            </div>
+            <div th:unless="${historique.isEmpty()}">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date d'IA</th>
+                            <th>Semence</th>
+                            <th>Type d'IA</th>
+                            <th>Inséminateur</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="ia : ${historique}">
+                            <td th:text="${ia.dateIA}"></td>
+                            <td th:text="${ia.semence}"></td>
+                            <td th:text="${ia.typeInjection}"></td>
+                            <!-- Attention : ici on utilise 'inseminateur' (sans accent) car le DTO a probablement ce nom -->
+                            <td th:text="${ia.inséminateur}"></td>
+                            <td>
+                                <span class="badge" 
+                                      th:classappend="${ia.statutIA == 'en_attente' ? 'badge-attente' : ia.statutIA == 'gestante' ? 'badge-gestante' : 'badge-echouee'}"
+                                      th:text="${ia.statutIA}"></span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button type="button" class="btn-small btn-update"
+                                            th:onclick="'openModal(' + ${ia.id} + ')'">
+                                        ✏️ Mettre à jour
+                                    </button>
+                                    <form th:action="@{/reproduction/supprimer/{reproductionId}(reproductionId=${ia.id})}" 
+                                          method="post" style="display:inline;"
+                                          onsubmit="return confirm('Supprimer cette IA ?')">
+                                        <button type="submit" class="btn-small btn-delete">🗑️</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour mise à jour du statut -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h2>Mettre à jour le statut</h2></div>
+            <form id="statusForm" method="post">
+                <div class="form-group">
+                    <label for="statut">Nouveau statut :</label>
+                    <select id="statut" name="statut" required>
+                        <option value="en_attente">En attente</option>
+                        <option value="gestante">Gestante</option>
+                        <option value="echouee">Échouée</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="dateConfirmation">Date de confirmation (optionnel) :</label>
+                    <input type="date" id="dateConfirmation" name="dateConfirmation">
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-confirm">✓ Confirmer</button>
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal(iaId) {
+            document.getElementById('statusModal').style.display = 'block';
+            document.getElementById('statusForm').action = '/reproduction/update-statut/' + iaId;
+        }
+        function closeModal() {
+            document.getElementById('statusModal').style.display = 'none';
+        }
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('statusModal')) closeModal();
+        }
+    </script>
+</body>
+</html>
