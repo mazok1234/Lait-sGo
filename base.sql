@@ -8,7 +8,7 @@ CREATE TABLE ref_race (
 );
 
 CREATE TABLE ref_statut_vache (
-    id      SERIAL PRIMARY KEY,
+    id      SERIAL PRIMARY KEY, 
     code    VARCHAR(30)  NOT NULL UNIQUE,   -- en_lactation, tarie, gestante, reformee
     libelle VARCHAR(100) NOT NULL
 );
@@ -25,11 +25,6 @@ CREATE TABLE ref_role_utilisateur (
     libelle VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE ref_type_evenement_sante (
-    id      SERIAL PRIMARY KEY,
-    code    VARCHAR(30)  NOT NULL UNIQUE,   -- mammite, boiterie, metrite...
-    libelle VARCHAR(100) NOT NULL
-);
 
 CREATE TABLE ref_niveau_alerte (
     id      SERIAL PRIMARY KEY,
