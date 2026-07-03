@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+<head><title>Nouveau stade physiologique</title></head>
+<body>
+<div th:fragment="mainContent" class="page-content">
+
+    <div class="page-header">
+        <h1 class="page-title">Nouveau stade physiologique</h1>
+        <p class="page-subtitle">Definition des bornes de jours en lait</p>
+    </div>
+
+    <div class="card" style="max-width:600px;margin:0 auto;">
+        <div class="card-header">
+            <h2 class="card-title">Informations du stade</h2>
+        </div>
+
+        <div class="card-body" style="padding:24px;">
+            <form th:action="@{/stades-physiologiques/save}" th:object="${stade}" method="post"
+                  style="display:flex;flex-direction:column;gap:16px;">
+
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    <label for="code" style="font-size:0.875rem;font-weight:600;">Code</label>
+                    <input type="text" id="code" th:field="*{code}"
+                           style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
+                    <span th:if="${#fields.hasErrors('code')}" th:errors="*{code}"
+                          style="color:#DC2626;font-size:0.8rem;"></span>
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    <label for="libelle" style="font-size:0.875rem;font-weight:600;">Libelle</label>
+                    <input type="text" id="libelle" th:field="*{libelle}"
+                           style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
+                    <span th:if="${#fields.hasErrors('libelle')}" th:errors="*{libelle}"
+                          style="color:#DC2626;font-size:0.8rem;"></span>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                        <label for="jourMin" style="font-size:0.875rem;font-weight:600;">Jour min</label>
+                        <input type="number" min="0" id="jourMin" th:field="*{jourMin}"
+                               style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
+                        <span th:if="${#fields.hasErrors('jourMin')}" th:errors="*{jourMin}"
+                              style="color:#DC2626;font-size:0.8rem;"></span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                        <label for="jourMax" style="font-size:0.875rem;font-weight:600;">Jour max</label>
+                        <input type="number" min="0" id="jourMax" th:field="*{jourMax}"
+                               style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
+                        <span th:if="${#fields.hasErrors('jourMax')}" th:errors="*{jourMax}"
+                              style="color:#DC2626;font-size:0.8rem;"></span>
+                    </div>
+                </div>
+
+                <small style="color:#6B7280;font-size:0.8rem;">
+                    Le jour max doit etre superieur ou egal au jour min.
+                </small>
+
+                <div style="display:flex;justify-content:space-between;margin-top:20px;">
+                    <a th:href="@{/stades-physiologiques}" class="btn"
+                       style="border:1px solid #D1D5DB;background:white;color:#1A1A2E;">Retour</a>
+                    <button type="submit" class="btn btn-primary">Valider</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/alimentation_sidebar :: sidebarScript('stades')}"></div>
+</div>
+</body>
+</html>

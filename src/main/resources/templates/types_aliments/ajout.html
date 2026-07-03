@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+<head>
+    <title>Ajouter un type d'aliment</title>
+</head>
+<body>
+    <div th:fragment="mainContent" class="page-content">
+        <div class="page-header">
+            <h1 class="page-title">Nouveau type d'aliment</h1>
+        </div>
+
+        <div class="card" style="max-width: 600px; margin: 0 auto;">
+            <div class="card-header">
+                <h2 class="card-title">Informations du type</h2>
+            </div>
+            
+            <div class="card-body" style="padding: 24px;">
+                <form th:action="@{/types-aliments/save}" th:object="${typeAliment}" method="post" style="display: flex; flex-direction: column; gap: 16px;">
+                    
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <label for="code" style="font-size: 0.875rem; font-weight: 600;">Code</label>
+                        <input type="text" id="code" th:field="*{code}" class="filter-search" style="padding: 10px; border: 1px solid #D1D5DB; border-radius: 6px; width: 100%;">
+                        <span th:if="${#fields.hasErrors('code')}" th:errors="*{code}" style="color: #DC2626; font-size: 0.8rem;"></span>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <label for="libelle" style="font-size: 0.875rem; font-weight: 600;">Libellé</label>
+                        <input type="text" id="libelle" th:field="*{libelle}" class="filter-search" style="padding: 10px; border: 1px solid #D1D5DB; border-radius: 6px; width: 100%;">
+                        <span th:if="${#fields.hasErrors('libelle')}" th:errors="*{libelle}" style="color: #DC2626; font-size: 0.8rem;"></span>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                        <a th:href="@{/types-aliments}" class="btn" style="border: 1px solid #D1D5DB; background: white; color: #1A1A2E;">Retour</a>
+                        <button type="submit" class="btn btn-primary">Valider</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var sidebarNav = document.querySelector('.sidebar-nav ul');
+                if (sidebarNav) {
+                    sidebarNav.innerHTML = `
+                        <li>
+                            <a href="/aliments">
+                                <i class="fas fa-apple-alt"></i>
+                                <span>Alimentation</span>
+                            </a>
+                        </li>
+                        <li class="active">
+                            <a href="/types-aliments">
+                                <i class="fas fa-tags"></i>
+                                <span>Types d'aliments</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/rations">
+                                <i class="fas fa-balance-scale"></i>
+                                <span>Rations</span>
+                            </a>
+                        </li>
+                    `;
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

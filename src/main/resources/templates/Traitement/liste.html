@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+<head>
+    <title>Traitements</title>
+</head>
+<body>
+<div th:fragment="mainContent" class="page-content">
+
+    <div class="page-header">
+        <h1 class="page-title">Traitements de santé</h1>
+        <p class="page-subtitle">Suivi des traitements, doses et délais d'attente</p>
+    </div>
+
+    <div class="card card-table">
+        <div class="card-header filters" style="justify-content:space-between;">
+            <input type="text" id="searchInput" placeholder="Recherche ..."
+                   class="filter-search" oninput="filterTable(this,'traitementsTable')">
+            <a th:href="@{/traitements/new}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Nouveau traitement
+            </a>
+        </div>
+
+        <div class="card-body">
+            <table class="table" id="traitementsTable">
+                <thead>
+                <tr>
+                    <th>Vache</th>
+                    <th>Maladie</th>
+                    <th>Médicament</th>
+                    <th>Dose</th>
+                    <th>Durée</th>
+                    <th>Délai</th>
+                    <th>Date début</th>
+                    <th>Date fin</th>
+                    <th style="text-align:center;">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="traitement : ${traitements}">
+                    <td th:text="${traitement.evenementSante != null and traitement.evenementSante.vache != null ? traitement.evenementSante.vache.numeroBoucle : '-'}">-</td>
+                    <td th:text="${traitement.evenementSante != null and traitement.evenementSante.maladie != null ? traitement.evenementSante.maladie.nom : '-'}">-</td>
+                    <td th:text="${traitement.medicament != null ? traitement.medicament.nom : '-'}">-</td>
+                    <td th:text="${traitement.dose != null ? #numbers.formatDecimal(traitement.dose,1,2) + ' ' + traitement.unite : '-'}">-</td>
+                    <td th:text="${traitement.dureeTraitement != null ? traitement.dureeTraitement + ' j' : '-'}">-</td>
+                    <td th:text="${traitement.delaiAttenteJ != null ? traitement.delaiAttenteJ + ' j' : '-'}">-</td>
+                    <td th:text="${traitement.dateDebut != null ? #temporals.format(traitement.dateDebut,'dd/MM/yyyy') : '-'}">-</td>
+                    <td th:text="${traitement.dateFin != null ? #temporals.format(traitement.dateFin,'dd/MM/yyyy') : '-'}">-</td>
+                    <td style="text-align:center;display:flex;justify-content:center;gap:6px;">
+                        <a th:href="@{/traitements/edit/{id}(id=${traitement.id})}"
+                           class="btn btn-sm" style="border:1px solid #6B7280;color:#6B7280;">
+                            <i class="fas fa-pen"></i>
+                        </a>
+                        <a th:href="@{/traitements/delete/{id}(id=${traitement.id})}"
+                           class="btn btn-sm" style="border:1px solid #DC2626;color:#DC2626;"
+                           onclick="return confirm('Supprimer ce traitement ?');">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(traitements)}">
+                    <td colspan="9" class="text-center" style="padding:32px;color:#9CA3AF;">
+                        Aucun traitement enregistré.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function filterTable(input, tableId) {
+            var filter = input.value.toLowerCase();
+            document.querySelectorAll('#' + tableId + ' tbody tr').forEach(function(row) {
+                row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
+            });
+        }
+    </script>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!--
+    Fragment réutilisable : injecte la sidebar Alimentation dans toutes les pages /aliments
+    Usage: <div th:replace="~{fragments/alimentation_sidebar :: sidebar(activeItem)}"></div>
+    activeItem : 'alimentation' | 'types' | 'mouvements' | 'rations' | 'stades' | 'affectations'
+-->
+<script th:fragment="sidebarScript(activeItem)" th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        var nav = document.querySelector('.sidebar-nav ul');
+        if (!nav) return;
+        var active = /*[[${activeItem}]]*/ 'alimentation';
+        nav.innerHTML =
+            '<li class="' + (active === 'alimentation' ? 'active' : '') + '">' +
+                '<a href="/aliments"><i class="fas fa-apple-alt"></i><span>Alimentation</span></a>' +
+            '</li>' +
+            '<li class="' + (active === 'types' ? 'active' : '') + '">' +
+                '<a href="/types-aliments"><i class="fas fa-tags"></i><span>Types d\'aliments</span></a>' +
+            '</li>' +
+            '<li class="' + (active === 'mouvements' ? 'active' : '') + '">' +
+                '<a href="/mouvementsAlim"><i class="fas fa-exchange-alt"></i><span>Mouvements</span></a>' +
+            '</li>' +
+            '<li class="' + (active === 'rations' ? 'active' : '') + '">' +
+                '<a href="/rations"><i class="fas fa-balance-scale"></i><span>Rations</span></a>' +
+            '</li>' +
+            '<li class="' + (active === 'stades' ? 'active' : '') + '">' +
+                '<a href="/stades-physiologiques"><i class="fas fa-calendar-alt"></i><span>Stades</span></a>' +
+            '</li>' +
+            '<li class="' + (active === 'affectations' ? 'active' : '') + '">' +
+                '<a href="/affectations-rations"><i class="fas fa-link"></i><span>Affectations</span></a>' +
+            '</li>';
+    });
+</script>
+
+</body>
+</html>

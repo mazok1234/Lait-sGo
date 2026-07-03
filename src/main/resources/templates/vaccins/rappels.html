@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{index :: layout(~{::mainContent})}">
+
+<head>
+    <title>Rappels Vaccins</title>
+</head>
+
+<body>
+
+<div th:fragment="mainContent" class="page-content">
+
+    <div class="page-header">
+        <h1 class="page-title">Rappels de Vaccination</h1>
+        <p class="page-subtitle">Vaccins à surveiller pour le troupeau</p>
+    </div>
+
+    <div class="card card-table">
+
+        <div class="card-header"
+             style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+
+            <span class="card-title">Rappels globaux</span>
+
+        <input type="text"
+               class="filter-search"
+               placeholder="Rechercher un vaccin..."
+               style="padding:8px 12px; border:1px solid #D1D5DB; border-radius:6px; outline:none; width:250px;">
+        </div>
+
+        <div class="card-body">
+
+            <table class="table" id="rappelTable">
+
+                <thead>
+                <tr>
+                    <th>Vaccin</th>
+                    <th>Dernière vaccination</th>
+                    <th>Rappel (jours)</th>
+                    <th>Statut</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                <tr th:each="h : ${rappels}">
+
+                    <td th:text="${h.protocoleVaccin.nomVaccin}"></td>
+
+                    <td th:text="${h.dateVaccination}"></td>
+
+                    <td th:text="${h.protocoleVaccin.dureeRappelJours}"></td>
+
+                    <td>
+                        <span class="badge badge-danger">À rappeler</span>
+                    </td>
+
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(rappels)}">
+                    <td colspan="4" class="text-center" style="padding:20px;">
+                        Aucun vaccin à rappeler
+                    </td>
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+    const input = document.querySelector(".filter-search");
+    const table = document.getElementById("rappelTable");
+
+    if (!input || !table) return;
+
+    input.addEventListener("keyup", function () {
+
+        const filter = this.value.toLowerCase();
+        const rows = table.querySelectorAll("tbody tr");
+
+        rows.forEach(row => {
+
+            const text = row.textContent.toLowerCase();
+
+            if (row.children.length === 1) return;
+
+            row.style.display = text.includes(filter) ? "" : "none";
+        });
+    });
+});
+</script>
+
+</div>
+</body>
+</html>

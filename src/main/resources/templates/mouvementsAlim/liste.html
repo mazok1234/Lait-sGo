@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+<head><title>Mouvements Aliments</title></head>
+<body>
+<div th:fragment="mainContent" class="page-content">
+
+    <div class="page-header">
+        <h1 class="page-title">Mouvements de stock</h1>
+        <p class="page-subtitle">Historique des entrées et sorties</p>
+    </div>
+
+    <div class="card card-table">
+        <div class="card-header filters" style="justify-content:space-between;">
+            <input type="text" id="searchInput" placeholder="Recherche ..."
+                   class="filter-search" oninput="filterTable(this,'mouvTable')">
+            <a th:href="@{/mouvementsAlim/new}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Nouveau mouvement
+            </a>
+        </div>
+
+        <div class="card-body">
+            <table class="table" id="mouvTable">
+                <thead>
+                    <tr>
+                        <th>Aliment</th>
+                        <th>Type</th>
+                        <th>Quantité (kg)</th>
+                        <th>Date</th>
+                        <th style="text-align:center;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="mvt : ${mouvements}">
+                        <td th:text="${mvt.aliment != null ? mvt.aliment.nom : '-'}">-</td>
+                        <td>
+                            <span th:text="${mvt.typeMouvement}"
+                                  th:class="${mvt.typeMouvement == 'entree'} ? 'badge badge-success' : 'badge badge-danger'">
+                            </span>
+                        </td>
+                        <td th:text="${#numbers.formatDecimal(mvt.quantiteKg,1,2) + ' kg'}">0</td>
+                        <td th:text="${#temporals.format(mvt.dateMouvement,'dd/MM/yyyy')}">-</td>
+                        <td style="text-align:center;display:flex;justify-content:center;gap:6px;">
+                            <a th:href="@{/mouvementsAlim/edit/{id}(id=${mvt.id})}"
+                               class="btn btn-sm" style="border:1px solid #6B7280;color:#6B7280;">
+                                <i class="fas fa-pen"></i>
+                            </a>
+                            <a th:href="@{/mouvementsAlim/delete/{id}(id=${mvt.id})}"
+                               class="btn btn-sm" style="border:1px solid #DC2626;color:#DC2626;"
+                               onclick="return confirm('Supprimer ce mouvement ?');">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(mouvements)}">
+                        <td colspan="5" class="text-center" style="padding:32px;color:#9CA3AF;">
+                            Aucun mouvement enregistré.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function filterTable(input, tableId) {
+            var filter = input.value.toLowerCase();
+            document.querySelectorAll('#' + tableId + ' tbody tr').forEach(function(row) {
+                row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
+            });
+        }
+    </script>
+
+    <div th:replace="~{fragments/alimentation_sidebar :: sidebarScript('mouvements')}"></div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+<head><title th:text="${mouvement.id != null ? 'Modification Mouvement' : 'Nouveau Mouvement'}">Nouveau Mouvement</title></head>
+<body>
+<div th:fragment="mainContent" class="page-content">
+
+    <div class="page-header">
+        <h1 class="page-title" th:text="${mouvement.id != null ? 'Modification Mouvement' : 'Nouveau Mouvement'}">Nouveau Mouvement</h1>
+        <p class="page-subtitle"
+           th:text="${mouvement.aliment != null ? (mouvement.id != null ? 'Modification — ' : 'Mouvement — ') + mouvement.aliment.nom : (mouvement.id != null ? 'Modifier un mouvement de stock' : 'Nouveau mouvement de stock')}">
+        </p>
+    </div>
+
+    <div class="card" style="max-width:540px;margin:0 auto;">
+        <div class="card-header">
+            <h2 class="card-title" th:text="${mouvement.id != null ? 'Modifier le mouvement de stock' : 'Saisir un mouvement de stock'}">Saisir un mouvement de stock</h2>
+        </div>
+        <div class="card-body" style="padding:28px;">
+            <form th:action="@{/mouvementsAlim/save}" th:object="${mouvement}" method="post"
+                  style="display:flex;flex-direction:column;gap:18px;">
+
+                                <input type="hidden" th:field="*{id}">
+
+                <!-- Aliment -->
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label for="aliment" style="font-size:0.875rem;font-weight:600;">Aliment</label>
+                    <select id="aliment" th:field="*{aliment}"
+                            style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;background:white;width:100%;">
+                        <option value="">-- Sélectionner un aliment --</option>
+                        <option th:each="a : ${aliments}" th:value="${a.id}" th:text="${a.nom}"></option>
+                    </select>
+                    <span th:if="${#fields.hasErrors('aliment')}" th:errors="*{aliment}"
+                          style="color:#DC2626;font-size:0.8rem;"></span>
+                </div>
+
+                <!-- Type -->
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label style="font-size:0.875rem;font-weight:600;">Type</label>
+                    <div style="display:flex;gap:12px;">
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;
+                                      padding:10px 20px;border:2px solid #D1D5DB;border-radius:8px;flex:1;">
+                            <input type="radio" th:field="*{typeMouvement}" value="entree" id="typeEntree">
+                            <span style="font-weight:600;color:#22C55E;"><i class="fas fa-arrow-down"></i> Entrée</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;
+                                      padding:10px 20px;border:2px solid #D1D5DB;border-radius:8px;flex:1;">
+                            <input type="radio" th:field="*{typeMouvement}" value="sortie" id="typeSortie">
+                            <span style="font-weight:600;color:#EF4444;"><i class="fas fa-arrow-up"></i> Sortie</span>
+                        </label>
+                    </div>
+                    <span th:if="${#fields.hasErrors('typeMouvement')}" th:errors="*{typeMouvement}"
+                          style="color:#DC2626;font-size:0.8rem;"></span>
+                </div>
+
+                <!-- Quantité -->
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label for="quantiteKg" style="font-size:0.875rem;font-weight:600;">Quantité (kg)</label>
+                    <input type="number" step="0.01" min="0.01" id="quantiteKg" th:field="*{quantiteKg}"
+                           placeholder="ex: 150.00"
+                           style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
+                    <span th:if="${#fields.hasErrors('quantiteKg')}" th:errors="*{quantiteKg}"
+                          style="color:#DC2626;font-size:0.8rem;"></span>
+                </div>
+
+                <!-- Date -->
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label for="dateMouvement" style="font-size:0.875rem;font-weight:600;">Date</label>
+                    <input type="date" id="dateMouvement" th:field="*{dateMouvement}"
+                           style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
+                    <span th:if="${#fields.hasErrors('dateMouvement')}" th:errors="*{dateMouvement}"
+                          style="color:#DC2626;font-size:0.8rem;"></span>
+                </div>
+
+                <!-- Boutons -->
+                <div style="display:flex;justify-content:space-between;margin-top:8px;">
+                    <a th:href="@{/aliments}" class="btn"
+                       style="border:1px solid #D1D5DB;background:white;color:#1A1A2E;">
+                        <i class="fas fa-arrow-left"></i> Retour
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check"></i> Valider
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/alimentation_sidebar :: sidebarScript('mouvements')}"></div>
+
+</div>
+</body>
+</html>
