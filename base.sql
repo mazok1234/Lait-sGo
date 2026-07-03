@@ -75,6 +75,14 @@ CREATE TABLE vache (
     score_locomotion SMALLINT,           
     created_at       TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
+-- table associatif vache et ref_statut_vache
+CREATE TABLE vache_statut (
+    id        BIGSERIAL PRIMARY KEY,
+    vache_id  BIGINT    NOT NULL REFERENCES vache(id),
+    statut_id INT       NOT NULL REFERENCES ref_statut_vache(id),
+    date_debut DATE     NOT NULL,
+    date_fin   DATE
+);
 
 CREATE TABLE protocole_vaccin(
     id_protocole_vaccin SERIAL PRIMARY KEY,

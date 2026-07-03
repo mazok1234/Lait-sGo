@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="${pageTitle} + ' – Élevage Bel-Air'">Élevage Bel-Air</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">Élevage Bel-Air</div>
+      <nav>
+        <a class="nav-item" th:classappend="${activePage == 'dashboard'} ? 'active'" th:href="@{/dashboard}">
+          <span class="dot"></span>Dashboard
+        </a>
+        <a class="nav-item" th:classappend="${activePage == 'reproduction'} ? 'active'" th:href="@{/reproduction}">
+          <span class="dot"></span>Reproduction
+        </a>
+        <a class="nav-item" th:classappend="${activePage == 'alertes'} ? 'active'" th:href="@{/alertes}">
+          <span class="dot"></span>Alertes
+        </a>
+        <a class="nav-item" th:classappend="${activePage == 'velage'} ? 'active'" th:href="@{/velage}">
+          <span class="dot"></span>Vêlage
+        </a>
+      </nav>
+    </aside>
+
+    <main class="main" th:replace="${content}"></main>
+  </div>
+</body>
+</html>
