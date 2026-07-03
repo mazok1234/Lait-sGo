@@ -1,369 +1,66 @@
 <!DOCTYPE html>
-<html lang="fr" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lait-sGo - Suivi de la reproduction</title>
-    <style>
-        :root {
-            --bg: #f7f5ef;
-            --surface: #ffffff;
-            --line: #d8d2c4;
-            --text: #26231f;
-            --muted: #6f6a60;
-            --green: #5f8f72;
-            --red: #b65353;
-            --blue: #3f6f94;
-            --amber: #c2852a;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            min-height: 100vh;
-            background: var(--bg);
-            color: var(--text);
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        main {
-            width: min(1180px, calc(100% - 32px));
-            margin: 0 auto;
-            padding: 28px 0 40px;
-        }
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            gap: 16px;
-            align-items: flex-start;
-            margin-bottom: 22px;
-        }
-
-        h1, h2 {
-            margin: 0;
-        }
-
-        h1 {
-            font-size: 2rem;
-        }
-
-        .subtitle {
-            margin: 8px 0 0;
-            color: var(--muted);
-        }
-
-        .week-nav {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 40px;
-            padding: 0 14px;
-            border: 1px solid var(--line);
-            border-radius: 6px;
-            background: var(--surface);
-            color: var(--text);
-            font-weight: 700;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .btn-primary {
-            border-color: var(--green);
-            background: var(--green);
-            color: #fff;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 14px;
-            margin-bottom: 18px;
-        }
-
-        .stat-card {
-            background: var(--surface);
-            border: 1px solid var(--line);
-            border-radius: 8px;
-            padding: 16px;
-        }
-
-        .stat-label {
-            margin: 0 0 8px;
-            color: var(--muted);
-            font-size: 0.95rem;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 800;
-        }
-
-        .filters {
-            display: flex;
-            justify-content: space-between;
-            gap: 16px;
-            align-items: end;
-            background: var(--surface);
-            border: 1px solid var(--line);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 20px;
-        }
-
-        .field {
-            display: grid;
-            gap: 6px;
-            min-width: min(100%, 320px);
-        }
-
-        label {
-            color: var(--muted);
-            font-weight: 700;
-        }
-
-        select, input[type="date"] {
-            min-height: 42px;
-            border: 1px solid var(--line);
-            border-radius: 6px;
-            padding: 0 10px;
-            background: #fff;
-            color: var(--text);
-        }
-
-        .panel {
-            background: var(--surface);
-            border: 1px solid var(--line);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-            align-items: center;
-            padding: 16px;
-            border-bottom: 1px solid var(--line);
-        }
-
-        .panel-header p {
-            margin: 4px 0 0;
-            color: var(--muted);
-        }
-
-        .filter-actions {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--line);
-            text-align: left;
-            vertical-align: middle;
-        }
-
-        th {
-            color: var(--muted);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-        }
-
-        tr:last-child td {
-            border-bottom: 0;
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            min-height: 28px;
-            padding: 0 10px;
-            border-radius: 999px;
-            background: #eef4f0;
-            color: var(--green);
-            font-weight: 700;
-            white-space: nowrap;
-        }
-
-        .badge-warning {
-            background: #fff4df;
-            color: var(--amber);
-        }
-
-        .empty-state {
-            padding: 28px 16px;
-            color: var(--muted);
-            text-align: center;
-        }
-
-        @media (max-width: 760px) {
-            .page-header, .filters, .panel-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .week-nav {
-                justify-content: stretch;
-            }
-
-            .week-nav .btn {
-                flex: 1;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            table, thead, tbody, th, td, tr {
-                display: block;
-            }
-
-            thead {
-                display: none;
-            }
-
-            tr {
-                border-bottom: 1px solid var(--line);
-                padding: 10px 0;
-            }
-
-            td {
-                display: flex;
-                justify-content: space-between;
-                gap: 16px;
-                border: 0;
-                padding: 8px 16px;
-            }
-
-            td::before {
-                content: attr(data-label);
-                color: var(--muted);
-                font-weight: 700;
-            }
-        }
-    </style>
-</head>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{index :: layout(~{::content})}">
 <body>
-<main>
-    <header class="page-header">
-        <div>
-            <h1>Tableau de bord reproduction</h1>
-            <p class="subtitle"
-               th:text="${'Semaine du ' + #temporals.format(startOfWeek, 'dd/MM/yyyy') + ' au ' + #temporals.format(endOfWeek, 'dd/MM/yyyy')}">
-                Semaine du --/--/---- au --/--/----
-            </p>
-        </div>
+<div th:fragment="content">
+  <h1>Dashboard</h1>
 
-        <nav class="week-nav" aria-label="Navigation par semaine">
-            <a class="btn"
-               th:href="@{/reproduction(date=${currentDate.minusWeeks(1)}, vacheId=${selectedVacheId})}">
-                Precedente
-            </a>
-            <a class="btn"
-               th:href="@{/reproduction(date=${today}, vacheId=${selectedVacheId})}">
-                Aujourd'hui
-            </a>
-            <a class="btn"
-               th:href="@{/reproduction(date=${currentDate.plusWeeks(1)}, vacheId=${selectedVacheId})}">
-                Suivante
-            </a>
-        </nav>
-    </header>
+  <div class="filters">
+    <input type="text" placeholder="Rechercher une vache" th:name="recherche">
+    <select th:name="race">
+      <option>Toutes les races</option>
+      <option>Prim'Holstein</option>
+      <option>Normande</option>
+      <option>Montbéliarde</option>
+    </select>
+    <input type="date" th:name="dateDebut" value="2026-06-22">
+    <input type="date" th:name="dateFin" value="2026-06-28">
+  </div>
 
-    <section class="stats-grid" aria-label="Indicateurs reproduction">
-        <article class="stat-card">
-            <p class="stat-label">Alertes actives</p>
-            <div class="stat-value" th:text="${compteurs.alertesActives}">0</div>
-        </article>
-        <article class="stat-card">
-            <p class="stat-label">Gestations en cours</p>
-            <div class="stat-value" th:text="${compteurs.gestationsEnCours}">0</div>
-        </article>
-        <article class="stat-card">
-            <p class="stat-label">Vaches en lactation</p>
-            <div class="stat-value" th:text="${compteurs.vachesEnLactation}">0</div>
-        </article>
-    </section>
+  <div class="section-head">
+    <h2>Suivi des chaleurs</h2>
+    <div class="controls">
+      <select th:name="vache">
+        <option>Toutes les vaches</option>
+        <option th:each="v : ${vaches}" th:text="${v.nom} + ' ' + ${v.numero}" th:value="${v.id}">Bella n°014</option>
+      </select>
+      <button class="primary" id="edit-btn" type="button">Modifier</button>
+    </div>
+  </div>
 
-    <form class="filters" method="get" th:action="@{/reproduction}">
-        <div class="field">
-            <label for="vache-select">Filtrer par vache</label>
-            <select id="vache-select" name="vacheId">
-                <option value="">Toutes les vaches</option>
-                <option th:each="vache : ${vaches}"
-                        th:value="${vache.id}"
-                        th:selected="${selectedVacheId != null and selectedVacheId.equals(vache.id)}"
-                        th:text="${vache.numeroBoucle + ' - ' + vache.statut}">
-                    FR-001 - En lactation
-                </option>
-            </select>
-        </div>
-        <div class="field">
-            <label for="date-select">Date de la semaine</label>
-            <input id="date-select" type="date" name="date" th:value="${currentDate}">
-        </div>
-        <div class="filter-actions">
-            <button class="btn btn-primary" type="submit">Appliquer</button>
-            <a class="btn" th:href="@{/reproduction/velage}">Declarer un velage</a>
-        </div>
-    </form>
+  <table>
+    <thead>
+      <tr>
+        <th>Vache</th>
+        <th class="day" th:each="jour : ${jours}" th:text="${jour}">Lun 22</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="ligne : ${suiviChaleurs}">
+        <td>
+          <div class="cow-name" th:text="${ligne.vache.nom}">Bella</div>
+          <div class="cow-id" th:text="${ligne.vache.numero}">n°014</div>
+        </td>
+        <td class="day" th:each="statut : ${ligne.statutsParJour}">
+          <span th:if="${statut == 'HEAT'}" class="badge heat">Chaleur</span>
+          <span th:if="${statut == 'INSEM'}" class="badge insem">IA prévue</span>
+          <span th:if="${statut == 'NONE'}" class="badge none">–</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
-    <section class="panel">
-        <div class="panel-header">
-            <div>
-                <h2>Evenements de la semaine</h2>
-                <p th:text="${#lists.size(evenements) + ' evenement(s) trouve(s)'}">0 evenement(s) trouve(s)</p>
-            </div>
-        </div>
+  <div class="pagination">
+    <button aria-label="Page précédente" type="button" th:disabled="${page == 1}">‹</button>
+    <span th:text="'Page ' + ${page} + ' sur ' + ${totalPages}">Page 1 sur 3</span>
+    <button aria-label="Page suivante" type="button" th:disabled="${page == totalPages}">›</button>
+  </div>
+</div>
 
-        <table th:if="${!#lists.isEmpty(evenements)}">
-            <thead>
-            <tr>
-                <th>Date</th>
-                <th>Vache</th>
-                <th>Type d'evenement</th>
-                <th>Priorite</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="evenement : ${evenements}">
-                <td data-label="Date" th:text="${#temporals.format(evenement.dateEvenement, 'dd/MM/yyyy')}">02/07/2026</td>
-                <td data-label="Vache" th:text="${evenement.numeroBoucle}">FR-001</td>
-                <td data-label="Type" th:text="${evenement.typeEvenement}">Insemination Artificielle</td>
-                <td data-label="Priorite">
-                    <span class="badge"
-                          th:classappend="${#strings.contains(evenement.typeEvenement, 'Vigilance')} ? ' badge-warning' : ''"
-                          th:text="${#strings.contains(evenement.typeEvenement, 'Vigilance')} ? 'A surveiller' : 'Planifie'">
-                        Planifie
-                    </span>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-
-        <div class="empty-state" th:if="${#lists.isEmpty(evenements)}">
-            Aucun evenement de reproduction pour cette semaine.
-        </div>
-    </section>
-</main>
+<script>
+  document.getElementById('edit-btn')?.addEventListener('click', () => {
+    alert('Mode édition à connecter à votre backend.');
+  });
+</script>
 </body>
 </html>
