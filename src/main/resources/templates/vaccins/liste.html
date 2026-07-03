@@ -89,16 +89,17 @@
                                 <th>Statut</th>
                             </tr>
                         </thead>
+
                         <tbody>
                             <tr th:each="h : ${prioritaires}">
-                               <td>
+                                <td>
                                     <a th:if="${h.alerteId != null}" 
-                                       th:href="@{/alertes/detail/{id}(id=${h.alerteId})}" 
+                                       th:href="@{/alertes/{id}(id=${h.alerteId})}" 
                                        th:text="${h.protocoleVaccin.nomVaccin}"
                                        style="color: #007AFF; font-weight: 500; text-decoration: underline;"
                                        title="Cliquez pour gérer et acquitter l'alerte">
                                     </a>
-
+                                
                                     <span th:if="${h.alerteId == null}" 
                                           th:text="${h.protocoleVaccin.nomVaccin}">
                                     </span>
@@ -108,28 +109,24 @@
                                 <td>
                                     <th:block th:with="prochainRappel=${h.dateVaccination.plusDays(h.protocoleVaccin.dureeRappelJours)},
                                                        aujourdhui=${T(java.time.LocalDate).now()}">
-                                        
-                                        <!-- Cas 1 : L'alerte est active (Non acquittée) -->
-                                        <th:block th:if="${h.alerteId != null && !h.isAlerteAcquittee}">
-                                            <!-- Retard critique -->
+
+                                        <th:block th:if="${h.alerteId != null}">
                                             <span th:if="${prochainRappel.isBefore(aujourdhui)}" 
                                                   class="badge badge-danger">
                                                 URGENT
                                             </span>
-                                            <!-- Rappel proche -->
                                             <span th:if="${!prochainRappel.isBefore(aujourdhui)}" 
                                                   class="badge" style="background:#FFF3E0; color:#F57C00;">
                                                 ATTENTION
                                             </span>
                                         </th:block>
                                     
-                                        <!-- Cas 2 : L'alerte n'existe pas OU elle a été acquittée par l'éleveur -->
-                                        <th:block th:if="${h.alerteId == null || h.isAlerteAcquittee}">
+                                        <th:block th:if="${h.alerteId == null}">
                                             <span class="badge badge-success">
                                                 À JOUR
                                             </span>
                                         </th:block>
-                                        
+
                                     </th:block>
                                 </td>
                             </tr>
@@ -137,6 +134,8 @@
                                 <td colspan="4" class="text-center" style="padding:20px;">Aucun vaccin critique</td>
                             </tr>
                         </tbody>
+
+
                     </table>
                 </div>
             </div>

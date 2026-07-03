@@ -165,4 +165,8 @@ public class AlerteService {
             System.err.println("[Alertes] Alerte non envoyée : " + e.getMessage());
         }
     }
+
+    public Optional<Alerte> obtenirAlerteActive(Long vacheId, String typeCode) {
+        return alerteRepo.findByVacheIdAndType_CodeAndAcquitteeFalse(vacheId, typeCode);
+    }
 }

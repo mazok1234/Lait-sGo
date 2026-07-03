@@ -25,7 +25,18 @@ public class HistoriqueVaccin {
     @Column(name = "type_injection", nullable = false)
     private String typeInjection;
 
+    @Transient // Permet d'associer l'id de l'alerte sans impacter la table en BDD
+    private Long alerteId;
+
     public HistoriqueVaccin() {
+    }
+
+    public Long getAlerteId() {
+        return alerteId;
+    }
+
+    public void setAlerteId(Long alerteId) {
+        this.alerteId = alerteId;
     }
 
     public Integer getIdHistoriqueVaccin() {
