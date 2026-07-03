@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{index :: layout(~{::mainContent})}">
+<head><title>Alertes</title></head>
+<body>
+<div th:fragment="mainContent" class="page-content">
+    <div id="mainContent">
+
+  <div class="page-header">
+    <h1 class="page-title">Alertes</h1>
+    <p class="page-subtitle">Surveillance centralisée du troupeau</p>
+  </div>
+
+  <!-- Messages flash -->
+  <div th:if="${succes}" class="flash flash-success">
+    <i class="fas fa-check-circle"></i>
+    <span th:text="${succes}"></span>
+  </div>
+  <div th:if="${erreur}" class="flash flash-error">
+    <i class="fas fa-exclamation-circle"></i>
+    <span th:text="${erreur}"></span>
+  </div>
+
+  <!-- KPIs dynamiques (depuis BDD) -->
+  <div class="stats-grid stats-grid-3">
+
+    <div th:each="niveau : ${niveaux}" class="card kpi-card">
+      <div class="card-icon">
+        <i class="fas"
+           th:classappend="${
+              niveau.code == 'urgent'
+                ? ' fa-exclamation-triangle icon-danger'
+                : (niveau.code == 'attention'
+                    ? ' fa-exclamation-circle icon-warning'
+                    : ' fa-info-circle icon-info')
+           }">
+        </i>
+      </div>
+      <div>
+        <div class="card-label" th:text="${niveau.libelle}">Niveau</div>
+        <div class="card-value" th:text="${kpis[niveau.code] ?: 0}">0</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tableau principal -->
+  <div class="card card-table">
+
+    <!-- Barre de recherche + filtre niveau -->
+    <div class="filters filters-between">
+      <input type="text" id="searchInput" placeholder="Rechercher par titre, vache, niveau, type, date…"
+             class="filter-search" oninput="alertesApp.applyFilters()"/>
+      <div class="filter-group-inline">
+        <button class="btn btn-primary" id="btn-niveau-all"
+                onclick="alertesApp.setNiveau(null, this)">Tous</button>
+        <button th:each="n : ${niveaux}"
+                th:id="'btn-niveau-' + ${n.code}"
+                th:text="${n.libelle}"
+                class="btn"
+                th:attr="onclick='alertesApp.setNiveau(\'' + ${n.code} + '\', this)'">Niveau</button>
+      </div>
+    </div>
+
+    <!-- Tableau -->
+    <div class="card-body">
+      <table class="table" id="alertesTable">
+        <thead>
+          <tr>
+            <th class="sortable" onclick="alertesApp.sortBy('niveau')" data-col="niveau">
+              Niveau <i class="fas fa-sort"></i>
+            </th>
+            <th class="sortable" onclick="alertesApp.sortBy('titre')" data-col="titre">
+              Titre <i class="fas fa-sort"></i>
+            </th>
+            <th>Concerne</th>
+            <th class="sortable" onclick="alertesApp.sortBy('date')" data-col="date">
+              Reçue <i class="fas fa-sort"></i>
+            </th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="alertesBody">
+          <tr th:each="alerte : ${alertes}"
+              th:classappend="${'row-niveau-' + alerte.niveauCode}"
+              th:data-niveau="${alerte.niveauCode}"
+              th:data-niveau-label="${alerte.niveauLibelle}"
+              th:data-type="${alerte.typeCode}"
+              th:data-type-label="${alerte.typeLibelle}"
+              th:data-titre="${alerte.titre}"
+              th:data-date="${alerte.createdAt}"
+              th:data-vache="${alerte.vacheBoucle != null ? alerte.vacheBoucle : (alerte.vacheId != null ? 'Vache #' + alerte.vacheId : 'Alerte ferme')}">
+
+            <td>
+              <span class="badge"
+                    th:classappend="${
+                        alerte.niveauCode == 'urgent'
+                          ? ' badge-niveau badge-niveau-danger'
+                          : (alerte.niveauCode == 'attention'
+                              ? ' badge-niveau badge-niveau-warning'
+                              : ' badge-niveau badge-niveau-info')
+                    }">
+                          
+                  <i class="fas"
+                     th:classappend="${
+                         alerte.niveauCode == 'urgent'
+                           ? ' fa-exclamation-triangle icon-danger'
+                           : (alerte.niveauCode == 'attention'
+                               ? ' fa-exclamation-circle icon-warning'
+                               : ' fa-info-circle icon-info')
+                     }">
+                  </i>
+                
+                  <span th:text="${alerte.niveauLibelle}"></span>
+                
+              </span>
+            </td>
+
+            <td class="cell-titre" th:text="${alerte.titre}">Titre</td>
+
+            <td>
+              <a th:if="${alerte.vacheId != null}"
+                 th:href="@{/cheptel/{id}(id=${alerte.vacheId})}"
+                 th:text="${alerte.vacheBoucle != null ? alerte.vacheBoucle : 'Vache #' + alerte.vacheId}"
+                 class="link-vache"></a>
+              <span th:if="${alerte.vacheId == null}" class="cell-ferme">
+                <i class="fas fa-warehouse"></i> Alerte ferme
+              </span>
+            </td>
+
+            <td class="cell-date"
+                th:text="${#temporals.format(alerte.createdAt, 'dd/MM/yyyy HH:mm')}">Date</td>
+
+            <td>
+              <a th:href="@{/alertes/{id}(id=${alerte.id})}" class="btn btn-primary btn-sm">
+                <i class="fas fa-eye"></i> Voir
+              </a>
+            </td>
+
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- État vide (Thymeleaf) -->
+      <div th:if="${alertes.isEmpty()}" class="empty-state">
+        <i class="fas fa-check-circle" style="color:#059669;opacity:0.4;"></i>
+        <p>Aucune alerte active pour le moment</p>
+      </div>
+
+      <!-- Aucun résultat filtrage JS -->
+      <div id="noResult" class="no-result" style="display:none;">
+        <i class="fas fa-search"></i>
+        <p>Aucune alerte ne correspond à vos critères</p>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" id="paginationBar">
+      <button class="btn" id="btnPrev" onclick="alertesApp.prevPage()" disabled>
+        <i class="fas fa-chevron-left"></i> Précédent
+      </button>
+      <span class="page-info" id="pageInfo">Page 1</span>
+      <button class="btn" id="btnNext" onclick="alertesApp.nextPage()">
+        Suivant <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+
+  </div>
+    </div>
+
+  <script th:inline="none">
+/* ====================================================
+   Alertes – logique recherche / filtres / tri / pagination
+   ==================================================== */
+(function () {
+
+  const alertesApp = window.alertesApp = {};
+
+  /* ---- état ---- */
+  let allRows     = [];
+  let filtered    = [];
+  let currentPage = 1;
+  let pageSize    = 5;
+  let sortCol     = null;
+  let sortAsc     = true;
+  let activeNiveau = null;
+
+  /* ---- init ---- */
+  document.addEventListener('DOMContentLoaded', function () {
+    const tbody = document.getElementById('alertesBody');
+    if (!tbody) return;
+    allRows = Array.from(tbody.querySelectorAll('tr'));
+    if (allRows.length === 0) return;
+    applyAll();
+  });
+
+  /* ======== API publique ======== */
+
+  alertesApp.applyFilters = function () { applyAll(); };
+
+  alertesApp.setNiveau = function (code, btn) {
+    activeNiveau = code;
+    highlightBtn('btn-niveau-all', btn, 'btn-niveau-');
+    applyAll();
+  };
+
+  alertesApp.sortBy = function (col) {
+    if (sortCol === col) {
+      sortAsc = !sortAsc;
+    } else {
+      sortCol = col;
+      sortAsc = true;
+    }
+    updateSortIcons();
+    applyAll();
+  };
+
+  alertesApp.prevPage = function () {
+    if (currentPage > 1) { currentPage--; render(); }
+  };
+
+  alertesApp.nextPage = function () {
+    const totalPages = Math.ceil(filtered.length / pageSize);
+    if (currentPage < totalPages) { currentPage++; render(); }
+  };
+
+  /* ======== Fonctions internes ======== */
+
+  function applyAll() {
+    const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+
+    filtered = allRows.filter(function (row) {
+      if (activeNiveau && row.dataset.niveau !== activeNiveau) {
+        return false;
+      }
+
+      if (!query) {
+        return true;
+      }
+
+      const titre = (row.dataset.titre || '').toLowerCase();
+      const vache = (row.dataset.vache || '').toLowerCase();
+      const niveauCode = (row.dataset.niveau || '').toLowerCase();
+      const niveauLabel = (row.dataset.niveauLabel || '').toLowerCase();
+      const typeCode = (row.dataset.type || '').toLowerCase();
+      const typeLabel = (row.dataset.typeLabel || '').toLowerCase();
+      const date = (row.dataset.date || '').toLowerCase();
+      const concerne = (row.querySelector('td:nth-child(3)')?.textContent || '').toLowerCase();
+
+      return titre.includes(query)
+          || vache.includes(query)
+          || niveauCode.includes(query)
+          || niveauLabel.includes(query)
+          || typeCode.includes(query)
+          || typeLabel.includes(query)
+          || date.includes(query)
+          || concerne.includes(query);
+    });
+
+    /* -- tri -- */
+    if (sortCol) {
+      filtered.sort(function (a, b) {
+        let va = '', vb = '';
+        if (sortCol === 'niveau') { va = a.dataset.niveau; vb = b.dataset.niveau; }
+        if (sortCol === 'titre')  { va = a.dataset.titre;  vb = b.dataset.titre; }
+        if (sortCol === 'date')   { va = a.dataset.date;   vb = b.dataset.date; }
+        if (va < vb) return sortAsc ? -1 : 1;
+        if (va > vb) return sortAsc ?  1 : -1;
+        return 0;
+      });
+    }
+
+    currentPage = 1;
+    render();
+  }
+
+  function render() {
+    const tbody = document.getElementById('alertesBody');
+    const noResult = document.getElementById('noResult');
+    const paginationBar = document.getElementById('paginationBar');
+
+    /* masquer toutes les lignes */
+    allRows.forEach(function (r) { r.style.display = 'none'; });
+
+    if (filtered.length === 0) {
+      noResult.style.display = 'flex';
+      paginationBar.style.display = 'none';
+      return;
+    }
+    noResult.style.display = 'none';
+
+    const totalPages = Math.ceil(filtered.length / pageSize);
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    const start = (currentPage - 1) * pageSize;
+    const end   = Math.min(start + pageSize, filtered.length);
+
+    /* remettre les lignes visibles dans le bon ordre */
+    filtered.forEach(function (row, idx) {
+      if (idx >= start && idx < end) {
+        row.style.display = '';
+        tbody.appendChild(row);
+      }
+    });
+
+    /* pagination controls */
+    document.getElementById('pageInfo').textContent =
+        'Page ' + currentPage + ' / ' + totalPages +
+        ' (' + filtered.length + ' alerte' + (filtered.length > 1 ? 's' : '') + ')';
+    document.getElementById('btnPrev').disabled = (currentPage === 1);
+    document.getElementById('btnNext').disabled = (currentPage === totalPages);
+    paginationBar.style.display = totalPages <= 1 ? 'none' : 'flex';
+  }
+
+  function highlightBtn(allBtnId, clickedBtn, prefix) {
+    /* retirer btn-primary de tous les boutons de ce groupe */
+    document.querySelectorAll('[id^="' + prefix + '"]').forEach(function (b) {
+      b.classList.remove('btn-primary');
+    });
+    const allBtn = document.getElementById(allBtnId);
+    if (allBtn) allBtn.classList.remove('btn-primary');
+    /* activer le bouton cliqué */
+    if (clickedBtn) clickedBtn.classList.add('btn-primary');
+    else if (allBtn) allBtn.classList.add('btn-primary');
+  }
+
+  function updateSortIcons() {
+    document.querySelectorAll('.sortable').forEach(function (th) {
+      const col = th.dataset.col;
+      const icon = th.querySelector('i');
+      if (!icon) return;
+      if (col === sortCol) {
+        icon.className = sortAsc ? 'fas fa-sort-up' : 'fas fa-sort-down';
+      } else {
+        icon.className = 'fas fa-sort';
+      }
+    });
+  }
+
+})();
+</script>
+
+</div>
+</body>
+</html>

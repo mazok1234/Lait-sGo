@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+<head><title>Nouveau aliment</title></head>
+<body>
+<div th:fragment="mainContent" class="page-content">
+
+    <div class="page-header">
+        <h1 class="page-title">Nouveau aliment</h1>
+        <p class="page-subtitle" th:text="${ration != null ? 'Ration : ' + ration.nom : 'Ajouter un aliment a la ration'}">Ration</p>
+    </div>
+
+    <div class="card" style="max-width:540px;margin:0 auto;">
+        <div class="card-header">
+            <h2 class="card-title" th:text="${ration != null ? 'Ration : ' + ration.nom : 'Ajouter un aliment'}">Ajouter un aliment</h2>
+        </div>
+        <div class="card-body" style="padding:28px;">
+            <form th:action="@{/rations/aliments/save}" th:object="${rationAliment}" method="post"
+                  style="display:flex;flex-direction:column;gap:18px;">
+
+                <input type="hidden" th:field="*{id}">
+                <input type="hidden" th:field="*{ration.id}">
+
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label for="aliment" style="font-size:0.875rem;font-weight:600;">Aliment</label>
+                    <select id="aliment" th:field="*{aliment}"
+                            style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;background:white;width:100%;">
+                        <option value="">-- Selectionner un aliment --</option>
+                        <option th:each="a : ${aliments}" th:value="${a.id}" th:text="${a.nom}"></option>
+                    </select>
+                    <span th:if="${#fields.hasErrors('aliment')}" th:errors="*{aliment}"
+                          style="color:#DC2626;font-size:0.8rem;"></span>
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label for="quantiteKg" style="font-size:0.875rem;font-weight:600;">Quantite (kg)</label>
+                    <input type="number" step="0.01" min="0.01" id="quantiteKg" th:field="*{quantiteKg}"
+                           style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
+                    <span th:if="${#fields.hasErrors('quantiteKg')}" th:errors="*{quantiteKg}"
+                          style="color:#DC2626;font-size:0.8rem;"></span>
+                </div>
+
+                <div style="display:flex;justify-content:space-between;margin-top:8px;">
+                    <a th:href="@{/rations(rationId=${ration != null ? ration.id : null})}" class="btn"
+                       style="border:1px solid #D1D5DB;background:white;color:#1A1A2E;">
+                        <i class="fas fa-arrow-left"></i> Retour
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check"></i> Valider
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/alimentation_sidebar :: sidebarScript('rations')}"></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{index :: layout(~{::content})}">
+
+<div th:fragment="content">
+
+    <style>
+        .page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            background: #f2f2f2;
+        }
+
+        .form-box {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 350px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #444;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            margin-bottom: 18px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #666;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 18px;
+            background: #666;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        .btn:hover {
+            background: #555;
+        }
+        button:hover {
+            background: #555;
+        }
+    </style>
+
+    <div class="page">
+        <div class="form-box">
+
+            <h2>Nouvelle vente</h2>
+
+            <form th:action="@{/vente}" th:object="${vente}" method="post">
+                
+                <a th:if="${success}" th:href="@{/vente/{id}/pdf(id=${lastVenteId})}" class = "btn">
+                    Télécharger le reçu PDF
+                </a>
+
+                <label>Date de vente</label>
+                <input type="date" th:field="*{dateVente}">
+
+                <label>Quantité (L)</label>
+                <input type="number"
+                       step="0.01"
+                       th:field="*{quantiteLait}">
+
+                <label>Prix unitaire</label>
+                <input type="number"
+                       step="0.01"
+                       th:field="*{prixUnitaire}">
+
+                <button type="submit">
+                    Enregistrer
+                </button>
+
+            </br>
+            </br>
+                <a th:href="@{/vente/liste}" class="btn">
+                Voir la liste des ventes
+                </a>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+</html>

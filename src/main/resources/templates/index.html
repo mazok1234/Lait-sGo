@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org" th:fragment="layout (content)">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lait's Go</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
+
     <link rel="stylesheet" th:href="@{/css/main.css}">
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
 </head>
+
 <body>
 
     <aside class="sidebar">
@@ -43,11 +46,33 @@
                         <span>Reproduction</span>
                     </a>
                 </li>
-                <li>
-                    <a href="/sante">
-                        <i class="fas fa-notes-medical"></i>
-                        <span>Santé</span>
+                <li class="has-submenu open">
+
+                    <a href="#" class="submenu-toggle">
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <i class="fas fa-notes-medical"></i>
+                            <span>Santé</span>
+                        </div>
+
+                        <i class="fas fa-chevron-down submenu-arrow"></i>
                     </a>
+
+                    <ul class="submenu">
+                        <li>
+                            <a href="/traitements">
+                                <i class="fas fa-pills"></i>
+                                <span>Traitements</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="/vaccins">
+                                <i class="fas fa-syringe"></i>
+                                <span>Vaccination</span>
+                            </a>
+                        </li>
+                    </ul>
+
                 </li>
                 <li>
                     <a href="/aliments">
@@ -62,7 +87,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="/ventes">
+                    <a href="/vente/liste">
                         <i class="fas fa-shopping-cart"></i>
                         <span>Ventes</span>
                     </a>
@@ -96,11 +121,27 @@
             </div>
         </header>
 
-        <div class="page-content" th:replace="~{${page} :: content}">
+        <div id="content" class="page-content" th:replace="${content}">
         </div>
 
     </main>
 
-    <script th:src="@{/js/main.js}"></script>
+    <script>
+
+        document.querySelectorAll(".submenu-toggle").forEach(toggle => {
+            toggle.addEventListener("click", function (e) {
+                e.preventDefault();
+                if (this.parentElement.classList.contains("open")) {
+                    this.parentElement.classList.remove("open");
+                } else {
+                    document.querySelectorAll(".has-submenu").forEach(item => item.classList.remove("open"));
+                    this.parentElement.classList.add("open");
+                }
+            });
+        });
+    </script>
+
+
 </body>
+
 </html>
