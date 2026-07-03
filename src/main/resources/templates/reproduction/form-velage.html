@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lait-sGo - Declarer un velage</title>
+    <style>
+        :root {
+            --bg: #f7f5ef;
+            --surface: #ffffff;
+            --line: #d8d2c4;
+            --text: #26231f;
+            --muted: #6f6a60;
+            --green: #5f8f72;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        main {
+            width: min(760px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 28px 0 40px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 22px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 18px;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .field {
+            display: grid;
+            gap: 6px;
+        }
+
+        label {
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        select, input[type="date"] {
+            min-height: 42px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 0 10px;
+            background: #fff;
+            color: var(--text);
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            padding: 0 14px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: var(--surface);
+            color: var(--text);
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            border-color: var(--green);
+            background: var(--green);
+            color: #fff;
+        }
+
+        .message {
+            margin-bottom: 16px;
+            padding: 12px 14px;
+            border: 1px solid #bdd7c5;
+            border-radius: 6px;
+            background: #eef7f1;
+            color: #376346;
+            font-weight: 700;
+        }
+
+        .empty-state {
+            color: var(--muted);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <header class="page-header">
+        <h1>Declarer un velage</h1>
+        <a class="btn" th:href="@{/reproduction}">Retour dashboard</a>
+    </header>
+
+    <div class="message" th:if="${message}" th:text="${message}">
+        Velage enregistre avec succes.
+    </div>
+
+    <section class="card" th:if="${!#lists.isEmpty(reproductionsGestantes)}">
+        <form class="form-grid" method="post" th:action="@{/reproduction/velage}">
+            <div class="field">
+                <label for="reproductionId">Vache gestante</label>
+                <select id="reproductionId" name="reproductionId" required>
+                    <option value="">Selectionner une vache</option>
+                    <option th:each="reproduction : ${reproductionsGestantes}"
+                            th:value="${reproduction.id}"
+                            th:text="${reproduction.numeroBoucle + ' - IA du ' + #temporals.format(reproduction.dateIa, 'dd/MM/yyyy')}">
+                        Vache gestante - IA
+                    </option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="dateVelageReel">Date reelle du velage</label>
+                <input id="dateVelageReel" type="date" name="dateVelageReel" required>
+            </div>
+
+            <div class="field">
+                <label for="sexeVeau">Sexe du veau</label>
+                <select id="sexeVeau" name="sexeVeau" required>
+                    <option value="">Selectionner</option>
+                    <option value="F">Femelle</option>
+                    <option value="M">Male</option>
+                </select>
+            </div>
+
+            <div class="btn-row">
+                <a class="btn" th:href="@{/reproduction}">Annuler</a>
+                <button class="btn btn-primary" type="submit">Enregistrer</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="card empty-state" th:if="${#lists.isEmpty(reproductionsGestantes)}">
+        Aucune gestation confirmee en attente de velage.
+    </section>
+</main>
+</body>
+</html>
