@@ -1,4 +1,10 @@
-<div th:fragment="content">
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+<head>
+    <title>Gestion des races</title>
+</head>
+<body>
+<div th:fragment="mainContent" class="page-content">
     <div class="cheptel-wrapper">
         <div class="cheptel-header">
             <h1><i class="fas fa-paw" style="color:#2f6ed4"></i> Gestion des races</h1>
@@ -63,3 +69,5 @@
         </div>
     </div>
 </div>
+</body>
+</html>

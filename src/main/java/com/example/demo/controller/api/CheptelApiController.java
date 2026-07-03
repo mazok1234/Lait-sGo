@@ -1,24 +1,25 @@
-package com.example.demo.cheptel.controllers.api;
+package com.example.demo.controller.api;
 
-import com.example.demo.cheptel.entities.Vache;
-import com.example.demo.cheptel.repositories.VacheRepository;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.example.demo.entity.Vache;
+import com.example.demo.repository.VacheRepository;
 
 @RestController
 @RequestMapping("/api/cheptel")
@@ -44,15 +45,6 @@ public class CheptelApiController {
         payload.put("vachesAchetees", achetees);
 
         // Répartition par statut
-        // Important: éviter d'accéder à des relations LAZY (v.getStatut()) ici,
-        // car ça peut provoquer LazyInitializationException et donc un 500.
-        // On approxime en utilisant la même logique que pour les autres compteurs :
-        // requêtes DB via Specification sur id_statut.
-        //
-        // Comme on n'a pas encore de requête d'agrégation (group by) en JPQL,
-        // on calcule pour chaque statut existant via le Repository de StatutVache.
-        // => Voir le fallback ci-dessous si aucune requête dédiée n'est disponible.
-
         Map<String, Long> repartition = new HashMap<>();
         repartition.put("en_lactation", vacheRepository.count((root, query, cb) ->
                 cb.and(
@@ -89,15 +81,14 @@ public class CheptelApiController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String q,
-            @RequestParam(required = false) Long raceId,
-            @RequestParam(required = false) Long statutId,
+            @RequestParam(required = false) Integer raceId,
+            @RequestParam(required = false) Integer statutId,
             @RequestParam(required = false) String origine,
             @RequestParam(required = false) String etatSante
     ) {
         Pageable pageable = PageRequest.of(page, size);
 
         Specification<Vache> spec = (root, query, cb) -> cb.conjunction();
-
 
         if (raceId != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("race").get("id"), raceId));
@@ -106,7 +97,6 @@ public class CheptelApiController {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("statut").get("id"), statutId));
         }
         if (origine != null) {
-            // origine: "NEE_A_LA_FERME" => mere_id not null ; "ACHETEE" => mere_id null
             if (origine.equalsIgnoreCase("NEE_A_LA_FERME")) {
                 spec = spec.and((root, query, cb) -> cb.isNotNull(root.get("mere")));
             } else if (origine.equalsIgnoreCase("ACHETEE")) {
@@ -145,4 +135,3 @@ public class CheptelApiController {
         return ResponseEntity.noContent().build();
     }
 }
-

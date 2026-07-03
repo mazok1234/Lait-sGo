@@ -46,7 +46,7 @@
                         <span>Reproduction</span>
                     </a>
                 </li>
-                <li class="has-submenu open">
+                <li class="has-submenu" data-submenu-paths="/traitements,/vaccins">
 
                     <a href="#" class="submenu-toggle">
                         <div style="display:flex;align-items:center;gap:12px;">
@@ -74,11 +74,61 @@
                     </ul>
 
                 </li>
-                <li>
-                    <a href="/aliments">
-                        <i class="fas fa-apple-alt"></i>
-                        <span>Alimentation</span>
+                <li class="has-submenu" data-submenu-paths="/aliments,/types-aliments,/mouvementsAlim,/rations,/stades-physiologiques,/affectations-rations">
+
+                    <a href="#" class="submenu-toggle">
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <i class="fas fa-apple-alt"></i>
+                            <span>Alimentation</span>
+                        </div>
+
+                        <i class="fas fa-chevron-down submenu-arrow"></i>
                     </a>
+
+                    <ul class="submenu">
+                        <li>
+                            <a href="/aliments">
+                                <i class="fas fa-apple-alt"></i>
+                                <span>Aliments</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="/types-aliments">
+                                <i class="fas fa-tags"></i>
+                                <span>Types d'aliments</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="/mouvementsAlim">
+                                <i class="fas fa-exchange-alt"></i>
+                                <span>Mouvements</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="/rations">
+                                <i class="fas fa-balance-scale"></i>
+                                <span>Rations</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="/stades-physiologiques">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Stades</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="/affectations-rations">
+                                <i class="fas fa-link"></i>
+                                <span>Affectations</span>
+                            </a>
+                        </li>
+                    </ul>
+
                 </li>
                 <li>
                     <a href="/alertes">
@@ -127,6 +177,14 @@
     </main>
 
     <script>
+
+        var currentPath = window.location.pathname;
+        document.querySelectorAll(".has-submenu").forEach(item => {
+            var paths = (item.dataset.submenuPaths || "").split(",").filter(Boolean);
+            if (paths.some(p => currentPath.startsWith(p))) {
+                item.classList.add("open");
+            }
+        });
 
         document.querySelectorAll(".submenu-toggle").forEach(toggle => {
             toggle.addEventListener("click", function (e) {
