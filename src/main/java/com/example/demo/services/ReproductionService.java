@@ -3,14 +3,23 @@ package com.example.demo.services;
 import com.example.demo.dto.ReproductionDTO;
 import com.example.demo.entity.Reproduction;
 import com.example.demo.entity.Vache;
+import com.example.demo.entity.VacheStatus;
 import com.example.demo.repository.ReproductionRepository;
 import com.example.demo.repository.VacheRepository;
+import com.example.demo.repository.VacheStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,6 +30,12 @@ public class ReproductionService {
 
     @Autowired
     private VacheRepository vacheRepository;
+
+    @Autowired
+    private VacheStatusRepository vacheStatusRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     /**
      * Enregistrer une nouvelle insémination artificielle
@@ -132,13 +147,6 @@ public class ReproductionService {
         return dto;
     }
 
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private ReproductionRepository reproductionRepository;
-
-    @Autowired
-    private VacheStatusRepository vacheStatusRepository;
 
     public Map<String, Object> getDashboardCounters() {
         Map<String, Object> counters = new HashMap<>();
@@ -347,6 +355,10 @@ public class ReproductionService {
     }
 
     public List<Reproduction> findReproductionsActivesEtConfirmees() {
+        return reproductionRepository.findByGestationConfirmeeTrueAndDateVelageReelIsNull();
+    }
+
+    public List<Reproduction> findByGestationConfirmeeTrueAndDateVelageReelIsNull() {
         return reproductionRepository.findByGestationConfirmeeTrueAndDateVelageReelIsNull();
     }
 

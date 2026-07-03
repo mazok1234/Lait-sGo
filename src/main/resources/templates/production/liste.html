@@ -1,39 +1,49 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
 <head>
-    <meta charset="UTF-8">
-    <title>Productions de Lait</title>
-    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <title>Productions de lait</title>
 </head>
 <body>
-    <div class="container">
-        <div class="page-header">
-            <h2 class="page-title">🥛 Production de Lait Globale</h2>
-            <div class="btn-group">
-                <a th:href="@{/production/nouvelle}" class="btn btn-secondary">+ Nouvelle Production</a>
-            </div>
+<div th:fragment="mainContent" class="page-content">
+
+    <div class="page-header">
+        <h1 class="page-title">Production de lait</h1>
+        <p class="page-subtitle">Suivi journalier de la production par vache</p>
+    </div>
+
+    <div class="card card-table">
+        <div class="card-header" style="justify-content:space-between;">
+            <span class="card-title">Historique des productions</span>
+            <a th:href="@{/productions/nouvelle}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Nouvelle production
+            </a>
         </div>
 
-        <table>
-            <thead>
+        <div class="card-body">
+            <table class="table">
+                <thead>
                 <tr>
-                    <th>Code Vache</th>
-                    <th>Nom Vache</th>
+                    <th>Vache</th>
                     <th>Quantité (L)</th>
-                    <th>Période</th>
                     <th>Date</th>
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
                 <tr th:each="p : ${productions}">
-                    <td th:text="${p.codeVache}">-</td>
-                    <td th:text="${p.nomVache}">-</td>
-                    <td th:text="${p.quantite}">0</td>
-                    <td th:text="${p.periode}">-</td>
+                    <td th:text="${p.vache.numeroBoucle}">-</td>
+                    <td th:text="${p.quantiteLitres}">0</td>
                     <td th:text="${p.dateProduction}">-</td>
                 </tr>
-            </tbody>
-        </table>
+                <tr th:if="${#lists.isEmpty(productions)}">
+                    <td colspan="3" class="text-center" style="padding:32px;color:#9CA3AF;">
+                        Aucune production enregistrée.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
+
+</div>
 </body>
 </html>

@@ -1,53 +1,53 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
 <head>
-    <meta charset="UTF-8">
-    <title>Ajouter une Production</title>
-    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <title>Nouvelle production</title>
 </head>
 <body>
-    <div class="container form-container">
-        <div class="page-header">
-            <h2 class="page-title">📝 Enregistrer une Production</h2>
-        </div>
+<div th:fragment="mainContent" class="page-content">
 
-        <form th:action="@{/production/enregistrer}" th:object="${production}" method="post">
-            <div class="form-group">
-                <label>Code de la Vache <span class="required">*</span></label>
-                <input type="text" th:field="*{codeVache}" required placeholder="ex: FR0001">
-            </div>
-
-            <div class="form-group">
-                <label>Nom de la Vache</label>
-                <input type="text" th:field="*{nomVache}" placeholder="ex: Bella">
-            </div>
-
-            <div class="form-group-row">
-                <div class="form-group">
-                    <label>Quantité (Litres) <span class="required">*</span></label>
-                    <input type="number" step="0.01" th:field="*{quantite}" required placeholder="ex: 24.5">
-                </div>
-                <div class="form-group">
-                    <label>Période <span class="required">*</span></label>
-                    <select th:field="*{periode}">
-                        <option value="Matin">Matin</option>
-                        <option value="Soir">Soir</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Date de Production <span class="required">*</span></label>
-                <input type="date" th:field="*{dateProduction}" required>
-            </div>
-
-            <div class="form-group-row">
-                <div class="btn-group" style="width: 100%;">
-                    <button type="submit" class="btn btn-success" style="flex: 1; justify-content: center;">Enregistrer</button>
-                    <a th:href="@{/production}" class="btn btn-cancel" style="flex: 1; justify-content: center; text-decoration: none; text-align: center; line-height: 20px;">Annuler</a>
-                </div>
-            </div>
-        </form>
+    <div class="page-header">
+        <h1 class="page-title">Nouvelle production</h1>
+        <p class="page-subtitle">Enregistrer une production de lait</p>
     </div>
+
+    <div class="cheptel-wrapper">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title"><i class="fas fa-chart-bar" style="margin-right:8px;color:#007AFF;"></i> Informations de la production</span>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/productions/enregistrer}" th:object="${production}" method="post" class="form-grid">
+
+                    <div class="form-group">
+                        <label>Vache</label>
+                        <select th:field="*{vache}" required>
+                            <option value="">Sélectionner une vache</option>
+                            <option th:each="v : ${vaches}" th:value="${v.id}" th:text="${v.numeroBoucle}">Vache</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Quantité (L)</label>
+                        <input type="number" step="0.01" th:field="*{quantiteLitres}" required placeholder="ex: 24.5">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Date de production</label>
+                        <input type="date" th:field="*{dateProduction}" required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <div class="form-actions">
+                            <a th:href="@{/productions}" class="btn btn-outline">Annuler</a>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Enregistrer</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
 </body>
 </html>

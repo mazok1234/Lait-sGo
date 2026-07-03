@@ -126,11 +126,15 @@ CREATE TABLE production (
 CREATE TABLE reproduction (
     id                     BIGSERIAL PRIMARY KEY,
     vache_id               BIGINT    NOT NULL REFERENCES vache(id),
-    date_ia                DATE      NOT NULL,   
-    gestation_confirmee    BOOLEAN,             
-    date_confirmation_gest DATE,                 
-    date_velage_reel       DATE,               
-    sexe_veau              CHAR(1)              
+    date_ia                DATE      NOT NULL,
+    gestation_confirmee    BOOLEAN,
+    date_confirmation_gest DATE,
+    date_velage_reel       DATE,
+    sexe_veau              CHAR(1),
+    statut_ia              VARCHAR(20) DEFAULT 'en_attente',
+    semence                VARCHAR(100),
+    inseminateur           VARCHAR(100),
+    type_injection         VARCHAR(50)
 );
 
 

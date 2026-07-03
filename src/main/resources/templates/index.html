@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <link rel="stylesheet" th:href="@{/css/main.css}">
-    <link rel="stylesheet" th:href="@{/css/style.css}">
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
 </head>
 
@@ -41,11 +40,54 @@
                         <span>Production</span>
                     </a>
                 </li>
-                <li>
-                    <a href="/reproduction">
-                        <i class="fas fa-heart"></i>
-                        <span>Reproduction</span>
+                <li class="has-submenu" data-submenu-paths="/reproduction">
+
+                    <a href="#" class="submenu-toggle">
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <i class="fas fa-heart"></i>
+                            <span>Reproduction</span>
+                        </div>
+
+                        <i class="fas fa-chevron-down submenu-arrow"></i>
                     </a>
+
+                    <ul class="submenu">
+                        <li>
+                            <a href="/reproduction">
+                                <i class="fas fa-chart-pie"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="/reproduction/nouvelle">
+                                <i class="fas fa-syringe"></i>
+                                <span>Nouvelle IA</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="/reproduction/en-attente">
+                                <i class="fas fa-hourglass-half"></i>
+                                <span>IA en attente</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="/reproduction/alertes">
+                                <i class="fas fa-bell"></i>
+                                <span>Alertes vêlage</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="/reproduction/velage">
+                                <i class="fas fa-baby"></i>
+                                <span>Vêlage</span>
+                            </a>
+                        </li>
+                    </ul>
+
                 </li>
                 <li class="has-submenu" data-submenu-paths="/traitements,/vaccins">
 

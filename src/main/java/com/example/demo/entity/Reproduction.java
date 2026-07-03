@@ -1,7 +1,16 @@
 package com.example.demo.entity; 
 
-import jakarta.persistence.*;
 import java.time.LocalDate;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "reproduction")
@@ -16,7 +25,7 @@ public class Reproduction {
     private Vache vache;
 
     @Column(name = "date_ia", nullable = false)
-    private LocalDate dateIa;
+    private LocalDate dateIA;
 
     @Column(name = "gestation_confirmee")
     private Boolean gestationConfirmee; // Null au début, puis True/False après le contrôle
@@ -30,12 +39,24 @@ public class Reproduction {
     @Column(name = "sexe_veau", length = 1)
     private String sexeVeau; // Null jusqu'au vêlage ('M' ou 'F')
 
+    @Column(name = "statut_ia", length = 20)
+    private String statutIA; // en_attente, gestante, echouee
+
+    @Column(name = "semence")
+    private String semence;
+
+    @Column(name = "inseminateur")
+    private String inseminateur;
+
+    @Column(name = "type_injection")
+    private String typeInjection;
+
     // --- Constructeurs ---
     public Reproduction() {}
 
-    public Reproduction(Vache vache, LocalDate dateIa) {
+    public Reproduction(Vache vache, LocalDate dateIA) {
         this.vache = vache;
-        this.dateIa = dateIa;
+        this.dateIA = dateIA;
     }
 
     // --- Getters et Setters ---
@@ -49,8 +70,8 @@ public class Reproduction {
         return vache != null ? vache.getNumeroBoucle() : "";
     }
 
-    public LocalDate getDateIa() { return dateIa; }
-    public void setDateIa(LocalDate dateIa) { this.dateIa = dateIa; }
+    public LocalDate getDateIA() { return dateIA; }
+    public void setDateIA(LocalDate dateIA) { this.dateIA = dateIA; }
 
     public Boolean getGestationConfirmee() { return gestationConfirmee; }
     public void setGestationConfirmee(Boolean gestationConfirmee) { this.gestationConfirmee = gestationConfirmee; }
@@ -63,4 +84,16 @@ public class Reproduction {
 
     public String getSexeVeau() { return sexeVeau; }
     public void setSexeVeau(String sexeVeau) { this.sexeVeau = sexeVeau; }
+
+    public String getStatutIA() { return statutIA; }
+    public void setStatutIA(String statutIA) { this.statutIA = statutIA; }
+
+    public String getSemence() { return semence; }
+    public void setSemence(String semence) { this.semence = semence; }
+
+    public String getInséminateur() { return inseminateur; }
+    public void setInséminateur(String inseminateur) { this.inseminateur = inseminateur; }
+
+    public String getTypeInjection() { return typeInjection; }
+    public void setTypeInjection(String typeInjection) { this.typeInjection = typeInjection; }
 }

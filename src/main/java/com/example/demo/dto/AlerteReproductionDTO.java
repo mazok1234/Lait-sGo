@@ -9,8 +9,7 @@ public class AlerteReproductionDTO {
     private LocalDate dateIA;
     private LocalDate dateVelagePrevue;
     private long joursRestants;
-    private String niveauUrgence; // "urgent", "attention", "info"
-
+    private String niveauUrgence;
 
     public AlerteReproductionDTO() {}
 

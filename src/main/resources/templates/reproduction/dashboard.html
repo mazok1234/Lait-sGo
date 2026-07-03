@@ -1,76 +1,84 @@
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{index :: layout(~{::content})}">
+      th:replace="~{index :: layout(~{::mainContent})}">
+<head><title>Reproduction</title></head>
 <body>
-<div th:fragment="content">
-  <h1>Dashboard</h1>
+<div th:fragment="mainContent" class="page-content">
 
-  <div class="counters">
-    <div class="counter">
-      <strong th:text="${compteurs.alertesActives}">0</strong>
-      <span>Alertes actives</span>
+    <div class="page-header">
+        <h1 class="page-title">Reproduction</h1>
+        <p class="page-subtitle">Suivi des chaleurs et des gestations</p>
     </div>
-    <div class="counter">
-      <strong th:text="${compteurs.gestationsEnCours}">0</strong>
-      <span>Gestations en cours</span>
-    </div>
-    <div class="counter">
-      <strong th:text="${compteurs.vachesEnLactation}">0</strong>
-      <span>Vaches en lactation</span>
-    </div>
-  </div>
 
-  <div class="section-head">
-    <h2>Suivi des chaleurs</h2>
-    <div class="controls">
-      <form th:action="@{/reproduction}" method="get" class="heat-filters">
-        <label>
-          Mois
-          <input type="number" name="mois" min="1" max="12" th:value="${selectedMonth}" />
-        </label>
-        <label>
-          Année
-          <input type="number" name="annee" min="2000" max="2100" th:value="${selectedYear}" />
-        </label>
-        <label>
-          Vache
-          <select name="vacheId">
-            <option th:value="''" th:text="'Toutes les vaches'" th:selected="${selectedVacheId == null}"></option>
-            <option th:each="v : ${vaches}"
-                    th:value="${v.id}"
-                    th:text="${v.numeroBoucle}"
-                    th:selected="${v.id == selectedVacheId}">
-            </option>
-          </select>
-        </label>
-        <button class="primary" type="submit">Filtrer</button>
-      </form>
+    <div class="stats-grid stats-grid-3">
+        <div class="card kpi-card">
+            <div class="card-icon"><i class="fas fa-exclamation-triangle icon-danger"></i></div>
+            <div>
+                <div class="card-label">Alertes actives</div>
+                <div class="card-value" th:text="${compteurs.alertesActives}">0</div>
+            </div>
+        </div>
+        <div class="card kpi-card">
+            <div class="card-icon"><i class="fas fa-baby icon-info"></i></div>
+            <div>
+                <div class="card-label">Gestations en cours</div>
+                <div class="card-value" th:text="${compteurs.gestationsEnCours}">0</div>
+            </div>
+        </div>
+        <div class="card kpi-card">
+            <div class="card-icon"><i class="fas fa-tint icon-warning"></i></div>
+            <div>
+                <div class="card-label">Vaches en lactation</div>
+                <div class="card-value" th:text="${compteurs.vachesEnLactation}">0</div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Vache</th>
-        <th>Numéro boucle</th>
-        <th>Date de chaleur</th>
-        <th>Origine</th>
-        <th>Statut</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr th:each="ligne : ${chaleurs}">
-        <td th:text="${ligne.numeroBoucle}">Bella</td>
-        <td th:text="${ligne.vacheId}">1</td>
-        <td th:text="${ligne.dateChaleur}">2026-06-22</td>
-        <td th:text="${ligne.origine}">Prochaine chaleur</td>
-        <td th:text="${ligne.statut}">Chaleur</td>
-      </tr>
-      <tr th:if="${#lists.isEmpty(chaleurs)}">
-        <td colspan="5">Aucune chaleur trouvée pour ce filtre.</td>
-      </tr>
-    </tbody>
-  </table>
+    <div class="card card-table">
+        <div class="card-header" style="justify-content:space-between;flex-wrap:wrap;gap:12px;">
+            <span class="card-title">Suivi des chaleurs</span>
+            <form th:action="@{/reproduction}" method="get" class="filters" style="margin:0;">
+                <input type="number" name="mois" min="1" max="12" th:value="${selectedMonth}" placeholder="Mois" style="width:90px;">
+                <input type="number" name="annee" min="2000" max="2100" th:value="${selectedYear}" placeholder="Année" style="width:100px;">
+                <select name="vacheId" style="padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-family:'Inter',sans-serif;font-size:0.85rem;">
+                    <option value="" th:selected="${selectedVacheId == null}">Toutes les vaches</option>
+                    <option th:each="v : ${vaches}"
+                            th:value="${v.id}"
+                            th:text="${v.numeroBoucle}"
+                            th:selected="${v.id == selectedVacheId}">
+                    </option>
+                </select>
+                <button class="btn btn-primary" type="submit">Filtrer</button>
+            </form>
+        </div>
+
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Vache</th>
+                    <th>Date de chaleur</th>
+                    <th>Origine</th>
+                    <th>Statut</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="ligne : ${chaleurs}">
+                    <td th:text="${ligne.numeroBoucle}">-</td>
+                    <td th:text="${ligne.dateChaleur}">-</td>
+                    <td th:text="${ligne.origine}">-</td>
+                    <td><span class="badge badge-niveau badge-niveau-info" th:text="${ligne.statut}"></span></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(chaleurs)}">
+                    <td colspan="4" class="text-center" style="padding:32px;color:#9CA3AF;">
+                        Aucune chaleur trouvée pour ce filtre.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
 </body>
 </html>
