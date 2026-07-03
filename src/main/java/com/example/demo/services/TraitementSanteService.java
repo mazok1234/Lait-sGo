@@ -1,7 +1,9 @@
 package com.example.demo.services;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,37 +11,91 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.demo.entity.EvenementSante;
 import com.example.demo.entity.Maladie;
 import com.example.demo.entity.Medicament;
+import com.example.demo.entity.RefStatutVache;
 import com.example.demo.entity.TraitementSante;
 import com.example.demo.entity.Vache;
 import com.example.demo.repository.EvenementSanteRepository;
 import com.example.demo.repository.MaladieRepository;
 import com.example.demo.repository.MedicamentRepository; // Import essentiel
+import com.example.demo.repository.RefStatutVacheRepository;
 import com.example.demo.repository.TraitementSanteRepository;
 import com.example.demo.repository.VacheRepository;
 
 @Service
 public class TraitementSanteService {
 
+    private static final String STATUT_EN_LACTATION = "en_lactation";
+    private static final String STATUT_TARIE = "tarie";
+
     private final TraitementSanteRepository traitementRepository;
     private final EvenementSanteRepository evenementRepository;
     private final VacheRepository vacheRepository;
     private final MaladieRepository maladieRepository;
     private final MedicamentRepository medicamentRepository;
+    private final RefStatutVacheRepository statutVacheRepository;
 
     public TraitementSanteService(TraitementSanteRepository traitementRepository,
                                   EvenementSanteRepository evenementRepository,
                                   VacheRepository vacheRepository,
                                   MaladieRepository maladieRepository,
-                                  MedicamentRepository medicamentRepository) {
+                                  MedicamentRepository medicamentRepository,
+                                  RefStatutVacheRepository statutVacheRepository) {
         this.traitementRepository = traitementRepository;
         this.evenementRepository = evenementRepository;
         this.vacheRepository = vacheRepository;
         this.maladieRepository = maladieRepository;
         this.medicamentRepository = medicamentRepository;
+        this.statutVacheRepository = statutVacheRepository;
     }
 
     public List<TraitementSante> findAll() {
         return traitementRepository.findAllByOrderByDateDebutDesc();
+    }
+
+    public long countVachesTariees() {
+        return vacheRepository.countByStatut_Code(STATUT_TARIE);
+    }
+
+    @Transactional
+    public void synchronizeVacheStatuses() {
+        RefStatutVache statutTarie = getStatutRequired(STATUT_TARIE);
+        RefStatutVache statutLactation = getStatutRequired(STATUT_EN_LACTATION);
+
+        Set<Long> vachesAvecTraitementActif = new HashSet<>();
+        LocalDate today = LocalDate.now();
+
+        for (TraitementSante traitement : traitementRepository.findAllByOrderByDateDebutDesc()) {
+            if (isTreatmentActif(traitement, today)) {
+                Vache vache = traitement.getEvenementSante() != null ? traitement.getEvenementSante().getVache() : null;
+                if (vache != null && vache.getId() != null) {
+                    vachesAvecTraitementActif.add(vache.getId());
+                }
+            }
+        }
+
+        List<Vache> vaches = vacheRepository.findAll();
+        boolean changed = false;
+
+        for (Vache vache : vaches) {
+            if (vache.getId() == null) {
+                continue;
+            }
+
+            boolean doitEtreTariee = vachesAvecTraitementActif.contains(vache.getId());
+            boolean estDejaTariee = vache.getStatut() != null && STATUT_TARIE.equals(vache.getStatut().getCode());
+
+            if (doitEtreTariee && !estDejaTariee) {
+                vache.setStatut(statutTarie);
+                changed = true;
+            } else if (!doitEtreTariee && estDejaTariee) {
+                vache.setStatut(statutLactation);
+                changed = true;
+            }
+        }
+
+        if (changed) {
+            vacheRepository.saveAll(vaches);
+        }
     }
 
     public TraitementSante findById(Long id) {
@@ -98,6 +154,7 @@ public class TraitementSanteService {
 
         TraitementSante saved = traitementRepository.save(traitement); // Sauvegarde Table 2
         syncIds(saved);
+        synchronizeVacheStatuses();
         return saved;
     }
 
@@ -113,6 +170,7 @@ public class TraitementSanteService {
         if (evenement != null) {
             evenementRepository.delete(evenement);
         }
+        synchronizeVacheStatuses();
     }
 
     public List<Vache> findAllVaches() {
@@ -132,6 +190,25 @@ public class TraitementSanteService {
             return null;
         }
         return dateDebut.plusDays(dureeTraitement.longValue() - 1L);
+    }
+
+    private boolean isTreatmentActif(TraitementSante traitement, LocalDate today) {
+        if (traitement == null || traitement.getDateDebut() == null) {
+            return false;
+        }
+
+        LocalDate dateFinTraitement = calculerDateFin(traitement.getDateDebut(), traitement.getDureeTraitement());
+        if (dateFinTraitement == null || traitement.getDelaiAttenteJ() == null) {
+            return false;
+        }
+
+        LocalDate dateFinAttente = dateFinTraitement.plusDays(traitement.getDelaiAttenteJ().longValue());
+        return !today.isBefore(traitement.getDateDebut()) && !today.isAfter(dateFinAttente);
+    }
+
+    private RefStatutVache getStatutRequired(String code) {
+        return statutVacheRepository.findByCode(code)
+                .orElseThrow(() -> new IllegalStateException("Statut vache introuvable: " + code));
     }
 
     private void syncIds(TraitementSante traitement) {

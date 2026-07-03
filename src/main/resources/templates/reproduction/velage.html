@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{index :: layout(~{::content})}">
+<body>
+<div th:fragment="content">
+  <h1>Vêlage</h1>
+
+  <form class="form-card" th:action="@{/velage}" th:object="${velageForm}" method="post">
+
+    <div class="field">
+      <label for="vache">Vache</label>
+      <select id="vache" th:field="*{vacheId}">
+        <option value="">Sélectionner une vache</option>
+        <option th:each="v : ${vaches}" th:value="${v.id}" th:text="${v.nom} + ' ' + ${v.numero}">Bella n°014</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="dateVelage">Date de vêlage</label>
+      <input type="date" id="dateVelage" th:field="*{dateVelage}">
+    </div>
+
+    <div class="form-actions">
+      <button class="primary" type="submit">Vêlage</button>
+    </div>
+  </form>
+</div>
+</body>
+</html>

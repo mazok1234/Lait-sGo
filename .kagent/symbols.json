@@ -1,0 +1,463 @@
+{
+  "symbols": {
+    "TODO.md": {
+      "ipo_ts": 1783013874222,
+      "edit_count": 9,
+      "last_lines": 11,
+      "last_ts": 1783018529829,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "1fc3c71f"
+    },
+    "src/main/java/com/example/demo/cheptel/entities/Race.java": {
+      "ipo_ts": 1783013904654,
+      "edit_count": 1,
+      "last_lines": 53,
+      "last_ts": 1783013904654,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "67990c7f"
+    },
+    "target/classes/com/example/demo/cheptel/entities/Race.class": {
+      "ipo_ts": 1783013905511,
+      "edit_count": 2,
+      "last_lines": 9,
+      "last_ts": 1783014320453,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "a45db566"
+    },
+    "src/main/java/com/example/demo/cheptel/entities/StatutVache.java": {
+      "ipo_ts": 1783013931715,
+      "edit_count": 1,
+      "last_lines": 53,
+      "last_ts": 1783013931715,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "bcad3c30"
+    },
+    "target/classes/com/example/demo/cheptel/entities/StatutVache.class": {
+      "ipo_ts": 1783013932861,
+      "edit_count": 2,
+      "last_lines": 9,
+      "last_ts": 1783014320502,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "d8b0ae58"
+    },
+    "src/main/java/com/example/demo/cheptel/entities/Vache.java": {
+      "ipo_ts": 1783013953954,
+      "edit_count": 2,
+      "last_lines": 123,
+      "last_ts": 1783013999158,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "cc92f164"
+    },
+    "target/classes/com/example/demo/cheptel/entities/Vache.class": {
+      "ipo_ts": 1783014000271,
+      "edit_count": 2,
+      "last_lines": 16,
+      "last_ts": 1783014320556,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "45f1c3e4"
+    },
+    "src/main/java/com/example/demo/cheptel/repositories/RaceRepository.java": {
+      "ipo_ts": 1783014009453,
+      "edit_count": 1,
+      "last_lines": 8,
+      "last_ts": 1783014009453,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "fbfe42e0"
+    },
+    "target/classes/com/example/demo/cheptel/repositories/RaceRepository.class": {
+      "ipo_ts": 1783014010194,
+      "edit_count": 2,
+      "last_lines": 2,
+      "last_ts": 1783014320850,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "3480142a"
+    },
+    "src/main/java/com/example/demo/cheptel/repositories/StatutVacheRepository.java": {
+      "ipo_ts": 1783014014869,
+      "edit_count": 2,
+      "last_lines": 8,
+      "last_ts": 1783014020456,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "1da0f70b"
+    },
+    "target/classes/com/example/demo/cheptel/repositories/StatutVacheRepository.class": {
+      "ipo_ts": 1783014021501,
+      "edit_count": 2,
+      "last_lines": 2,
+      "last_ts": 1783014320891,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "731d76e5"
+    },
+    "src/main/java/com/example/demo/cheptel/repositories/VacheRepository.java": {
+      "ipo_ts": 1783014030340,
+      "edit_count": 1,
+      "last_lines": 9,
+      "last_ts": 1783014030340,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "562f4d36"
+    },
+    "target/classes/com/example/demo/cheptel/repositories/VacheRepository.class": {
+      "ipo_ts": 1783014030888,
+      "edit_count": 2,
+      "last_lines": 3,
+      "last_ts": 1783014320633,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "90e61884"
+    },
+    "src/main/java/com/example/demo/cheptel/services/RaceService.java": {
+      "ipo_ts": 1783014057878,
+      "edit_count": 1,
+      "last_lines": 41,
+      "last_ts": 1783014057878,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "e8baa432"
+    },
+    "target/classes/com/example/demo/cheptel/services/RaceService.class": {
+      "ipo_ts": 1783014059569,
+      "edit_count": 2,
+      "last_lines": 26,
+      "last_ts": 1783014320967,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "e057afa8"
+    },
+    "src/main/java/com/example/demo/cheptel/services/StatutVacheService.java": {
+      "ipo_ts": 1783014086257,
+      "edit_count": 1,
+      "last_lines": 41,
+      "last_ts": 1783014086257,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "50868ba"
+    },
+    "target/classes/com/example/demo/cheptel/services/StatutVacheService.class": {
+      "ipo_ts": 1783014087327,
+      "edit_count": 2,
+      "last_lines": 26,
+      "last_ts": 1783014321036,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "799852e0"
+    },
+    "src/main/java/com/example/demo/cheptel/services/VacheService.java": {
+      "ipo_ts": 1783014127951,
+      "edit_count": 1,
+      "last_lines": 66,
+      "last_ts": 1783014127951,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "7347ed10"
+    },
+    "target/classes/com/example/demo/cheptel/services/VacheService.class": {
+      "ipo_ts": 1783014128788,
+      "edit_count": 2,
+      "last_lines": 40,
+      "last_ts": 1783014321095,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "9be9df9d"
+    },
+    "src/main/java/com/example/demo/cheptel/controllers/CheptelPageController.java": {
+      "ipo_ts": 1783014158348,
+      "edit_count": 9,
+      "last_lines": 256,
+      "last_ts": 1783018624991,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "cecc953f"
+    },
+    "target/classes/com/example/demo/cheptel/controllers/CheptelPageController.class": {
+      "ipo_ts": 1783014159505,
+      "edit_count": 10,
+      "last_lines": 76,
+      "last_ts": 1783018625738,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "97b89cad"
+    },
+    "src/main/java/com/example/demo/cheptel/controllers/api/CheptelApiController.java": {
+      "ipo_ts": 1783014226875,
+      "edit_count": 3,
+      "last_lines": 148,
+      "last_ts": 1783015878118,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "a4e5b89f"
+    },
+    "target/classes/com/example/demo/cheptel/controllers/api/CheptelApiController.class": {
+      "ipo_ts": 1783014228893,
+      "edit_count": 4,
+      "last_lines": 76,
+      "last_ts": 1783015880156,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "39c9ab47"
+    },
+    "src/main/java/com/example/demo/cheptel/controllers/api/RaceApiController.java": {
+      "ipo_ts": 1783014242118,
+      "edit_count": 1,
+      "last_lines": 41,
+      "last_ts": 1783014242118,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "1fb0acce"
+    },
+    "target/classes/com/example/demo/cheptel/controllers/api/RaceApiController.class": {
+      "ipo_ts": 1783014243115,
+      "edit_count": 2,
+      "last_lines": 18,
+      "last_ts": 1783014320404,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "55b47d58"
+    },
+    "src/main/java/com/example/demo/cheptel/controllers/api/StatutVacheApiController.java": {
+      "ipo_ts": 1783014251550,
+      "edit_count": 1,
+      "last_lines": 41,
+      "last_ts": 1783014251550,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "22950472"
+    },
+    "target/classes/com/example/demo/cheptel/controllers/api/StatutVacheApiController.class": {
+      "ipo_ts": 1783014253407,
+      "edit_count": 2,
+      "last_lines": 18,
+      "last_ts": 1783014320804,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "3f0d30e9"
+    },
+    "target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst": {
+      "ipo_ts": 1783014316304,
+      "edit_count": 1,
+      "last_lines": 14,
+      "last_ts": 1783014316304,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "55fcc7a4"
+    },
+    "target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst": {
+      "ipo_ts": 1783014321139,
+      "edit_count": 1,
+      "last_lines": 1,
+      "last_ts": 1783014321139,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "bc0018ce"
+    },
+    "src/main/resources/templates/cheptel/dashboard.html": {
+      "ipo_ts": 1783014609009,
+      "edit_count": 20,
+      "last_lines": 629,
+      "last_ts": 1783020853396,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "2eaf3779"
+    },
+    "src/main/resources/templates/cheptel/vaches.html": {
+      "ipo_ts": 1783014609209,
+      "edit_count": 2,
+      "last_lines": 72,
+      "last_ts": 1783019007128,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "bcc7e02b"
+    },
+    "target/classes/templates/cheptel/dashboard.html": {
+      "ipo_ts": 1783014609756,
+      "edit_count": 19,
+      "last_lines": 629,
+      "last_ts": 1783020854500,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "2eaf3779"
+    },
+    "target/classes/templates/cheptel/vaches.html": {
+      "ipo_ts": 1783014609787,
+      "edit_count": 2,
+      "last_lines": 72,
+      "last_ts": 1783019008190,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "bcc7e02b"
+    },
+    "src/main/resources/templates/cheptel/vache-detail.html": {
+      "ipo_ts": 1783014633295,
+      "edit_count": 2,
+      "last_lines": 40,
+      "last_ts": 1783019009609,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "155ed915"
+    },
+    "src/main/resources/templates/cheptel/vache-form.html": {
+      "ipo_ts": 1783014633315,
+      "edit_count": 3,
+      "last_lines": 54,
+      "last_ts": 1783019015291,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "82b8a3e1"
+    },
+    "src/main/resources/templates/cheptel/races.html": {
+      "ipo_ts": 1783014633452,
+      "edit_count": 2,
+      "last_lines": 65,
+      "last_ts": 1783019019121,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "ae370f71"
+    },
+    "src/main/resources/templates/cheptel/etats-sante.html": {
+      "ipo_ts": 1783014633547,
+      "edit_count": 2,
+      "last_lines": 62,
+      "last_ts": 1783019023142,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "2c960f48"
+    },
+    "target/classes/templates/cheptel/etats-sante.html": {
+      "ipo_ts": 1783014634129,
+      "edit_count": 2,
+      "last_lines": 62,
+      "last_ts": 1783019024129,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "2c960f48"
+    },
+    "target/classes/templates/cheptel/races.html": {
+      "ipo_ts": 1783014634171,
+      "edit_count": 2,
+      "last_lines": 65,
+      "last_ts": 1783019020150,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "ae370f71"
+    },
+    "target/classes/templates/cheptel/vache-detail.html": {
+      "ipo_ts": 1783014634218,
+      "edit_count": 2,
+      "last_lines": 40,
+      "last_ts": 1783019010868,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "155ed915"
+    },
+    "target/classes/templates/cheptel/vache-form.html": {
+      "ipo_ts": 1783014634262,
+      "edit_count": 3,
+      "last_lines": 54,
+      "last_ts": 1783019016010,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "82b8a3e1"
+    },
+    "src/main/resources/templates/index.html": {
+      "ipo_ts": 1783015275641,
+      "edit_count": 1,
+      "last_lines": 106,
+      "last_ts": 1783015275641,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "68b39d75"
+    },
+    "target/classes/templates/index.html": {
+      "ipo_ts": 1783015276605,
+      "edit_count": 1,
+      "last_lines": 106,
+      "last_ts": 1783015276605,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "68b39d75"
+    },
+    "src/main/resources/static/js/main.js": {
+      "ipo_ts": 1783015852619,
+      "edit_count": 1,
+      "last_lines": 96,
+      "last_ts": 1783015852619,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "390df466"
+    },
+    "target/classes/static/js/main.js": {
+      "ipo_ts": 1783015854215,
+      "edit_count": 1,
+      "last_lines": 96,
+      "last_ts": 1783015854215,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "390df466"
+    },
+    "CHEPTELle.html": {
+      "ipo_ts": 1783016162997,
+      "edit_count": 1,
+      "last_lines": 760,
+      "last_ts": 1783016162997,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "5f7bef92"
+    },
+    "target/classes/com/example/demo/cheptel/controllers/CheptelPageController$VacheForm.class": {
+      "ipo_ts": 1783018613660,
+      "edit_count": 2,
+      "last_lines": 16,
+      "last_ts": 1783018625673,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "54ca4860"
+    },
+    "src/main/resources/static/css/main.css": {
+      "ipo_ts": 1783018962495,
+      "edit_count": 1,
+      "last_lines": 720,
+      "last_ts": 1783018962495,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "36e0ed61"
+    },
+    "target/classes/static/css/main.css": {
+      "ipo_ts": 1783018963548,
+      "edit_count": 1,
+      "last_lines": 720,
+      "last_ts": 1783018963548,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "36e0ed61"
+    },
+    "target/surefire-reports/com.example.demo.DemoApplicationTests.txt": {
+      "ipo_ts": 1783020220015,
+      "edit_count": 3,
+      "last_lines": 4,
+      "last_ts": 1783020282819,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "b1a414f5"
+    },
+    "target/surefire-reports/TEST-com.example.demo.DemoApplicationTests.xml": {
+      "ipo_ts": 1783020220246,
+      "edit_count": 3,
+      "last_lines": 120,
+      "last_ts": 1783020282976,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "b144aac"
+    }
+  }
+}

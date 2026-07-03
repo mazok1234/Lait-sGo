@@ -3,7 +3,8 @@
       th:replace="~{index :: layout(~{::mainContent})}">
 <head><title>Alertes</title></head>
 <body>
-<div th:fragment="mainContent">
+<div th:fragment="mainContent" class="page-content">
+    <div id="mainContent">
 
   <div class="page-header">
     <h1 class="page-title">Alertes</h1>
@@ -165,6 +166,7 @@
     </div>
 
   </div>
+    </div>
 
   <script th:inline="none">
 /* ====================================================
@@ -178,7 +180,7 @@
   let allRows     = [];
   let filtered    = [];
   let currentPage = 1;
-  let pageSize    = 10;
+  let pageSize    = 5;
   let sortCol     = null;
   let sortAsc     = true;
   let activeNiveau = null;

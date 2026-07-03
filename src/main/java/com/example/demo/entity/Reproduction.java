@@ -1,9 +1,7 @@
-package com.example.demo.entity;
+package com.example.demo.entity; 
 
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reproduction")
@@ -18,155 +16,51 @@ public class Reproduction {
     private Vache vache;
 
     @Column(name = "date_ia", nullable = false)
-    private LocalDate dateIA;
-
-    @Column(name = "semence")
-    private String semence;
-
-    @Column(name = "inséminateur")
-    private String inséminateur;
-
-    @Column(name = "type_injection")
-    private String typeInjection;
-
-    @Column(name = "statut_ia")
-    private String statutIA = "en_attente";
+    private LocalDate dateIa;
 
     @Column(name = "gestation_confirmee")
-    private Boolean gestationConfirmee;
+    private Boolean gestationConfirmee; // Null au début, puis True/False après le contrôle
 
     @Column(name = "date_confirmation_gest")
-    private LocalDate dateConfirmationGest;
+    private LocalDate dateConfirmationGest; // Null tant que le contrôle n'est pas fait
 
     @Column(name = "date_velage_reel")
-    private LocalDate dateVelageReel;
+    private LocalDate dateVelageReel; // Null pendant toute la gestation (9 mois)
 
-    @Column(name = "sexe_veau")
-    private String sexeVeau;
+    @Column(name = "sexe_veau", length = 1)
+    private String sexeVeau; // Null jusqu'au vêlage ('M' ou 'F')
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    // --- Constructeurs ---
+    public Reproduction() {}
 
-    // ============ CONSTRUCTEURS ============
-    public Reproduction() {
-    }
-
-    public Reproduction(Vache vache, LocalDate dateIA, String semence, String inséminateur, String typeInjection) {
+    public Reproduction(Vache vache, LocalDate dateIa) {
         this.vache = vache;
-        this.dateIA = dateIA;
-        this.semence = semence;
-        this.inséminateur = inséminateur;
-        this.typeInjection = typeInjection;
-        this.statutIA = "en_attente";
+        this.dateIa = dateIa;
     }
 
-    // ============ GETTERS ============
-    public Long getId() {
-        return id;
+    // --- Getters et Setters ---
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public Vache getVache() { return vache; }
+    public void setVache(Vache vache) { this.vache = vache; }
+
+    public String getNumeroBoucle() {
+        return vache != null ? vache.getNumeroBoucle() : "";
     }
 
-    public Vache getVache() {
-        return vache;
-    }
+    public LocalDate getDateIa() { return dateIa; }
+    public void setDateIa(LocalDate dateIa) { this.dateIa = dateIa; }
 
-    public LocalDate getDateIA() {
-        return dateIA;
-    }
+    public Boolean getGestationConfirmee() { return gestationConfirmee; }
+    public void setGestationConfirmee(Boolean gestationConfirmee) { this.gestationConfirmee = gestationConfirmee; }
 
-    public String getSemence() {
-        return semence;
-    }
+    public LocalDate getDateConfirmationGest() { return dateConfirmationGest; }
+    public void setDateConfirmationGest(LocalDate dateConfirmationGest) { this.dateConfirmationGest = dateConfirmationGest; }
 
-    public String getInséminateur() {
-        return inséminateur;
-    }
+    public LocalDate getDateVelageReel() { return dateVelageReel; }
+    public void setDateVelageReel(LocalDate dateVelageReel) { this.dateVelageReel = dateVelageReel; }
 
-    public String getTypeInjection() {
-        return typeInjection;
-    }
-
-    public String getStatutIA() {
-        return statutIA;
-    }
-
-    public Boolean getGestationConfirmee() {
-        return gestationConfirmee;
-    }
-
-    public LocalDate getDateConfirmationGest() {
-        return dateConfirmationGest;
-    }
-
-    public LocalDate getDateVelageReel() {
-        return dateVelageReel;
-    }
-
-    public String getSexeVeau() {
-        return sexeVeau;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    // ============ SETTERS ============
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setVache(Vache vache) {
-        this.vache = vache;
-    }
-
-    public void setDateIA(LocalDate dateIA) {
-        this.dateIA = dateIA;
-    }
-
-    public void setSemence(String semence) {
-        this.semence = semence;
-    }
-
-    public void setInséminateur(String inséminateur) {
-        this.inséminateur = inséminateur;
-    }
-
-    public void setTypeInjection(String typeInjection) {
-        this.typeInjection = typeInjection;
-    }
-
-    public void setStatutIA(String statutIA) {
-        this.statutIA = statutIA;
-    }
-
-    public void setGestationConfirmee(Boolean gestationConfirmee) {
-        this.gestationConfirmee = gestationConfirmee;
-    }
-
-    public void setDateConfirmationGest(LocalDate dateConfirmationGest) {
-        this.dateConfirmationGest = dateConfirmationGest;
-    }
-
-    public void setDateVelageReel(LocalDate dateVelageReel) {
-        this.dateVelageReel = dateVelageReel;
-    }
-
-    public void setSexeVeau(String sexeVeau) {
-        this.sexeVeau = sexeVeau;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    @Override
-    public String toString() {
-        return "Reproduction{" +
-                "id=" + id +
-                ", vacheId=" + (vache != null ? vache.getId() : null) +
-                ", dateIA=" + dateIA +
-                ", semence='" + semence + '\'' +
-                ", inséminateur='" + inséminateur + '\'' +
-                ", statutIA='" + statutIA + '\'' +
-                '}';
-    }
+    public String getSexeVeau() { return sexeVeau; }
+    public void setSexeVeau(String sexeVeau) { this.sexeVeau = sexeVeau; }
 }

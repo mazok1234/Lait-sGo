@@ -26,7 +26,9 @@ public class TraitementController {
 
 	@GetMapping
 	public String list(Model model) {
+		traitementService.synchronizeVacheStatuses();
 		model.addAttribute("traitements", traitementService.findAll());
+		model.addAttribute("vachesTariees", traitementService.countVachesTariees());
 		return "Traitement/liste";
 	}
 

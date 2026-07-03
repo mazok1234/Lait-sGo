@@ -10,7 +10,9 @@
 <body>
 
 <div th:fragment="mainContent" class="page-content">
-
+    <a th:href="@{/vaccins}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Retour
+    </a>
     <div class="page-header">
         <h1 class="page-title">Rappels de Vaccination</h1>
         <p class="page-subtitle">Vaccins à surveiller pour le troupeau</p>
@@ -36,24 +38,42 @@
                 <thead>
                 <tr>
                     <th>Vaccin</th>
+                    <th>Bovins concernés</th>
                     <th>Dernière vaccination</th>
-                    <th>Rappel (jours)</th>
+                    <th>Rappel </th>
                     <th>Statut</th>
                 </tr>
                 </thead>
 
                 <tbody>
 
-                <tr th:each="h : ${rappels}">
+                <tr th:each="h , i: ${rappels}">
 
                     <td th:text="${h.protocoleVaccin.nomVaccin}"></td>
+                    <td th:text="${h.vache.numeroBoucle}"></td>
 
                     <td th:text="${h.dateVaccination}"></td>
 
-                    <td th:text="${h.protocoleVaccin.dureeRappelJours}"></td>
-
+                    <td th:text="${h.dateVaccination.plusDays(h.protocoleVaccin.dureeRappelJours)}"></td>
                     <td>
-                        <span class="badge badge-danger">À rappeler</span>
+                        <span th:if="${status[i.index].contains('EN RETARD')}" 
+                              class="badge badge-danger" th:text="${status[i.index]}">
+                        </span>
+
+                        <span th:if="${status[i.index].contains('A REVOIR')}" 
+                              class="badge" style="background:#FFF3E0; color:#F57C00;"
+                              th:text="${status[i.index]}">
+                        </span>
+
+
+                         <span th:if="${!status[i.index].contains('A REVOIR') && !status[i.index].contains('EN RETARD')}" 
+                              class="badge" style="background:#0bc737; color:#ffffff;"
+                              th:text="${status[i.index]}">
+                        </span>
+
+
+
+                        
                     </td>
 
                 </tr>

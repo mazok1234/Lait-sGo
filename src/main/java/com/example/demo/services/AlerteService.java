@@ -123,34 +123,61 @@ public class AlerteService {
         return dto;
     }
 
-    public void envoyerAlerte(String typeCode, String niveauCode,
-            String titre, String description, Long vacheId) {
+// FA-02 : Envoyer une alerte automatique (avec détection de doublons intelligents)
+    public void envoyerAlerte(String typeCode, String niveauCode, String titre, String description, Long vacheId) {
         try {
-            // Vérifier doublon avant d'insérer
-            boolean dejaPresente;
+            RefTypeAlerte type = typeRepo.findByCode(typeCode)
+                    .orElseThrow(() -> new IllegalArgumentException("Type d'alerte introuvable : " + typeCode));
+            RefNiveauAlerte niveau = niveauRepo.findByCode(niveauCode)
+                    .orElseThrow(() -> new IllegalArgumentException("Niveau d'alerte introuvable : " + niveauCode));
+
+            // NOUVELLE LOGIQUE : On cherche N'IMPORTE QUELLE alerte existante (active OU acquittée)
+            // Pour cela, on utilise le repository pour trouver la toute dernière générée pour cette vache et ce type
+            Optional<Alerte> alerteExistanteOpt;
             if (vacheId != null) {
-                dejaPresente = alerteRepo
-                        .existsByVacheIdAndType_CodeAndAcquitteeFalse(vacheId, typeCode);
+                // On récupère toutes les alertes et on prend la plus récente
+                alerteExistanteOpt = alerteRepo.findAll().stream()
+                        .filter(a -> a.getVacheId() != null && a.getVacheId().equals(vacheId) && a.getType().getCode().equals(typeCode))
+                        .max(Comparator.comparing(Alerte::getCreatedAt));
             } else {
-                dejaPresente = alerteRepo
-                        .existsByVacheIdIsNullAndType_CodeAndAcquitteeFalse(typeCode);
+                alerteExistanteOpt = alerteRepo.findAll().stream()
+                        .filter(a -> a.getVacheId() == null && a.getType().getCode().equals(typeCode))
+                        .max(Comparator.comparing(Alerte::getCreatedAt));
             }
 
-            if (dejaPresente) {
-                System.out.println("[Alertes] Doublon ignoré : " + typeCode
-                        + (vacheId != null ? " — vache " + vacheId : " — ferme"));
+            // Si une alerte existe déjà dans l'historique
+            if (alerteExistanteOpt.isPresent()) {
+                Alerte alerteExistante = alerteExistanteOpt.get();
+
+                // CAS 1 : L'éleveur l'a déjà acquittée ! On refuse de la recréer.
+                if (Boolean.TRUE.equals(alerteExistante.getAcquittee())) {
+                    System.out.println("[Alertes] L'alerte pour " + typeCode + " a déjà été acquittée. On ne recrée rien.");
+                    return; 
+                }
+
+                // CAS 2 : Elle est toujours active mais le niveau de gravité a changé (ex: attention -> urgent)
+                if (!alerteExistante.getNiveau().getCode().equals(niveauCode)) {
+                    alerteExistante.setNiveau(niveau);
+                    alerteExistante.setTitre(titre);
+                    alerteExistante.setDescription(description);
+                    alerteRepo.save(alerteExistante);
+                    System.out.println("[Alertes] Gravité mise à jour en [" + niveauCode + "] pour le type : " + typeCode);
+                } else {
+                    // Même type, active, et même niveau : doublon ignoré
+                    System.out.println("[Alertes] Doublon ignoré (déjà en statut " + niveauCode + ") : " + typeCode);
+                }
                 return;
             }
 
-            RefTypeAlerte type = typeRepo.findByCode(typeCode)
-                    .orElseThrow(() -> new IllegalArgumentException("Type inconnu : " + typeCode));
-            RefNiveauAlerte niveau = niveauRepo.findByCode(niveauCode)
-                    .orElseThrow(() -> new IllegalArgumentException("Niveau inconnu : " + niveauCode));
-
+            // Si vraiment aucune alerte n'a jamais été créée, on la crée pour la première fois
             creerAlerte(type.getId(), niveau.getId(), titre, description, vacheId);
 
         } catch (Exception e) {
             System.err.println("[Alertes] Alerte non envoyée : " + e.getMessage());
         }
+    }
+
+    public Optional<Alerte> obtenirAlerteActive(Long vacheId, String typeCode) {
+        return alerteRepo.findByVacheIdAndType_CodeAndAcquitteeFalse(vacheId, typeCode);
     }
 }

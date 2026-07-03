@@ -75,6 +75,14 @@ CREATE TABLE vache (
     score_locomotion SMALLINT,           
     created_at       TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
+-- table associatif vache et ref_statut_vache
+CREATE TABLE vache_statut (
+    id        BIGSERIAL PRIMARY KEY,
+    vache_id  BIGINT    NOT NULL REFERENCES vache(id),
+    statut_id INT       NOT NULL REFERENCES ref_statut_vache(id),
+    date_debut DATE     NOT NULL,
+    date_fin   DATE
+);
 
 CREATE TABLE protocole_vaccin(
     id_protocole_vaccin SERIAL PRIMARY KEY,
@@ -342,49 +350,3 @@ INSERT INTO ref_type_alerte (code, libelle) VALUES
 -- Cheptel
 ('bcs_hors_plage',     'Score BCS hors plage');
 
-
--- Données de test — à supprimer avant le rendu final
-INSERT INTO alerte (id_niveau, id_type, titre, description, vache_id, acquittee)
-VALUES
--- Urgent
-((SELECT id FROM ref_niveau_alerte WHERE code = 'urgent'),
- (SELECT id FROM ref_type_alerte WHERE code = 'vaccin_en_retard'),
- 'Vaccin en retard — FR1234567890',
- 'Vaccin IBR en retard de 3 jours.', null, false),
-
-((SELECT id FROM ref_niveau_alerte WHERE code = 'urgent'),
- (SELECT id FROM ref_type_alerte WHERE code = 'stock_aliment_bas'),
- 'Stock aliment insuffisant',
- 'Stock foin : 150 kg, seuil : 500 kg.', null, false),
-
--- Attention
-((SELECT id FROM ref_niveau_alerte WHERE code = 'attention'),
- (SELECT id FROM ref_type_alerte WHERE code = 'vaccin_prioritaire'),
- 'Vaccin prioritaire — FR9876543210',
- 'Vaccin BVD à administrer dans les 48h.', null, false),
-
-((SELECT id FROM ref_niveau_alerte WHERE code = 'attention'),
- (SELECT id FROM ref_type_alerte WHERE code = 'rappel_chaleur'),
- 'Rappel vache en chaleur — FR5544332211',
- 'Fenêtre d''insémination ouverte aujourd''hui.', null, false),
-
-((SELECT id FROM ref_niveau_alerte WHERE code = 'attention'),
- (SELECT id FROM ref_type_alerte WHERE code = 'bcs_hors_plage'),
- 'BCS hors plage — FR5544332211',
- 'BCS : 1.80, plage normale : 2.0 – 4.5.', null, false),
-
-((SELECT id FROM ref_niveau_alerte WHERE code = 'attention'),
- (SELECT id FROM ref_type_alerte WHERE code = 'stock_lait_bas'),
- 'Stock de lait insuffisant',
- 'Stock lait restant : 120 L après dernière vente.', null, false),
-
--- Info
-((SELECT id FROM ref_niveau_alerte WHERE code = 'info'),
- (SELECT id FROM ref_type_alerte WHERE code = 'rappel_vaccin'),
- 'Rappel vaccin — FR1122334455',
- 'Vaccin Fièvre Q prévu dans 7 jours.', null, false),
-
-((SELECT id FROM ref_niveau_alerte WHERE code = 'info'),
- (SELECT id FROM ref_type_alerte WHERE code = 'rappel_velage'),
- 'Rappel vêlage — FR6677889900',
- 'Vêlage prévu le 07/07/2026.', null, false);
