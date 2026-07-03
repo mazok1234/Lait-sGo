@@ -1,24 +1,25 @@
 package com.example.demo.services;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.entity.Reproduction;
 import com.example.demo.entity.VacheStatus;
 import com.example.demo.repository.ReproductionRepository;
 import com.example.demo.repository.VacheStatusRepository;
-import java.time.temporal.ChronoUnit;
-import java.util.stream.Collectors;
-import java.time.LocalDate;
 
 @Service
 public class ReproductionService {
@@ -157,6 +158,72 @@ public class ReproductionService {
         return null;
     }
 
+    @Transactional(readOnly = true)
+    public List<Map<String, Object>> getChaleurs(Integer mois, Integer annee, Long vacheId) {
+        LocalDate now = LocalDate.now();
+        boolean filtreActif = mois != null || annee != null;
+        int selectedMonth = mois != null ? mois : now.getMonthValue();
+        int selectedYear = annee != null ? annee : now.getYear();
+
+        List<VacheStatus> statusHistorique = vacheStatusRepository.findAll();
+        Map<Long, VacheStatus> derniersStatuts = statusHistorique.stream()
+                .filter(this::isChaleurOuVelage)
+                .filter(status -> vacheId == null || status.getVache().getId().equals(vacheId))
+                .collect(Collectors.toMap(
+                        status -> status.getVache().getId(),
+                        status -> status,
+                        (first, second) -> first.getDateDebut().isAfter(second.getDateDebut()) ? first : second
+                ));
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (VacheStatus status : derniersStatuts.values()) {
+            LocalDate dateChaleur;
+            String origine;
+
+            if (filtreActif) {
+                List<LocalDate> dates = getDateChaleur(selectedMonth, selectedYear, List.of(status));
+                dateChaleur = dates.stream().findFirst().orElse(null);
+                origine = "Chaleur filtrée";
+            } else {
+                dateChaleur = getProchaineChaleur(status.getDateDebut());
+                origine = "Prochaine chaleur";
+            }
+
+            if (dateChaleur != null) {
+                Map<String, Object> item = new HashMap<>();
+                item.put("vacheId", status.getVache().getId());
+                item.put("numeroBoucle", status.getVache().getNumeroBoucle());
+                item.put("dateChaleur", dateChaleur);
+                item.put("origine", origine);
+                item.put("statut", status.getStatut().getCode());
+                result.add(item);
+            }
+        }
+
+        result.sort(Comparator.comparing(item -> (LocalDate) item.get("dateChaleur")));
+        return result;
+    }
+
+    private boolean isChaleurOuVelage(VacheStatus status) {
+        if (status == null || status.getStatut() == null || status.getStatut().getCode() == null) {
+            return false;
+        }
+        String code = status.getStatut().getCode().trim().toLowerCase(Locale.ROOT);
+        return "chaleur".equals(code) || "velage".equals(code);
+    }
+
+    private LocalDate getProchaineChaleur(LocalDate dateDebut) {
+        if (dateDebut == null) {
+            return null;
+        }
+        LocalDate dateSuivante = dateDebut.plusDays(21);
+        LocalDate aujourdHui = LocalDate.now();
+        while (dateSuivante.isBefore(aujourdHui)) {
+            dateSuivante = dateSuivante.plusDays(21);
+        }
+        return dateSuivante;
+    }
+
     public List<Map<String, Object>> getVachesPourFiltre() {
         String sql = "SELECT v.id, v.numero_boucle, s.libelle AS statut " +
                 "FROM vache v " +
@@ -215,26 +282,30 @@ public class ReproductionService {
 
     public List<LocalDate> getDateChaleur(int mois , int Annee , List<VacheStatus> vacheStatusList) {
         List<LocalDate> datesChaleur = new ArrayList<>();
+        if (vacheStatusList == null || vacheStatusList.isEmpty()) {
+            return datesChaleur;
+        }
+
+        LocalDate startOfTargetMonth = LocalDate.of(Annee, mois, 1);
+        LocalDate endOfTargetMonth = startOfTargetMonth.withDayOfMonth(startOfTargetMonth.lengthOfMonth());
 
         for (VacheStatus vacheStatus : vacheStatusList) {
-            Long idVache = vacheStatus.getVache().getId();
             LocalDate dateDebut = vacheStatus.getDateDebut();
-            int moiss = dateDebut.getMonthValue();
-            int annee = dateDebut.getYear();
-            boolean EstAtteint = false;
-            while (!EstAtteint) {
-                if (mois == moiss && Annee == annee) {
-                    datesChaleur.add(dateDebut);
-                    EstAtteint = true;
-                } else {
-                    dateDebut = dateDebut.plusDays(21);
-                    moiss = dateDebut.getMonthValue();
-                    annee = dateDebut.getYear();
-                }
+            if (dateDebut == null || dateDebut.isAfter(endOfTargetMonth)) {
+                continue;
+            }
+
+            while (dateDebut.isBefore(startOfTargetMonth)) {
+                dateDebut = dateDebut.plusDays(21);
+            }
+
+            if (!dateDebut.isAfter(endOfTargetMonth)
+                    && dateDebut.getMonthValue() == mois
+                    && dateDebut.getYear() == Annee) {
+                datesChaleur.add(dateDebut);
             }
         }
 
-        return datesChaleur;   
-
+        return datesChaleur;
     }
 }

@@ -27,32 +27,27 @@ public class ReproductionController {
 
     @GetMapping("/reproduction")
     public String afficherDashboardReproduction(
-            @RequestParam(value = "date", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam(value = "mois", required = false) Integer mois,
+            @RequestParam(value = "annee", required = false) Integer annee,
             @RequestParam(value = "vacheId", required = false) Long vacheId,
             Model model) {
 
-        LocalDate currentDate = date != null ? date : LocalDate.now();
-        LocalDate startOfWeek = currentDate.with(DayOfWeek.MONDAY);
-        List<Map<String, Object>> evenements = reproductionService.getSuiviSemaine(startOfWeek, vacheId);
+        LocalDate now = LocalDate.now();
+        int selectedMonth = mois != null ? mois : now.getMonthValue();
+        int selectedYear = annee != null ? annee : now.getYear();
 
-        if (date == null && evenements.isEmpty()) {
-            LocalDate dateEvenement = reproductionService.getDateEvenementPertinent(LocalDate.now());
-            if (dateEvenement != null) {
-                currentDate = dateEvenement;
-                startOfWeek = currentDate.with(DayOfWeek.MONDAY);
-                evenements = reproductionService.getSuiviSemaine(startOfWeek, vacheId);
-            }
+        if (vacheId != null && vacheId <= 0) {
+            vacheId = null;
         }
 
-        model.addAttribute("currentDate", currentDate);
-        model.addAttribute("today", LocalDate.now());
-        model.addAttribute("startOfWeek", startOfWeek);
-        model.addAttribute("endOfWeek", startOfWeek.plusDays(6));
+        List<Map<String, Object>> chaleurs = reproductionService.getChaleurs(mois, annee, vacheId);
+
+        model.addAttribute("selectedMonth", selectedMonth);
+        model.addAttribute("selectedYear", selectedYear);
         model.addAttribute("selectedVacheId", vacheId);
         model.addAttribute("compteurs", reproductionService.getDashboardCounters());
         model.addAttribute("vaches", reproductionService.getVachesPourFiltre());
-        model.addAttribute("evenements", evenements);
+        model.addAttribute("chaleurs", chaleurs);
 
         return "reproduction/dashboard";
     }

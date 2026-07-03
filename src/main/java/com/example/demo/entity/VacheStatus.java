@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "vache_status")
+@Table(name = "vache_statut")
 public class VacheStatus {
 
     @Id
@@ -12,14 +12,14 @@ public class VacheStatus {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_vache", nullable = false)
+    @JoinColumn(name = "vache_id", nullable = false)
     private Vache vache;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_status", nullable = false)
+    @JoinColumn(name = "statut_id", nullable = false)
     private RefStatutVache statut;
 
-    @Column(name = "id_debut", nullable = false)
+    @Column(name = "date_debut", nullable = false)
     private LocalDate dateDebut;
 
     // Constructeurs

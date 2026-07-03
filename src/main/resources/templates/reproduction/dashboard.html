@@ -5,26 +5,46 @@
 <div th:fragment="content">
   <h1>Dashboard</h1>
 
-  <div class="filters">
-    <input type="text" placeholder="Rechercher une vache" th:name="recherche">
-    <select th:name="race">
-      <option>Toutes les races</option>
-      <option>Prim'Holstein</option>
-      <option>Normande</option>
-      <option>Montbéliarde</option>
-    </select>
-    <input type="date" th:name="dateDebut" value="2026-06-22">
-    <input type="date" th:name="dateFin" value="2026-06-28">
+  <div class="counters">
+    <div class="counter">
+      <strong th:text="${compteurs.alertesActives}">0</strong>
+      <span>Alertes actives</span>
+    </div>
+    <div class="counter">
+      <strong th:text="${compteurs.gestationsEnCours}">0</strong>
+      <span>Gestations en cours</span>
+    </div>
+    <div class="counter">
+      <strong th:text="${compteurs.vachesEnLactation}">0</strong>
+      <span>Vaches en lactation</span>
+    </div>
   </div>
 
   <div class="section-head">
     <h2>Suivi des chaleurs</h2>
     <div class="controls">
-      <select th:name="vache">
-        <option>Toutes les vaches</option>
-        <option th:each="v : ${vaches}" th:text="${v.numeroBoucle}" th:value="${v.id}">Bella n°014</option>
-      </select>
-      <button class="primary" id="edit-btn" type="button">Modifier</button>
+      <form th:action="@{/reproduction}" method="get" class="heat-filters">
+        <label>
+          Mois
+          <input type="number" name="mois" min="1" max="12" th:value="${selectedMonth}" />
+        </label>
+        <label>
+          Année
+          <input type="number" name="annee" min="2000" max="2100" th:value="${selectedYear}" />
+        </label>
+        <label>
+          Vache
+          <select name="vacheId">
+            <option th:value="''" th:text="'Toutes les vaches'" th:selected="${selectedVacheId == null}"></option>
+            <option th:each="v : ${vaches}"
+                    th:value="${v.id}"
+                    th:text="${v.numeroBoucle}"
+                    th:selected="${v.id == selectedVacheId}">
+            </option>
+          </select>
+        </label>
+        <button class="primary" type="submit">Filtrer</button>
+      </form>
     </div>
   </div>
 
@@ -32,35 +52,25 @@
     <thead>
       <tr>
         <th>Vache</th>
-        <th class="day" th:each="jour : ${jours}" th:text="${jour}">Lun 22</th>
+        <th>Numéro boucle</th>
+        <th>Date de chaleur</th>
+        <th>Origine</th>
+        <th>Statut</th>
       </tr>
     </thead>
     <tbody>
-      <tr th:each="ligne : ${suiviChaleurs}">
-        <td>
-          <div class="cow-name" th:text="${ligne.vache.nom}">Bella</div>
-          <div class="cow-id" th:text="${ligne.vache.numero}">n°014</div>
-        </td>
-        <td class="day" th:each="statut : ${ligne.statutsParJour}">
-          <span th:if="${statut == 'HEAT'}" class="badge heat">Chaleur</span>
-          <span th:if="${statut == 'INSEM'}" class="badge insem">IA prévue</span>
-          <span th:if="${statut == 'NONE'}" class="badge none">–</span>
-        </td>
+      <tr th:each="ligne : ${chaleurs}">
+        <td th:text="${ligne.numeroBoucle}">Bella</td>
+        <td th:text="${ligne.vacheId}">1</td>
+        <td th:text="${ligne.dateChaleur}">2026-06-22</td>
+        <td th:text="${ligne.origine}">Prochaine chaleur</td>
+        <td th:text="${ligne.statut}">Chaleur</td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(chaleurs)}">
+        <td colspan="5">Aucune chaleur trouvée pour ce filtre.</td>
       </tr>
     </tbody>
   </table>
-
-  <div class="pagination">
-    <button aria-label="Page précédente" type="button" th:disabled="${page == 1}">‹</button>
-    <span th:text="'Page ' + ${page} + ' sur ' + ${totalPages}">Page 1 sur 3</span>
-    <button aria-label="Page suivante" type="button" th:disabled="${page == totalPages}">›</button>
-  </div>
 </div>
-
-<script>
-  document.getElementById('edit-btn')?.addEventListener('click', () => {
-    alert('Mode édition à connecter à votre backend.');
-  });
-</script>
 </body>
 </html>
