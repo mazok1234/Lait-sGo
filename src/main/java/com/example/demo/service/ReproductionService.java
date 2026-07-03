@@ -1,7 +1,9 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.Reproduction;
+import com.example.demo.entity.VacheStatus;
 import com.example.demo.repository.ReproductionRepository;
+import com.example.demo.repository.VacheStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,6 +13,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Service
@@ -21,6 +24,9 @@ public class ReproductionService {
 
     @Autowired
     private ReproductionRepository reproductionRepository;
+
+    @Autowired
+    private VacheStatusRepository vacheStatusRepository;
 
     public Map<String, Object> getDashboardCounters() {
         Map<String, Object> counters = new HashMap<>();
@@ -51,6 +57,12 @@ public class ReproductionService {
                 "FROM reproduction r " +
                 "WHERE r.date_velage_reel IS NULL " +
                 "AND (r.gestation_confirmee IS NULL OR r.gestation_confirmee = FALSE) " +
+                "UNION ALL " +
+                "SELECT (s.date_debut + INTERVAL '21 days')::date AS date_evenement " +
+                "FROM vache_statut s " +
+                "JOIN ref_statut_vache st ON st.id = s.statut_id " +
+                "WHERE s.date_debut = (SELECT MAX(ss.date_debut) FROM vache_statut ss WHERE ss.vache_id = s.vache_id) " +
+                "AND lower(st.code) IN ('chaleur', 'velage') " +
                 ") evenements " +
                 "ORDER BY " +
                 "CASE WHEN date_evenement >= ? THEN 0 ELSE 1 END, " +
@@ -104,9 +116,41 @@ public class ReproductionService {
             params.add(vacheId);
         }
 
+        sql += "UNION ALL " +
+                "SELECT v.id AS vache_id, v.numero_boucle, (s.date_debut + INTERVAL '21 days')::date AS date_evenement, " +
+                "'Vigilance Retour Chaleurs (J+21)' AS type_evenement " +
+                "FROM vache_statut s " +
+                "JOIN vache v ON v.id = s.vache_id " +
+                "JOIN ref_statut_vache st ON st.id = s.statut_id " +
+                "WHERE s.date_debut = (SELECT MAX(ss.date_debut) FROM vache_statut ss WHERE ss.vache_id = s.vache_id) " +
+                "AND lower(st.code) IN ('chaleur', 'velage') " +
+                "AND (s.date_debut + INTERVAL '21 days')::date BETWEEN ? AND ? ";
+
+        params.add(java.sql.Date.valueOf(startOfWeek));
+        params.add(java.sql.Date.valueOf(endOfWeek));
+
+        if (vacheId != null) {
+            sql += "AND v.id = ? ";
+            params.add(vacheId);
+        }
+
         sql += "ORDER BY date_evenement ASC";
 
         return jdbcTemplate.query(sql, suiviRowMapper(), params.toArray());
+    }
+
+    public LocalDate calculerProchaineChaleur(Long vacheId) {
+        List<VacheStatus> statusHistorique = vacheStatusRepository.findByVacheIdOrderByDateDebutDesc(vacheId);
+        for (VacheStatus status : statusHistorique) {
+            if (status.getStatut() == null || status.getStatut().getCode() == null) {
+                continue;
+            }
+            String code = status.getStatut().getCode().trim().toLowerCase(Locale.ROOT);
+            if ("velage".equals(code) || "chaleur".equals(code)) {
+                return status.getDateDebut().plusDays(21);
+            }
+        }
+        return null;
     }
 
     public List<Map<String, Object>> getVachesPourFiltre() {
