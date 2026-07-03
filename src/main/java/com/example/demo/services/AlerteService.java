@@ -126,27 +126,39 @@ public class AlerteService {
     public void envoyerAlerte(String typeCode, String niveauCode,
             String titre, String description, Long vacheId) {
         try {
-            // Vérifier doublon avant d'insérer
-            boolean dejaPresente;
-            if (vacheId != null) {
-                dejaPresente = alerteRepo
-                        .existsByVacheIdAndType_CodeAndAcquitteeFalse(vacheId, typeCode);
-            } else {
-                dejaPresente = alerteRepo
-                        .existsByVacheIdIsNullAndType_CodeAndAcquitteeFalse(typeCode);
-            }
-
-            if (dejaPresente) {
-                System.out.println("[Alertes] Doublon ignoré : " + typeCode
-                        + (vacheId != null ? " — vache " + vacheId : " — ferme"));
-                return;
-            }
-
             RefTypeAlerte type = typeRepo.findByCode(typeCode)
                     .orElseThrow(() -> new IllegalArgumentException("Type inconnu : " + typeCode));
             RefNiveauAlerte niveau = niveauRepo.findByCode(niveauCode)
                     .orElseThrow(() -> new IllegalArgumentException("Niveau inconnu : " + niveauCode));
 
+            // 1. Chercher si une alerte active de ce TYPE existe déjà
+            Optional<Alerte> alerteExistanteOpt;
+            if (vacheId != null) {
+                alerteExistanteOpt = alerteRepo.findByVacheIdAndType_CodeAndAcquitteeFalse(vacheId, typeCode);
+            } else {
+                alerteExistanteOpt = alerteRepo.findByVacheIdIsNullAndType_CodeAndAcquitteeFalse(typeCode);
+            }
+
+            // 2. Si elle existe déjà
+            if (alerteExistanteOpt.isPresent()) {
+                Alerte alerteExistante = alerteExistanteOpt.get();
+
+                // Si le niveau de gravité a changé (ex: attention -> urgent), on met à jour
+                if (!alerteExistante.getNiveau().getCode().equals(niveauCode)) {
+                    alerteExistante.setNiveau(niveau);
+                    alerteExistante.setTitre(titre);
+                    alerteExistante.setDescription(description);
+                    alerteRepo.save(alerteExistante);
+                    System.out.println(
+                            "[Alertes] Gravité mise à jour en [" + niveauCode + "] pour le type : " + typeCode);
+                } else {
+                    // Même type et même niveau : c'est un doublon standard, on ne fait rien
+                    System.out.println("[Alertes] Doublon ignoré (déjà en statut " + niveauCode + ") : " + typeCode);
+                }
+                return;
+            }
+
+            // 3. Si aucune alerte active n'existe, on la crée
             creerAlerte(type.getId(), niveau.getId(), titre, description, vacheId);
 
         } catch (Exception e) {

@@ -1,129 +1,102 @@
--- test.sql
--- Données de test pour l'application Lait's Go
--- Ce fichier ajoute des vaches, des protocoles de vaccin, des historiques et des alertes.
--- Ne modifie pas les données initiales existantes dans base.sql.
+-- =============================================================================
+-- 1. DONNÉES DE RÉFÉRENCE SUPPLÉMENTAIRES (Nécessaires pour la cohérence)
+-- =============================================================================
 
--- Références de base pour les tests
-INSERT INTO ref_race (code, libelle)
-VALUES
-  ('holstein', 'Holstein'),
-  ('montbeliarde', 'Montbéliarde')
-ON CONFLICT (code) DO NOTHING;
+INSERT INTO ref_race (code, libelle) VALUES 
+('holstein', 'Frisonne Pie Noire (Holstein)'),
+('jersey', 'Jersiaise');
 
-INSERT INTO ref_statut_vache (code, libelle)
-VALUES
-  ('en_lactation', 'En lactation'),
-  ('tarie', 'Tariée'),
-  ('gestante', 'Gestante')
-ON CONFLICT (code) DO NOTHING;
+INSERT INTO ref_statut_vache (code, libelle) VALUES 
+('en_lactation', 'En lactation'),
+('tarie', 'Tarie'),
+('gestante', 'Gestante'),
+('reformee', 'Réformée');
 
--- Protocoles de vaccination
-INSERT INTO protocole_vaccin (nom_vaccin, age_min_jours, age_max_jours, duree_rappel_jours)
-VALUES
-  ('IBR', 180, 365, 365),
-  ('BVD', 200, 400, 180),
-  ('Fièvre Q', 150, 360, 365)
-ON CONFLICT (nom_vaccin) DO NOTHING;
+INSERT INTO ref_statut_lactation (code, libelle) VALUES 
+('active', 'Active'),
+('terminee', 'Terminée');
 
--- Vaches de test
-INSERT INTO vache (numero_boucle, id_race, date_naissance, poids_kg, id_statut, score_bcs, score_locomotion)
-VALUES
-  ('FR1234567890', (SELECT id FROM ref_race WHERE code = 'holstein'), '2019-05-14', 650.5, (SELECT id FROM ref_statut_vache WHERE code = 'en_lactation'), 3.40, 1),
-  ('FR9876543210', (SELECT id FROM ref_race WHERE code = 'montbeliarde'), '2020-08-22', 620.0, (SELECT id FROM ref_statut_vache WHERE code = 'en_lactation'), 3.10, 2),
-  ('FR1122334455', (SELECT id FROM ref_race WHERE code = 'holstein'), '2021-03-10', 540.2, (SELECT id FROM ref_statut_vache WHERE code = 'tarie'), 3.80, 1),
-  ('FR6677889900', (SELECT id FROM ref_race WHERE code = 'montbeliarde'), '2018-11-02', 715.7, (SELECT id FROM ref_statut_vache WHERE code = 'gestante'), 3.65, 1)
-ON CONFLICT (numero_boucle) DO NOTHING;
+INSERT INTO ref_role_utilisateur (code, libelle) VALUES 
+('admin', 'Administrateur'),
+('employe', 'Employé');
 
--- Historique de vaccination de test
-INSERT INTO historique_vaccin (vache_id, id_protocole_vaccin, date_vaccination, type_injection)
-SELECT v.id, p.id_protocole_vaccin, '2026-06-20', 'INTRAMUSCULAIRE'
-FROM vache v
-JOIN protocole_vaccin p ON p.nom_vaccin = 'IBR'
-WHERE v.numero_boucle = 'FR1234567890'
-  AND NOT EXISTS (
-    SELECT 1 FROM historique_vaccin h
-    WHERE h.vache_id = v.id
-      AND h.id_protocole_vaccin = p.id_protocole_vaccin
-      AND h.date_vaccination = '2026-06-20'
-  );
+INSERT INTO utilisateur (nom, email, id_role, mot_de_passe_hash, actif) VALUES 
+('Jean Rabe', 'jean.rabe@laitgo.mg', (SELECT id FROM ref_role_utilisateur WHERE code = 'admin'), 'hash_password_123', true),
+('Marie Elena', 'marie.elena@laitgo.mg', (SELECT id FROM ref_role_utilisateur WHERE code = 'employe'), 'hash_password_456', true);
 
-INSERT INTO historique_vaccin (vache_id, id_protocole_vaccin, date_vaccination, type_injection)
-SELECT v.id, p.id_protocole_vaccin, '2026-05-10', 'INTRAMUSCULAIRE'
-FROM vache v
-JOIN protocole_vaccin p ON p.nom_vaccin = 'BVD'
-WHERE v.numero_boucle = 'FR9876543210'
-  AND NOT EXISTS (
-    SELECT 1 FROM historique_vaccin h
-    WHERE h.vache_id = v.id
-      AND h.id_protocole_vaccin = p.id_protocole_vaccin
-      AND h.date_vaccination = '2026-05-10'
-  );
 
-INSERT INTO historique_vaccin (vache_id, id_protocole_vaccin, date_vaccination, type_injection)
-SELECT v.id, p.id_protocole_vaccin, '2026-06-25', 'INTRAMUSCULAIRE'
-FROM vache v
-JOIN protocole_vaccin p ON p.nom_vaccin = 'Fièvre Q'
-WHERE v.numero_boucle = 'FR1122334455'
-  AND NOT EXISTS (
-    SELECT 1 FROM historique_vaccin h
-    WHERE h.vache_id = v.id
-      AND h.id_protocole_vaccin = p.id_protocole_vaccin
-      AND h.date_vaccination = '2026-06-25'
-  );
+-- =============================================================================
+-- 2. INSERTION DU CHEPTEL (Vaches de différents âges pour les tests)
+-- =============================================================================
 
--- Alertes de test
-INSERT INTO alerte (id_niveau, id_type, titre, description, vache_id, acquittee)
-SELECT
-  (SELECT id FROM ref_niveau_alerte WHERE code = 'urgent'),
-  (SELECT id FROM ref_type_alerte WHERE code = 'vaccin_en_retard'),
-  'Vaccin en retard — FR1234567890',
-  'Vaccin IBR en retard de 3 jours.',
-  v.id,
-  false
-FROM vache v
-WHERE v.numero_boucle = 'FR1234567890'
-  AND NOT EXISTS (
-    SELECT 1 FROM alerte a WHERE a.titre = 'Vaccin en retard — FR1234567890'
-  );
+INSERT INTO vache (numero_boucle, id_race, date_naissance, poids_kg, id_statut, score_bcs, score_locomotion) VALUES 
+-- Une jeune génisse (environ 3 mois / 90 jours) pour tester les premiers vaccins
+('V001_GENISSE', (SELECT id FROM ref_race WHERE code = 'holstein'), CURRENT_DATE - INTERVAL '90 days', 110.0, (SELECT id FROM ref_statut_vache WHERE code = 'tarie'), 3.00, 1),
 
-INSERT INTO alerte (id_niveau, id_type, titre, description, vache_id, acquittee)
-SELECT
-  (SELECT id FROM ref_niveau_alerte WHERE code = 'attention'),
-  (SELECT id FROM ref_type_alerte WHERE code = 'vaccin_prioritaire'),
-  'Vaccin prioritaire — FR9876543210',
-  'Vaccin BVD à administrer dans les 48h.',
-  v.id,
-  false
-FROM vache v
-WHERE v.numero_boucle = 'FR9876543210'
-  AND NOT EXISTS (
-    SELECT 1 FROM alerte a WHERE a.titre = 'Vaccin prioritaire — FR9876543210'
-  );
+-- Une vache adulte en lactation
+('V002_ADULTE', (SELECT id FROM ref_race WHERE code = 'holstein'), CURRENT_DATE - INTERVAL '4 years', 620.0, (SELECT id FROM ref_statut_vache WHERE code = 'en_lactation'), 3.25, 1),
 
-INSERT INTO alerte (id_niveau, id_type, titre, description, vache_id, acquittee)
-SELECT
-  (SELECT id FROM ref_niveau_alerte WHERE code = 'info'),
-  (SELECT id FROM ref_type_alerte WHERE code = 'rappel_vaccin'),
-  'Rappel vaccin — FR1122334455',
-  'Vaccin Fièvre Q à programmer dans 7 jours.',
-  v.id,
-  false
-FROM vache v
-WHERE v.numero_boucle = 'FR1122334455'
-  AND NOT EXISTS (
-    SELECT 1 FROM alerte a WHERE a.titre = 'Rappel vaccin — FR1122334455'
-  );
+-- Une vache en fin de gestation avec un score BCS faible (pour déclencher une alerte)
+('V003_ALERTE', (SELECT id FROM ref_race WHERE code = 'jersey'), CURRENT_DATE - INTERVAL '5 years', 480.0, (SELECT id FROM ref_statut_vache WHERE code = 'gestante'), 2.20, 2);
 
-INSERT INTO alerte (id_niveau, id_type, titre, description, vache_id, acquittee)
-SELECT
-  (SELECT id FROM ref_niveau_alerte WHERE code = 'attention'),
-  (SELECT id FROM ref_type_alerte WHERE code = 'stock_lait_bas'),
-  'Stock de lait bas — FR6677889900',
-  'Stock lait insuffisant après la dernière vente.',
-  v.id,
-  false
-FROM vache v
-WHERE v.numero_boucle = 'FR6677889900'
-  AND NOT EXISTS (
-    SELECT 1 FROM alerte a WHERE a.titre = 'Stock de lait bas — FR6677889900'
-  );
+
+-- =============================================================================
+-- 3. MODULE VACCIN (Protocoles et Historique)
+-- =============================================================================
+
+-- Création des protocoles vaccinaux (ex: Fièvre Aphteuse, Charbon Symptomatique, etc.)
+INSERT INTO protocole_vaccin (nom_vaccin, age_min_jours, age_max_jours, duree_rappel_jours) VALUES 
+('Vaccin Fièvre Aphteuse (Primo)', 60, 120, 180),    -- À faire entre 2 et 4 mois, rappel tous les 6 mois
+('Vaccin Charbon Symptomatique', 90, 180, 365),     -- À faire à partir de 3 mois, rappel annuel
+('Rhinotrachéite Infectieuse Bovine (IBR)', 150, 360, 365);
+
+-- Historique des vaccinations passées
+INSERT INTO historique_vaccin (vache_id, id_protocole_vaccin, date_vaccination, type_injection) VALUES 
+-- La génisse V001 a reçu sa primo-injection de Fièvre Aphteuse il y a 10 jours
+((SELECT id FROM vache WHERE numero_boucle = 'V001_GENISSE'), 
+ (SELECT id_protocole_vaccin FROM protocole_vaccin WHERE nom_vaccin = 'Vaccin Fièvre Aphteuse (Primo)'), 
+ CURRENT_DATE - INTERVAL '10 days', 'Intramusculaire'),
+
+-- La vache V002 a reçu son vaccin IBR l'année dernière (Rappel bientôt nécessaire)
+((SELECT id FROM vache WHERE numero_boucle = 'V002_ADULTE'), 
+ (SELECT id_protocole_vaccin FROM protocole_vaccin WHERE nom_vaccin = 'Rhinotrachéite Infectieuse Bovine (IBR)'), 
+ CURRENT_DATE - INTERVAL '350 days', 'Sous-cutanée'),
+
+-- La vache V003 a reçu son vaccin contre le Charbon il y a un an et demi (Elle est en retard !)
+((SELECT id FROM vache WHERE numero_boucle = 'V003_ALERTE'), 
+ (SELECT id_protocole_vaccin FROM protocole_vaccin WHERE nom_vaccin = 'Vaccin Charbon Symptomatique'), 
+ CURRENT_DATE - INTERVAL '550 days', 'Intramusculaire');
+
+
+-- =============================================================================
+-- 4. MODULE ALERTE
+-- =============================================================================
+
+INSERT INTO alerte (id_niveau, id_type, titre, description, vache_id, acquittee) VALUES 
+-- Alerte Vaccin en retard (Lié à la vache V003 et son historique en retard)
+((SELECT id FROM ref_niveau_alerte WHERE code = 'urgent'), 
+ (SELECT id FROM ref_type_alerte WHERE code = 'vaccin_en_retard'), 
+ 'Retard critique : Vaccin Charbon', 
+ 'Le vaccin contre le Charbon Symptomatique a dépassé la date limite de rappel de plus de 6 mois.', 
+ (SELECT id FROM vache WHERE numero_boucle = 'V003_ALERTE'), false),
+
+-- Alerte Rappel de vaccin (Lié à la vache V002 qui approche des 365 jours)
+((SELECT id FROM ref_niveau_alerte WHERE code = 'attention'), 
+ (SELECT id FROM ref_type_alerte WHERE code = 'rappel_vaccin'), 
+ 'Rappel à planifier : Vaccin IBR', 
+ 'Le rappel annuel pour le vaccin IBR est à prévoir dans les 15 prochains jours.', 
+ (SELECT id FROM vache WHERE numero_boucle = 'V002_ADULTE'), false),
+
+-- Alerte Cheptel (BCS hors plage pour la vache V003 qui a un score de 2.20)
+((SELECT id FROM ref_niveau_alerte WHERE code = 'urgent'), 
+ (SELECT id FROM ref_type_alerte WHERE code = 'bcs_hors_plage'), 
+ 'Alerte Nutrition : Score BCS trop faible', 
+ 'La vache présente un score corporel (BCS) de 2.20, ce qui est en dessous du seuil critique pour une vache gestante.', 
+ (SELECT id FROM vache WHERE numero_boucle = 'V003_ALERTE'), false),
+
+-- Une alerte déjà traitée/acquittée pour l'historique
+((SELECT id FROM ref_niveau_alerte WHERE code = 'info'), 
+ (SELECT id FROM ref_type_alerte WHERE code = 'rappel_chaleur'), 
+ 'Suivi de chaleur acquitté', 
+ 'Vache détectée en chaleur en début de semaine, IA planifiée.', 
+ (SELECT id FROM vache WHERE numero_boucle = 'V002_ADULTE'), true);
