@@ -1,13 +1,4 @@
-package com.example.demo.service;
-
-import com.example.demo.entity.Reproduction;
-import com.example.demo.entity.VacheStatus;
-import com.example.demo.repository.ReproductionRepository;
-import com.example.demo.repository.VacheStatusRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Service;
+package com.example.demo.services;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,6 +6,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Service;
+
+import com.example.demo.entity.Reproduction;
+import com.example.demo.entity.VacheStatus;
+import com.example.demo.repository.ReproductionRepository;
+import com.example.demo.repository.VacheStatusRepository;
+import java.time.temporal.ChronoUnit;
+import java.util.stream.Collectors;
+import java.time.LocalDate;
 
 @Service
 public class ReproductionService {
@@ -207,5 +211,30 @@ public class ReproductionService {
             evenement.put("typeEvenement", rs.getString("type_evenement"));
             return evenement;
         };
+    }
+
+    public List<LocalDate> getDateChaleur(int mois , int Annee , List<VacheStatus> vacheStatusList) {
+        List<LocalDate> datesChaleur = new ArrayList<>();
+
+        for (VacheStatus vacheStatus : vacheStatusList) {
+            Long idVache = vacheStatus.getVache().getId();
+            LocalDate dateDebut = vacheStatus.getDateDebut();
+            int moiss = dateDebut.getMonthValue();
+            int annee = dateDebut.getYear();
+            boolean EstAtteint = false;
+            while (!EstAtteint) {
+                if (mois == moiss && Annee == annee) {
+                    datesChaleur.add(dateDebut);
+                    EstAtteint = true;
+                } else {
+                    dateDebut = dateDebut.plusDays(21);
+                    moiss = dateDebut.getMonthValue();
+                    annee = dateDebut.getYear();
+                }
+            }
+        }
+
+        return datesChaleur;   
+
     }
 }

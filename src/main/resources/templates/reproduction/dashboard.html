@@ -22,7 +22,7 @@
     <div class="controls">
       <select th:name="vache">
         <option>Toutes les vaches</option>
-        <option th:each="v : ${vaches}" th:text="${v.nom} + ' ' + ${v.numero}" th:value="${v.id}">Bella n°014</option>
+        <option th:each="v : ${vaches}" th:text="${v.numeroBoucle}" th:value="${v.id}">Bella n°014</option>
       </select>
       <button class="primary" id="edit-btn" type="button">Modifier</button>
     </div>
