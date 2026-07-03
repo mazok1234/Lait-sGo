@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.temporal.ChronoUnit;
 
 @Service
 public class VaccinService {
@@ -186,4 +187,33 @@ public class VaccinService {
                                 })
                                 .toList();
         }
+
+
+    public List<String> statut(List<HistoriqueVaccin> vaccins){
+        
+        List<String> statuts = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+
+        for (HistoriqueVaccin h : vaccins) {
+            LocalDate prochaineDate = h.getDateVaccination()
+                    .plusDays(h.getProtocoleVaccin().getDureeRappelJours());
+
+                    long joursRetard = ChronoUnit.DAYS.between(prochaineDate, today);
+
+                if(joursRetard > 0){
+                    statuts.add("EN RETARD " + joursRetard + "j");
+                }
+                if(joursRetard <= 0 && joursRetard > -7){
+                    statuts.add("A REVOIR " + joursRetard + "j");
+                }
+                if(joursRetard <= -7){
+                    statuts.add("------");
+                }
+
+
+        }
+
+        return statuts;
+
+    }
 }
