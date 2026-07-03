@@ -486,6 +486,64 @@ ul {
     flex-wrap: wrap;
 }
 
+/* --- Compat Cheptel (utilisé dans les templates) --- */
+.action-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #1f3f66;
+    background: #f0f5fc;
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
+}
+
+.action-pill i {
+    font-size: 0.75rem;
+}
+
+.action-pill:hover {
+    background: #e3ebf6;
+    border-color: #bdcfe0;
+}
+
+.inline-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.75rem;
+    color: #2f6ed4;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.inline-link:hover {
+    text-decoration: underline;
+}
+
+.btn-danger-sm {
+    background: #fce8e6;
+    color: #b34033;
+    border: 1px solid #f6d6d2;
+    padding: 0.2rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.btn-danger-sm:hover {
+    filter: brightness(0.98);
+}
+
+
 .stat-filters .filter-group {
     display: flex;
     flex-direction: column;

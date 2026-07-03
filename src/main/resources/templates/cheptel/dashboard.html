@@ -1,0 +1,629 @@
+<div th:fragment="content">
+    <div class="cheptel-wrapper">
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+
+            .cheptel-wrapper {
+                font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                color: #0b1a2e;
+            }
+
+            .cheptel-wrapper .card {
+                background: #ffffff;
+                border-radius: 24px;
+                box-shadow: 0 8px 20px rgba(0, 20, 40, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02);
+                border: 1px solid rgba(203, 213, 225, 0.3);
+                padding: 1.5rem 1.8rem;
+                transition: box-shadow 0.2s;
+            }
+
+            .cheptel-wrapper .card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 1rem;
+                margin-bottom: 1.6rem;
+            }
+
+            .cheptel-wrapper .card-header h2 {
+                font-size: 1.5rem;
+                font-weight: 600;
+                letter-spacing: -0.02em;
+                color: #0b1a2e;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .cheptel-wrapper .card-header h2 i { color: #2f6ed4; font-size: 1.4rem; }
+
+            .cheptel-wrapper .btn {
+                border: none;
+                background: transparent;
+                font-weight: 600;
+                padding: 0.5rem 1rem;
+                border-radius: 40px;
+                font-size: 0.85rem;
+                cursor: default;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.4rem;
+                transition: 0.1s;
+            }
+
+            .cheptel-wrapper .btn-primary { background: #1f3f66; color: white; }
+            .cheptel-wrapper .btn-primary i { color: white; }
+
+            .cheptel-wrapper .btn-outline { background: white; border: 1px solid #d0ddea; color: #1f3f66; }
+            .cheptel-wrapper .btn-outline i { color: #4b6f95; }
+
+            .cheptel-wrapper .grid-2col {
+                display: grid;
+                grid-template-columns: 2fr 1fr;
+                gap: 1.8rem;
+                margin-top: 1.8rem;
+            }
+
+            .cheptel-wrapper .grid-metrics {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 1rem;
+                margin-bottom: 1.8rem;
+            }
+
+            .cheptel-wrapper .flex-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem 1.2rem; }
+
+            .cheptel-wrapper .badge-sub {
+                color: #57708c;
+                font-weight: 400;
+                font-size: 0.9rem;
+                background: #f0f4fa;
+                padding: 0.25rem 0.9rem;
+                border-radius: 40px;
+                border: 1px solid #dce3ed;
+            }
+
+            .cheptel-wrapper .metric-tile {
+                background: #fafcff;
+                border-radius: 20px;
+                padding: 1rem 1.2rem;
+                border: 1px solid #e9eef4;
+                transition: background 0.15s;
+            }
+
+            .cheptel-wrapper .metric-tile .label {
+                font-size: 0.7rem;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+                color: #62748c;
+                font-weight: 600;
+            }
+
+            .cheptel-wrapper .metric-tile .value {
+                font-size: 1.8rem;
+                font-weight: 700;
+                color: #0b1a2e;
+                line-height: 1.2;
+                margin-top: 0.2rem;
+            }
+
+            .cheptel-wrapper .metric-tile .sub {
+                font-size: 0.8rem;
+                color: #62748c;
+                margin-top: 0.2rem;
+            }
+
+            .cheptel-wrapper .stat-badge {
+                display: inline-block;
+                background: #eef4fa;
+                padding: 0.2rem 0.8rem;
+                border-radius: 40px;
+                font-size: 0.75rem;
+                font-weight: 600;
+                color: #1f3a5f;
+                margin-right: 0.2rem;
+            }
+
+            .cheptel-wrapper .stat-badge.alert { background: #fee9e7; color: #b34033; }
+            .cheptel-wrapper .stat-badge.green { background: #e3f3e8; color: #1d6f42; }
+
+            .cheptel-wrapper .empty-state {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 48px 24px;
+                color: #9CA3AF;
+            }
+
+            .cheptel-wrapper .table-wrap { overflow-x: auto; }
+            .cheptel-wrapper table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+
+            .cheptel-wrapper th {
+                text-align: left;
+                padding: 0.9rem 0.5rem 0.7rem 0;
+                font-weight: 600;
+                color: #4b637c;
+                border-bottom: 1px solid #e6edf5;
+                font-size: 0.7rem;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+            }
+
+            .cheptel-wrapper td {
+                padding: 0.8rem 0.5rem 0.8rem 0;
+                border-bottom: 1px solid #eef3f9;
+                color: #1b334b;
+            }
+
+            .cheptel-wrapper .action-pill {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.2rem;
+                background: #f0f5fc;
+                padding: 0.2rem 0.9rem;
+                border-radius: 40px;
+                font-size: 0.75rem;
+                font-weight: 500;
+                color: #1f3f66;
+                border: 1px solid transparent;
+                transition: all 0.1s;
+                cursor: default;
+            }
+
+            .cheptel-wrapper .action-pill i { font-size: 0.7rem; color: #4f73a0; }
+            .cheptel-wrapper .action-pill:hover { background: #e3ebf6; border-color: #bdcfe0; }
+
+            .cheptel-wrapper .placeholder-box {
+                background: #f6faff;
+                border-radius: 20px;
+                padding: 2rem 1.2rem;
+                text-align: center;
+                color: #4b6889;
+                border: 1px dashed #c8d8ea;
+                font-size: 0.9rem;
+            }
+
+            .cheptel-wrapper .detail-grid {
+                display: flex;
+                flex-direction: column;
+                gap: 0.3rem;
+                margin: 1rem 0 1.2rem;
+            }
+
+            .cheptel-wrapper .detail-row {
+                display: flex;
+                justify-content: space-between;
+                padding: 0.4rem 0;
+                border-bottom: 1px solid #ecf2f9;
+                font-size: 0.9rem;
+            }
+
+            .cheptel-wrapper .detail-row strong { color: #0b1a2e; }
+
+            .cheptel-wrapper .tab-group {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.3rem 0.8rem;
+                margin: 0.8rem 0 1rem;
+            }
+
+            .cheptel-wrapper .tab-pill {
+                background: #f1f6fd;
+                padding: 0.3rem 1rem;
+                border-radius: 40px;
+                font-size: 0.75rem;
+                font-weight: 500;
+                color: #1f3f66;
+                border: 1px solid #dce6f2;
+            }
+
+            .cheptel-wrapper .tab-pill.active {
+                background: #1f3f66;
+                color: white;
+                border-color: #1f3f66;
+            }
+
+            .cheptel-wrapper .note-box {
+                background: #f2f8ff;
+                border-left: 4px solid #2f6ed4;
+                padding: 0.9rem 1.2rem;
+                border-radius: 14px;
+                color: #1f3a5f;
+                font-size: 0.85rem;
+                margin-top: 0.4rem;
+            }
+
+            .cheptel-wrapper .race-form-inline {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 0.6rem;
+                background: #f6faff;
+                padding: 0.6rem 1rem;
+                border-radius: 60px;
+                border: 1px solid #dde6f1;
+                margin-bottom: 1.2rem;
+            }
+
+            .cheptel-wrapper .race-form-inline input {
+                flex: 1 1 180px;
+                border: none;
+                background: transparent;
+                padding: 0.5rem 0.2rem;
+                font-size: 0.9rem;
+                outline: none;
+                color: #0b1a2e;
+            }
+
+            .cheptel-wrapper .race-form-inline input::placeholder { color: #8ba0b9; }
+
+            .cheptel-wrapper .filter-grid {
+                display: grid;
+                grid-template-columns: 2fr 1fr 1fr 1fr;
+                gap: 0.8rem;
+            }
+
+            .cheptel-wrapper .filter-item {
+                background: #f8fafd;
+                border-radius: 16px;
+                padding: 0.6rem 1rem;
+                border: 1px solid #e2e9f2;
+            }
+
+            .cheptel-wrapper .filter-item .label-sm {
+                font-size: 0.65rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.03em;
+                color: #62748c;
+            }
+
+            .cheptel-wrapper .filter-item .fake-input {
+                color: #1e3b5c;
+                font-weight: 500;
+                padding: 0.3rem 0;
+                display: flex;
+                align-items: center;
+                gap: 0.4rem;
+            }
+
+            .cheptel-wrapper .fake-input i { color: #8196b0; font-size: 0.8rem; }
+
+            .cheptel-wrapper .btn-danger-sm {
+                background: #fce8e6;
+                color: #b34033;
+                border: 1px solid #f6d6d2;
+                padding: 0.2rem 0.8rem;
+                border-radius: 40px;
+                font-size: 0.75rem;
+                font-weight: 500;
+            }
+
+            .cheptel-wrapper .btn-danger-sm i { margin-right: 0.2rem; }
+
+            .cheptel-wrapper .inline-link {
+                font-size: 0.75rem;
+                color: #2f6ed4;
+                text-decoration: none;
+                font-weight: 500;
+                margin-top: 0.2rem;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.3rem;
+            }
+
+            .cheptel-wrapper .inline-link:hover { text-decoration: underline; }
+
+            .cheptel-wrapper .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 1.5rem; }
+
+            .cheptel-wrapper .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
+            .cheptel-wrapper .form-group.full-width { grid-column: 1 / -1; }
+
+            .cheptel-wrapper .form-group label {
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.03em;
+                color: #4b637c;
+            }
+
+            .cheptel-wrapper .form-group input,
+            .cheptel-wrapper .form-group select {
+                padding: 0.6rem 0.8rem;
+                border: 1px solid #dce3ed;
+                border-radius: 14px;
+                font-size: 0.9rem;
+                background: #fafcff;
+                color: #0b1a2e;
+                transition: 0.15s;
+                outline: none;
+            }
+
+            .cheptel-wrapper .form-group input:focus,
+            .cheptel-wrapper .form-group select:focus {
+                border-color: #2f6ed4;
+                box-shadow: 0 0 0 3px rgba(47, 110, 212, 0.12);
+            }
+
+            .cheptel-wrapper .form-actions {
+                display: flex;
+                gap: 0.8rem;
+                justify-content: flex-end;
+                margin-top: 0.6rem;
+            }
+
+            .cheptel-wrapper .form-actions .btn { cursor: pointer; padding: 0.6rem 1.8rem; }
+            .cheptel-wrapper .form-actions .btn-outline { background: #f0f4fa; border: 1px solid #dce3ed; }
+
+            .cheptel-wrapper .text-muted { color: #62748c; }
+
+            @media (max-width: 1000px) {
+                .cheptel-wrapper .grid-2col { grid-template-columns: 1fr; }
+                .cheptel-wrapper .filter-grid { grid-template-columns: 1fr 1fr; }
+                .cheptel-wrapper .form-grid { grid-template-columns: 1fr; }
+                .cheptel-wrapper .form-group.full-width { grid-column: 1; }
+            }
+
+            @media (max-width: 600px) {
+                .cheptel-wrapper .filter-grid { grid-template-columns: 1fr; }
+                .cheptel-wrapper .card { padding: 1.2rem; }
+            }
+        </style>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+            <div>
+                <h1 style="font-size: 2rem; font-weight: 700; letter-spacing: -0.03em; color: #0b1a2e; display: flex; align-items: center; gap: 0.6rem;">
+                    <i class="fas fa-cow" style="color: #2f6ed4;"></i> Cheptel
+                </h1>
+            </div>
+            <div class="flex-row">
+                <span class="badge-sub"><i class="far fa-calendar-alt"></i> Tableau</span>
+                <span class="badge-sub"><i class="far fa-clock"></i> mise à jour</span>
+            </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 2rem;">
+            <div class="grid-metrics">
+                <div class="metric-tile">
+                    <div class="label"><i class="fas fa-tag"></i> Total vaches</div>
+                    <div class="value" th:text="${dashboard != null && vaches != null ? vaches.size() : 0}">0</div>
+                    <div class="sub">effectif global</div>
+                </div>
+                <div class="metric-tile">
+                    <div class="label"><i class="fas fa-heartbeat"></i> Statut</div>
+                    <div class="value" style="font-size: 1.1rem; display: flex; flex-wrap: wrap; gap: 0.2rem 0.6rem;">
+                        <span class="stat-badge green" th:text="${dashboard != null ? 'en_lactation ' : 'en_lactation 0'}"></span>
+                        <span class="stat-badge alert">reformee 0</span>
+                    </div>
+                </div>
+                <div class="metric-tile">
+                    <div class="label"><i class="fas fa-exclamation-triangle"></i> Alertes</div>
+                    <div class="value" style="color:#b34033;">0</div>
+                    <div class="sub">vaches à surveiller</div>
+                </div>
+                <div class="metric-tile">
+                    <div class="label"><i class="fas fa-sitemap"></i> Généalogie</div>
+                    <div class="value">0</div>
+                    <div class="sub">liens mère disponibles</div>
+                </div>
+            </div>
+
+            <div class="grid-2col" th:if="${dashboard != null}">
+                <div>
+                    <div class="card-header" style="padding: 0 0 0.5rem 0;">
+                        <h2 style="font-size: 1.2rem;"><i class="fas fa-list-ul"></i> Liste des vaches</h2>
+                        <span class="badge-sub" th:text="${vaches != null ? vaches.size() + ' affichées' : '0 affichées'}"><i class="far fa-file-alt"></i> 0 affichées</span>
+                    </div>
+
+                    <div style="margin-bottom: 1.8rem;">
+                        <div class="filter-grid">
+                            <div class="filter-item">
+                                <div class="label-sm"><i class="fas fa-search"></i> Recherche</div>
+                                <div class="fake-input"><i class="fas fa-chevron-right" style="font-size: 0.5rem;"></i> Numéro, race, statut…</div>
+                            </div>
+                            <div class="filter-item">
+                                <div class="label-sm">Race</div>
+                                <div class="fake-input"><i class="fas fa-chevron-down"></i> Toutes</div>
+                            </div>
+                            <div class="filter-item">
+                                <div class="label-sm">Statut</div>
+                                <div class="fake-input"><i class="fas fa-chevron-down"></i> Tous</div>
+                            </div>
+                            <div class="filter-item">
+                                <div class="label-sm">Santé</div>
+                                <div class="fake-input"><i class="fas fa-chevron-down"></i> Tous niveaux</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Référence</th>
+                                <th>Race</th>
+                                <th>Statut</th>
+                                <th>Santé</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:if="${#lists.isEmpty(vaches)}">
+                                <td colspan="5">
+                                    <div class="empty-state" style="padding: 24px 12px;">
+                                        <i class="fas fa-cow"></i>
+                                        <p>Aucune vache enregistrée</p>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr th:each="v : ${vaches}">
+                                <td th:text="${v.numeroBoucle}">#12345</td>
+                                <td th:text="${v.race != null ? v.race.libelle : ''}">Prim'Holstein</td>
+                                <td th:text="${v.statut != null ? v.statut.libelle : ''}">En lactation</td>
+                                <td>
+                                    <span class="stat-badge" th:classappend="${v.scoreLocomotion != null and v.scoreLocomotion < 3} ? ' alert' : ' green'">
+                                        <span th:text="${v.scoreLocomotion != null and v.scoreLocomotion < 3} ? 'Surveillance' : 'Stable'">Stable</span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <a th:href="@{'/cheptel/vaches/' + ${v.id}}" class="action-pill" style="background:#eef4fa;">
+                                        <i class="far fa-eye"></i>
+                                    </a>
+                                    <a th:href="@{'/cheptel/vaches/' + ${v.id} + '/edit'}" class="action-pill" style="background:#eef4fa;">
+                                        <i class="far fa-edit"></i>
+                                    </a>
+                                    <a th:href="@{'/cheptel/vaches/' + ${v.id} + '/delete'}" class="action-pill" style="background:#fce8e6;color:#b34033;" onclick="return confirm('Supprimer cette vache ?');">
+                                        <i class="far fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="margin-top: 0.8rem; display: flex; gap: 0.4rem;">
+<a th:href="@{/cheptel/vaches}" class="action-pill" style="background: #1f3f66; color: white;"><i class="fas fa-plus"></i> Nouvelle vache</a>
+                        <a th:href="@{/cheptel/races}" class="action-pill" style="background: #eef4fa;"><i class="fas fa-plus"></i> Nouvelle race</a>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="card-header" style="padding: 0 0 0.5rem 0;">
+                        <h2 style="font-size: 1.2rem;"><i class="fas fa-id-card"></i> Fiche vache</h2>
+                        <span class="badge-sub">détail</span>
+                    </div>
+                    <div class="placeholder-box" style="margin-bottom: 1rem;">
+                        <i class="fas fa-cow" style="font-size: 2rem; color: #a7bcd6; display: block; margin-bottom: 0.3rem;"></i>
+                        Sélectionner une vache pour afficher la fiche détaillée
+                    </div>
+
+                    <div class="detail-grid">
+                        <div class="detail-row"><span>Numéro</span><strong>#12345</strong></div>
+                        <div class="detail-row"><span>Race</span><strong>Prim'Holstein</strong></div>
+                        <div class="detail-row"><span>Statut</span><strong>En lactation</strong></div>
+                        <div class="detail-row"><span>Mère</span><strong>Vache #09876</strong></div>
+                    </div>
+
+                    <div class="tab-group">
+                        <span class="tab-pill active">Santé</span>
+                        <span class="tab-pill">Reproduction</span>
+                        <span class="tab-pill">Lactation</span>
+                        <span class="tab-pill">Généalogie</span>
+                    </div>
+
+                    <div class="note-box">
+                        <i class="fas fa-notes-medical" style="margin-right: 0.4rem;"></i> Événements, alertes, traitements et observations s'affichent ici.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="background: #f6faff; border-radius: 20px; padding: 1.5rem 1.8rem; margin-bottom: 1.8rem; border: 1px solid #dce6f2;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem 1rem; margin-bottom: 1.2rem;">
+                <h3 style="font-size: 1.1rem; font-weight: 600; color: #0b1a2e; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-plus-circle" style="color: #2f6ed4;"></i> Ajouter une vache
+                </h3>
+                <span class="badge-sub"><i class="far fa-clock"></i> Nouvel enregistrement</span>
+            </div>
+
+
+            <form class="form-grid" th:action="@{/cheptel/vaches/nouveau}" method="post">
+                <div class="form-group">
+                    <label for="numeroBoucle"><i class="fas fa-tag"></i> Numéro de boucle</label>
+                    <input type="text" id="numeroBoucle" name="numeroBoucle" placeholder="Ex: BOV-001" value="" />
+                </div>
+
+                <div class="form-group">
+                    <label for="raceId"><i class="fas fa-paw"></i> Race</label>
+                    <select id="raceId" name="raceId">
+                        <option value="">-- Choisir une race --</option>
+                        <option th:each="r : ${races}" th:value="${r.id}">
+                            <span th:text="${r.libelle}">Prim'Holstein</span>
+                        </option>
+                    </select>
+<a th:href="@{/cheptel/races}" class="inline-link"><i class="fas fa-cog"></i> Gérer les races</a>
+                </div>
+
+                <div class="form-group">
+                    <label for="etatSanteId"><i class="fas fa-heartbeat"></i> État de santé</label>
+                    <select id="etatSanteId" name="statutId">
+                        <option value="">-- Choisir un état --</option>
+                        <option th:each="s : ${statuts}" th:value="${s.id}" th:text="${s.libelle}">etat</option>
+                    </select>
+<a th:href="@{/cheptel/etats-sante}" class="inline-link"><i class="fas fa-cog"></i> Gérer les états de santé</a>
+                </div>
+
+                <div class="form-group">
+                    <label for="dateNaissance"><i class="fas fa-calendar-day"></i> Date de naissance</label>
+                    <input type="date" id="dateNaissance" name="dateNaissance" value="" />
+                </div>
+
+                <div class="form-group" style="display:none;">
+                    <label for="statut"><i class="fas fa-tags"></i> statut</label>
+                    <select id="statut" name="statutLibelle">
+                        <option value="en_lactation">en lactation</option>
+                        <option value="tarie">tarie</option>
+                        <option value="gestante">gestante</option>
+                        <option value="reformee">reformee</option>
+                    </select>
+                </div>
+
+                <div class="form-group full-width">
+                    <div class="form-actions">
+                        <button type="reset" class="btn btn-outline"><i class="fas fa-times"></i> Annuler</button>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Enregistrer</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-paw"></i> Gestion des races</h2>
+                <div class="flex-row">
+                    <span class="badge-sub"><i class="far fa-database"></i> <span th:text="${races != null ? races.size() : 0}">0</span> races</span>
+<a th:href="@{/cheptel}" style="color: #1f3f66; text-decoration: none; font-weight: 500; font-size: 0.9rem;"><i class="fas fa-arrow-left"></i> Accueil Cheptel</a>
+                </div>
+            </div>
+
+            <div class="race-form-inline">
+                <i class="fas fa-plus-circle" style="color: #2f6ed4;"></i>
+                <input type="text" placeholder="Nom de la race (ex: Holstein, Jersiaise…)" value="" />
+                <button class="btn btn-primary" type="button"><i class="fas fa-save"></i> Mettre à jour</button>
+                <button class="btn btn-outline" type="button"><i class="fas fa-times"></i> Annuler</button>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Nom</th><th style="text-align: right;">Actions</th></tr></thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(races)}">
+                        <td colspan="2">
+                            <div class="empty-state" style="padding: 24px 12px;">
+                                <i class="fas fa-paw"></i>
+                                <p>Aucune race enregistrée</p>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr th:each="r : ${races}">
+                        <td th:text="${r.libelle}">Prim'Holstein</td>
+                        <td style="text-align: right; display: flex; justify-content: flex-end; gap: 0.5rem;">
+                            <span class="action-pill" style="background: #eef4fa;"><i class="far fa-edit"></i> Modifier</span>
+                            <span class="btn-danger-sm"><i class="far fa-trash-alt"></i> Supprimer</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 0.6rem; font-size: 0.8rem; color: #62748c;">
+                <i class="fas fa-info-circle"></i> Les races sont associées aux vaches. La suppression est possible si aucune vache n’y est rattachée.
+            </div>
+        </div>
+    </div>
+</div>
+
