@@ -7,6 +7,7 @@ import com.example.demo.repository.RationRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -46,6 +47,36 @@ public class RationService {
                 .toList();
     }
 
+    public List<StadeVm> getStadesDisponibles() {
+        return rationRepository.findAvailableStades().stream()
+                .map(s -> new StadeVm(s.getId(), s.getLibelle(), s.getJourMin(), s.getJourMax()))
+                .toList();
+    }
+
+    public boolean isStadeDejaAssocieARation(Integer stadeId, Long rationId) {
+        if (stadeId == null) {
+            return false;
+        }
+        return rationRepository.existsByStadeForOtherRation(stadeId, rationId);
+    }
+
+    public List<StadeVm> getStadesPourEdition(Long rationId) {
+        List<StadeVm> stades = new ArrayList<>(getStadesDisponibles());
+        Ration ration = findById(rationId);
+        if (ration == null || ration.getIdStadePhysiologique() == null) {
+            return stades;
+        }
+
+        boolean present = stades.stream().anyMatch(s -> s.id().equals(ration.getIdStadePhysiologique()));
+        if (!present) {
+            getStades().stream()
+                    .filter(s -> s.id().equals(ration.getIdStadePhysiologique()))
+                    .findFirst()
+                    .ifPresent(stades::add);
+        }
+        return stades;
+    }
+
     public List<RationAliment> findAlimentsByRationId(Long rationId) {
         return rationAlimentRepository.findByRationIdOrderByIdAsc(rationId);
     }
@@ -58,23 +89,34 @@ public class RationService {
         rationAlimentRepository.deleteById(id);
     }
 
+    public void deleteRationById(Long rationId) {
+        rationAlimentRepository.deleteByRationId(rationId);
+        rationRepository.deleteById(rationId);
+    }
+
     public NutritionVm calculateNutrition(Long rationId) {
-        List<RationAliment> lignes = findAlimentsByRationId(rationId);
-        BigDecimal uflTotal = BigDecimal.ZERO;
-        BigDecimal coutTotal = BigDecimal.ZERO;
-
-        for (RationAliment ligne : lignes) {
-            BigDecimal qte = ligne.getQuantiteKg() != null ? ligne.getQuantiteKg() : BigDecimal.ZERO;
-            BigDecimal ufl = ligne.getAliment() != null && ligne.getAliment().getUfl() != null
-                    ? ligne.getAliment().getUfl() : BigDecimal.ZERO;
-            BigDecimal prixKg = ligne.getAliment() != null && ligne.getAliment().getPrixParKilo() != null
-                    ? ligne.getAliment().getPrixParKilo() : BigDecimal.ZERO;
-
-            uflTotal = uflTotal.add(qte.multiply(ufl));
-            coutTotal = coutTotal.add(qte.multiply(prixKg));
+        RationRepository.NutritionProjection nutrition = rationRepository.findNutritionByRationId(rationId);
+        if (nutrition == null) {
+            return new NutritionVm(BigDecimal.ZERO, BigDecimal.ZERO);
         }
 
-        return new NutritionVm(uflTotal, coutTotal);
+        return new NutritionVm(
+            nutrition.getUflTotal() != null ? nutrition.getUflTotal() : BigDecimal.ZERO,
+            nutrition.getCoutTotalAr() != null ? nutrition.getCoutTotalAr() : BigDecimal.ZERO
+        );
+        }
+
+        public List<RationActiveVacheVm> getRationsActivesVaches() {
+        return rationRepository.findRationsActivesVaches().stream()
+            .map(v -> new RationActiveVacheVm(
+                v.getVacheId(),
+                v.getNumeroBoucle(),
+                v.getJoursEnLait(),
+                v.getPhaseActuelle(),
+                v.getRationId(),
+                v.getRationRecommandee()
+            ))
+            .toList();
     }
 
     public record RationCardVm(Long id, String nom, String stade, long nbVaches) {
@@ -84,5 +126,13 @@ public class RationService {
     }
 
     public record NutritionVm(BigDecimal uflTotal, BigDecimal coutTotalAr) {
+    }
+
+    public record RationActiveVacheVm(Long vacheId,
+                                      String numeroBoucle,
+                                      Integer joursEnLait,
+                                      String phaseActuelle,
+                                      Long rationId,
+                                      String rationRecommandee) {
     }
 }

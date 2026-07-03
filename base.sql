@@ -8,7 +8,7 @@ CREATE TABLE ref_race (
 );
 
 CREATE TABLE ref_statut_vache (
-    id      SERIAL PRIMARY KEY,
+    id      SERIAL PRIMARY KEY, 
     code    VARCHAR(30)  NOT NULL UNIQUE,   -- en_lactation, tarie, gestante, reformee
     libelle VARCHAR(100) NOT NULL
 );
@@ -25,16 +25,12 @@ CREATE TABLE ref_role_utilisateur (
     libelle VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE ref_type_evenement_sante (
-    id      SERIAL PRIMARY KEY,
-    code    VARCHAR(30)  NOT NULL UNIQUE,   -- mammite, boiterie, metrite...
-    libelle VARCHAR(100) NOT NULL
-);
 
 CREATE TABLE ref_niveau_alerte (
     id      SERIAL PRIMARY KEY,
-    code    VARCHAR(20)  NOT NULL UNIQUE,   -- danger, warning, info
-    libelle VARCHAR(50)  NOT NULL
+    code    VARCHAR(20)  NOT NULL UNIQUE,       --urgent, attention, info
+    libelle VARCHAR(50)  NOT NULL,      
+    ordre   SMALLINT     NOT NULL  
 );
 
 CREATE TABLE ref_type_alerte (
@@ -88,6 +84,24 @@ CREATE TABLE vache_statut (
     date_fin   DATE
 );
 
+CREATE TABLE protocole_vaccin(
+    id_protocole_vaccin SERIAL PRIMARY KEY,
+    nom_vaccin VARCHAR(255) NOT NULL,
+    age_min_jours INT NOT NULL, 
+    age_max_jours INT NOT NULL, 
+    duree_rappel_jours INT NOT NULL 
+);
+
+CREATE TABLE historique_vaccin(
+    id_historique_vaccin SERIAL PRIMARY KEY,
+    vache_id INT NOT NULL,
+    id_protocole_vaccin INT NOT NULL,
+    date_vaccination DATE NOT NULL,
+    type_injection VARCHAR(50) NOT NULL,
+    FOREIGN KEY (vache_id) REFERENCES vache(id),
+    FOREIGN KEY (id_protocole_vaccin) REFERENCES protocole_vaccin(id_protocole_vaccin)
+);
+
 CREATE TABLE lactation (
     id               BIGSERIAL   PRIMARY KEY,
     vache_id         BIGINT      NOT NULL REFERENCES vache(id),
@@ -119,13 +133,45 @@ CREATE TABLE reproduction (
     sexe_veau              CHAR(1)              
 );
 
+
+CREATE TABLE maladie (
+    id          BIGSERIAL    PRIMARY KEY,
+    nom         VARCHAR(150) NOT NULL,
+    description TEXT
+);
+
+CREATE TABLE medicament (
+    id                         BIGSERIAL    PRIMARY KEY,
+    nom                        VARCHAR(150) NOT NULL,
+    delai_attente_lait_defaut  INT DEFAULT 0,
+    delai_attente_viande_defaut INT DEFAULT 0
+);
+
+CREATE TABLE maladie_medicament (
+    maladie_id    BIGINT NOT NULL REFERENCES maladie(id) ON DELETE CASCADE,
+    medicament_id BIGINT NOT NULL REFERENCES medicament(id) ON DELETE CASCADE,
+    PRIMARY KEY (maladie_id, medicament_id)
+);
+
 CREATE TABLE evenement_sante (
     id                BIGSERIAL   PRIMARY KEY,
     vache_id          BIGINT      NOT NULL REFERENCES vache(id),
+    maladie_id     BIGINT       NOT NULL REFERENCES maladie(id),
     date_evenement    DATE        NOT NULL,
-    id_type_evenement INT         NOT NULL REFERENCES ref_type_evenement_sante(id),
     description       TEXT,      
     created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE traitement_sante (
+    id                 BIGSERIAL  PRIMARY KEY,
+    evenement_sante_id BIGINT     NOT NULL REFERENCES evenement_sante(id) ON DELETE CASCADE,
+    medicament_id      BIGINT     NOT NULL REFERENCES medicament(id),
+    dose               DECIMAL(10,2) NOT NULL,
+    unite              VARCHAR(50)   NOT NULL,
+    duree_traitement   INT           NOT NULL,
+    delai_attente_j    INT           NOT NULL DEFAULT 0,
+    date_debut         DATE       NOT NULL,
+    date_fin           DATE       NOT NULL
 );
 
 CREATE TABLE aliment (
@@ -161,6 +207,18 @@ CREATE TABLE ration_aliment (
     quantite_kg DECIMAL(6,2) NOT NULL
 );
 
+CREATE TABLE affectation_ration_vache (
+    id         BIGSERIAL PRIMARY KEY,
+    vache_id   BIGINT    NOT NULL REFERENCES vache(id),
+    ration_id  BIGINT    NOT NULL REFERENCES ration(id),
+    date_debut DATE      NOT NULL,
+    date_fin   DATE,
+    actif      BOOLEAN   NOT NULL DEFAULT TRUE
+);
+
+CREATE INDEX idx_affectation_vache_actif ON affectation_ration_vache(vache_id, actif);
+CREATE INDEX idx_affectation_ration_actif ON affectation_ration_vache(ration_id, actif);
+
 
 CREATE TABLE alerte (
     id          BIGSERIAL   PRIMARY KEY,
@@ -172,6 +230,8 @@ CREATE TABLE alerte (
     acquittee   BOOLEAN     NOT NULL DEFAULT FALSE,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE INDEX idx_alerte_acquittee_date ON alerte(acquittee, created_at DESC);
 
 CREATE TABLE vente (
     id              BIGSERIAL    PRIMARY KEY,
@@ -265,3 +325,28 @@ LEFT JOIN (
     GROUP BY date_vente
 ) vente ON vente.date = jours.date
 ORDER BY jours.date;
+
+
+-- Donnees initiales
+-- Niveaux avec ordre de priorité
+INSERT INTO ref_niveau_alerte (code, libelle, ordre) VALUES
+('urgent',    'Urgent',    1),
+('attention', 'Attention', 2),
+('info',      'Info',      3);
+
+-- Types d'alertes par module
+INSERT INTO ref_type_alerte (code, libelle) VALUES
+-- Santé
+('vaccin_en_retard',   'Vaccin en retard'),
+('rappel_vaccin',      'Rappel vaccin'),
+('vaccin_prioritaire', 'Vaccin prioritaire'),
+-- Vente & Production
+('stock_lait_bas',     'Stock de lait insuffisant'),
+-- Reproduction
+('rappel_velage',      'Rappel vêlage'),
+('rappel_chaleur',     'Rappel vache en chaleur'),
+-- Alimentation
+('stock_aliment_bas',  'Stock aliment insuffisant'),
+-- Cheptel
+('bcs_hors_plage',     'Score BCS hors plage');
+

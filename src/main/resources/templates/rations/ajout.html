@@ -6,7 +6,7 @@
 
     <div class="page-header">
         <h1 class="page-title">Ajout ration</h1>
-        <p class="page-subtitle">Aucune ration n'existe encore, creez la premiere ration</p>
+        <p class="page-subtitle">Creer une ration pour un stade physiologique</p>
     </div>
 
     <div class="card" style="max-width:540px;margin:0 auto;">
@@ -27,7 +27,7 @@
                 </div>
 
                 <div style="display:flex;flex-direction:column;gap:6px;">
-                    <label for="idStadePhysiologique" style="font-size:0.875rem;font-weight:600;">Stade physiologique</label>
+                    <label for="idStadePhysiologique" style="font-size:0.875rem;font-weight:600;">Stade physiologique disponible</label>
                     <select id="idStadePhysiologique" th:field="*{idStadePhysiologique}"
                             style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;background:white;width:100%;">
                         <option value="">-- Selectionner un stade --</option>
@@ -35,7 +35,7 @@
                                 th:text="${s.libelle + ' (jours ' + s.jourMin + ' a ' + s.jourMax + ')'}"></option>
                     </select>
                     <small style="color:#6B7280;font-size:0.8rem;">
-                        jour min = premier jour en lait du stade, jour max = dernier jour en lait du stade.
+                        Un seul ration par stade. jour min = premier jour en lait, jour max = dernier jour en lait du stade.
                     </small>
                     <span th:if="${#fields.hasErrors('idStadePhysiologique')}" th:errors="*{idStadePhysiologique}"
                           style="color:#DC2626;font-size:0.8rem;"></span>
@@ -49,6 +49,9 @@
                 </div>
 
                 <div style="display:flex;justify-content:flex-end;margin-top:8px;">
+                    <button type="button" class="btn btn-secondary" onclick="window.history.back();">
+                        <i class="fas fa-times"></i> Annuler
+                    </button>
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-check"></i> Valider
                     </button>
