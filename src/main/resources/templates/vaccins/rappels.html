@@ -47,7 +47,7 @@
 
                 <tbody>
 
-                <tr th:each="h : ${rappels}">
+                <tr th:each="h , i: ${rappels}">
 
                     <td th:text="${h.protocoleVaccin.nomVaccin}"></td>
                     <td th:text="${h.vache.numeroBoucle}"></td>
@@ -56,15 +56,24 @@
 
                     <td th:text="${h.dateVaccination.plusDays(h.protocoleVaccin.dureeRappelJours)}"></td>
                     <td>
-                        <span th:if="${h.dateVaccination.plusDays(h.protocoleVaccin.dureeRappelJours).isBefore(T(java.time.LocalDate).now())}" 
-                              class="badge badge-danger">
-                            URGENT
+                        <span th:if="${status[i.index].contains('EN RETARD')}" 
+                              class="badge badge-danger" th:text="${status[i.index]}">
                         </span>
 
-                        <span th:if="${!h.dateVaccination.plusDays(h.protocoleVaccin.dureeRappelJours).isBefore(T(java.time.LocalDate).now())}" 
-                              class="badge" style="background:#FFF3E0; color:#F57C00;">
-                            ATTENTION
+                        <span th:if="${status[i.index].contains('A REVOIR')}" 
+                              class="badge" style="background:#FFF3E0; color:#F57C00;"
+                              th:text="${status[i.index]}">
                         </span>
+
+
+                         <span th:if="${!status[i.index].contains('A REVOIR') && !status[i.index].contains('EN RETARD')}" 
+                              class="badge" style="background:#0bc737; color:#ffffff;"
+                              th:text="${status[i.index]}">
+                        </span>
+
+
+
+                        
                     </td>
 
                 </tr>

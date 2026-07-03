@@ -70,6 +70,7 @@ public class VaccinController {
             model.addAttribute("vaches",
                     vacheRepo.findAll());
 
+
             return "vaccins/liste";
         }
 
@@ -112,8 +113,10 @@ public class VaccinController {
         @GetMapping("/rappels")
         public String rappels(Model model) {
 
-            model.addAttribute("rappels",
-                    vaccinService.getVaccinsPrioritaires());
+                model.addAttribute("rappels",
+                        vaccinService.getVaccinsPrioritaires());
+                model.addAttribute("status",vaccinService.statut(vaccinService.getVaccinsPrioritaires()));
+        
 
             return "vaccins/rappels";
         }
