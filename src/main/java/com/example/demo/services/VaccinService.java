@@ -96,7 +96,7 @@ public class VaccinService {
         // ------------------1
         public List<HistoriqueVaccin> getVaccinsPrioritaires() {
                 List<HistoriqueVaccin> derniers = historiqueRepository.findLastByVaccin();
-                LocalDate today = LocalDate.now();
+                LocalDate today = LocalDate.now(); // Aujourd'hui : 3 juillet 2026
 
                 List<HistoriqueVaccin> sorted = derniers.stream()
                                 .sorted((a, b) -> {
@@ -108,34 +108,30 @@ public class VaccinService {
                                 })
                                 .toList();
 
-                // Envoyer ou mettre à jour une alerte adaptée pour chaque vaccin prioritaire
                 sorted.forEach(h -> {
                         LocalDate prochaineDate = h.getDateVaccination()
                                         .plusDays(h.getProtocoleVaccin().getDureeRappelJours());
 
-                        String niveauAlerte;
-                        String titreAlerte;
+                        String niveauCode;
+                        String typeCode;
+                        String titre;
 
-                        // On compare par rapport à la date du jour (3 juillet 2026)
-                        // Si la date limite de rappel est dépassée (ex: 2025) -> URGENT
                         if (prochaineDate.isBefore(today)) {
-                                niveauAlerte = "urgent";
-                                titreAlerte = "Retard critique : Vaccin " + h.getProtocoleVaccin().getNomVaccin();
+                                niveauCode = "urgent";
+                                typeCode = "vaccin_en_retard"; // Code exact de base.sql
+                                titre = "Retard critique : " + h.getProtocoleVaccin().getNomVaccin();
                         } else {
-                                // Sinon, c'est une alerte préventive pour le futur -> ATTENTION
-                                niveauAlerte = "attention";
-                                titreAlerte = "Rappel à planifier : Vaccin " + h.getProtocoleVaccin().getNomVaccin();
+                                niveauCode = "attention";
+                                typeCode = "rappel_vaccin"; // Code exact de base.sql
+                                titre = "Rappel à planifier : " + h.getProtocoleVaccin().getNomVaccin();
                         }
 
-                        // On utilise ici le code unique commun 'vaccin_prioritaire' présent dans ta
-                        // base
                         alerteService.envoyerAlerte(
-                                        "vaccin_prioritaire",
-                                        niveauAlerte,
-                                        titreAlerte,
-                                        "Le vaccin " + h.getProtocoleVaccin().getNomVaccin()
-                                                        + " est requis pour la vache " + h.getVache().getNumeroBoucle()
-                                                        + " (Date prévue : " + prochaineDate + ").",
+                                        typeCode,
+                                        niveauCode,
+                                        titre,
+                                        "Rappel requis pour la vache " + h.getVache().getNumeroBoucle() + " avant le "
+                                                        + prochaineDate + ".",
                                         h.getVache().getId());
                 });
 

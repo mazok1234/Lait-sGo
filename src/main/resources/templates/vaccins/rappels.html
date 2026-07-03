@@ -54,10 +54,17 @@
 
                     <td th:text="${h.dateVaccination}"></td>
 
-                    <td th:text="${h.protocoleVaccin.dureeRappelJours}"></td>
-
+                    <td th:text="${h.dateVaccination.plusDays(h.protocoleVaccin.dureeRappelJours)}"></td>
                     <td>
-                        <span class="badge badge-danger">À rappeler</span>
+                        <span th:if="${h.dateVaccination.plusDays(h.protocoleVaccin.dureeRappelJours).isBefore(T(java.time.LocalDate).now())}" 
+                              class="badge badge-danger">
+                            URGENT
+                        </span>
+
+                        <span th:if="${!h.dateVaccination.plusDays(h.protocoleVaccin.dureeRappelJours).isBefore(T(java.time.LocalDate).now())}" 
+                              class="badge" style="background:#FFF3E0; color:#F57C00;">
+                            ATTENTION
+                        </span>
                     </td>
 
                 </tr>
