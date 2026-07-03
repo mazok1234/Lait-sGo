@@ -1,113 +1,41 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{index :: layout(~{::content})}">
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+<head>
+    <title>Liste des ventes</title>
+</head>
+<body>
+<div th:fragment="mainContent" class="page-content">
 
-<div th:fragment="content">
+    <div class="page-header">
+        <h1 class="page-title">Liste des ventes</h1>
+        <p class="page-subtitle">Gestion des ventes de lait</p>
+    </div>
 
-    <style>
-        .page {
-            display: flex;
-            justify-content: center;
-            padding: 40px;
-            background: #f2f2f2;
-            min-height: 80vh;
-        }
-
-        .box {
-            background: white;
-            width: 90%;
-            max-width: 900px;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        h2 {
-            text-align: center;
-            color: #444;
-            margin-bottom: 25px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            background: #666;
-            color: white;
-            padding: 12px;
-        }
-
-        td {
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
-            text-align: center;
-        }
-
-        tr:nth-child(even) {
-            background: #f7f7f7;
-        }
-
-        a {
-            color: #555;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        a:hover {
-            color: black;
-        }
-
-        .btn {
-            display: inline-block;
-            margin-bottom: 20px;
-            padding: 10px 18px;
-            background: #666;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-        }
-
-        .btn:hover {
-            background: #555;
-        }
-    </style>
-
-    <div class="page">
-
-        <div class="box">
-
-            <h2>Liste des ventes</h2>
-
-
-            <a th:href="@{/vente/liste(order='asc')}" class="btn">
-                Date ↑
+    <div class="card card-table">
+        <div class="card-header filters" style="justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                <a th:href="@{/vente/liste(order='asc')}" class="btn btn-sm" style="border:1px solid #D1D5DB;">
+                    <i class="fas fa-arrow-up"></i> Date ↑
+                </a>
+                <a th:href="@{/vente/liste(order='desc')}" class="btn btn-sm" style="border:1px solid #D1D5DB;">
+                    <i class="fas fa-arrow-down"></i> Date ↓
+                </a>
+                <form method="get" th:action="@{/vente/liste}" style="display:flex;align-items:center;gap:8px;">
+                    <input type="number" name="min" placeholder="Min" th:value="${min}"
+                           style="padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;width:100px;font-family:'Inter',sans-serif;font-size:0.85rem;">
+                    <input type="number" name="max" placeholder="Max" th:value="${max}"
+                           style="padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;width:100px;font-family:'Inter',sans-serif;font-size:0.85rem;">
+                    <input type="hidden" name="page" value="0"/>
+                    <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-filter"></i> Filtrer</button>
+                </form>
+            </div>
+            <a th:href="@{/vente/nouveau}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Nouvelle vente
             </a>
-            <a th:href="@{/vente/liste(order='desc')}" class="btn">
-                Date ↓
-            </a>
-            <h3>Filtrer par montant total</h3>
-            <form method="get" th:action="@{/vente/liste}">
-                
-                <input type="number"
-                    name="min"
-                    placeholder="Min"
-                    th:value="${min}"/>
+        </div>
 
-                <input type="number"
-                    name="max"
-                    placeholder="Max"
-                    th:value="${max}"/>
-
-                <button type="submit" class="btn">Filter</button>
-
-                <input type="hidden" name="page" value="0"/>
-
-            </form>
-
-            <table>
-
+        <div class="card-body">
+            <table class="table">
                 <thead>
                 <tr>
                     <th>Date</th>
@@ -116,45 +44,37 @@
                     <th>Montant</th>
                 </tr>
                 </thead>
-
                 <tbody>
-
                 <tr th:each="vente : ${page.content}">
-                    <td th:text="${vente.dateVente}"></td>
-                    <td th:text="${vente.quantiteLait}"></td>
-                    <td th:text="${vente.prixUnitaire + ' Ar'}"></td>
-                    <td th:text="${vente.prixUnitaire.multiply(vente.quantiteLait) + ' Ar'}"></td>
+                    <td th:text="${vente.dateVente}">2024-01-01</td>
+                    <td th:text="${vente.quantiteLait}">0</td>
+                    <td th:text="${vente.prixUnitaire + ' Ar'}">0 Ar</td>
+                    <td><strong th:text="${vente.prixUnitaire.multiply(vente.quantiteLait) + ' Ar'}">0 Ar</strong></td>
                 </tr>
-
+                <tr th:if="${#lists.isEmpty(page.content)}">
+                    <td colspan="4" class="text-center" style="padding:32px;color:#9CA3AF;">
+                        Aucune vente enregistrée.
+                    </td>
+                </tr>
                 </tbody>
-
             </table>
-        </br>
-        <a th:if="${!page.first}"
-        th:href="@{/vente/liste(page=${page.number-1}, min=${min}, max=${max})}"
-        class="btn">
-            Previous
-        </a>
-
-        <a th:if="${!page.last}"
-        th:href="@{/vente/liste(page=${page.number+1}, min=${min}, max=${max})}"
-        class="btn">
-            Next
-        </a>
-
-    </br>
-    </br>
-    </br>
-
-            <a th:href="@{/vente/nouveau}" class="btn">
-                Nouvelle vente
-            </a>
-
         </div>
 
-
+        <div class="pagination" th:if="${page.totalPages > 1}">
+            <a th:if="${!page.first}"
+               th:href="@{/vente/liste(page=${page.number-1}, min=${min}, max=${max})}"
+               class="btn btn-sm" style="border:1px solid #D1D5DB;">
+                <i class="fas fa-chevron-left"></i> Précédent
+            </a>
+            <span class="page-info" th:text="'Page ' + (${page.number} + 1) + ' / ' + ${page.totalPages}">Page 1</span>
+            <a th:if="${!page.last}"
+               th:href="@{/vente/liste(page=${page.number+1}, min=${min}, max=${max})}"
+               class="btn btn-sm" style="border:1px solid #D1D5DB;">
+                Suivant <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
     </div>
 
 </div>
-
+</body>
 </html>

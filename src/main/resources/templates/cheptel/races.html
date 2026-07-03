@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+<head>
+    <title>Gestion des races</title>
+</head>
+<body>
+<div th:fragment="mainContent" class="page-content">
+    <div class="cheptel-wrapper">
+        <div class="cheptel-header">
+            <h1><i class="fas fa-paw" style="color:#2f6ed4"></i> Gestion des races</h1>
+<a th:href="@{/cheptel}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Retour</a>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Ajouter une race</div>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/cheptel/races}" method="post" class="form-grid">
+                    <div class="form-group">
+                        <label>Code</label>
+                        <input type="text" name="code" placeholder="Ex: prim_holstein" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Libellé</label>
+                        <input type="text" name="libelle" placeholder="Ex: Prim'Holstein" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Ajouter</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Liste des races</div>
+                <span class="badge-sub" th:text="${'· ' + #lists.size(races) + ' races'}">· 0 races</span>
+            </div>
+            <div class="card-body">
+                <div th:if="${#lists.isEmpty(races)}" class="empty-state">
+                    <i class="fas fa-paw"></i>
+                    <p>Aucune race enregistrée</p>
+                </div>
+                <div th:unless="${#lists.isEmpty(races)}" class="table-wrap">
+                    <table>
+                        <thead><tr><th>Code</th><th>Libellé</th><th style="text-align:right">Actions</th></tr></thead>
+                        <tbody>
+                            <tr th:each="r : ${races}">
+                                <td th:text="${r.code}">prim_holstein</td>
+                                <td th:text="${r.libelle}">Prim'Holstein</td>
+                                <td style="text-align:right;display:flex;justify-content:flex-end;gap:.4rem;">
+                                    <form th:action="@{/cheptel/races/update/{id}(id=${r.id})}" method="post" style="display:inline-flex;gap:.3rem;align-items:center;">
+                                        <input type="text" name="libelle" th:value="${r.libelle}" style="padding:.3rem .5rem;border:1px solid #dce3ed;border-radius:10px;font-size:.82rem;" required>
+                                        <button type="submit" class="btn btn-outline" style="padding:.3rem .7rem;font-size:.78rem;">Mettre à jour</button>
+                                    </form>
+                                    <a th:href="@{/cheptel/races/delete/{id}(id=${r.id})}" class="btn btn-danger-sm" onclick="return confirm('Supprimer cette race ?');">Supprimer</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top:.6rem;font-size:.78rem;color:#62748c;">
+                    <i class="fas fa-info-circle"></i> Les races sont associées aux vaches. La suppression est possible si aucune vache n'y est rattachée.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

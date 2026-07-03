@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+<head>
+    <title>Fiche vache</title>
+</head>
+<body>
+<div th:fragment="mainContent" class="page-content">
+    <div class="cheptel-wrapper">
+        <div class="cheptel-header">
+            <h1><i class="fas fa-id-card" style="color:#2f6ed4"></i> Fiche vache <span th:text="${vache != null ? vache.numeroBoucle : ''}">#12345</span></h1>
+            <div class="flex-row">
+                <a th:href="@{'/cheptel/vaches/' + ${vache.id} + '/edit'}" class="btn btn-outline"><i class="far fa-edit"></i> Modifier</a>
+<a th:href="@{/cheptel/vaches}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Retour</a>
+            </div>
+        </div>
+
+        <div th:if="${vache == null}" class="card">
+            <div class="card-body">
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>Vache introuvable</p>
+                </div>
+            </div>
+        </div>
+
+        <div th:unless="${vache == null}">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-info-circle"></i> Informations générales</div>
+                </div>
+                <div class="card-body">
+                    <div class="detail-grid">
+                        <div class="detail-row"><span>Numéro</span><strong th:text="${vache.numeroBoucle}">#12345</strong></div>
+                        <div class="detail-row"><span>Race</span><strong th:text="${vache.race != null ? vache.race.libelle : ''}">Prim'Holstein</strong></div>
+                        <div class="detail-row"><span>Statut</span><strong th:text="${vache.statut != null ? vache.statut.libelle : ''}">En lactation</strong></div>
+                        <div class="detail-row"><span>Naissance</span><strong th:text="${vache.dateNaissance}">2024-03-15</strong></div>
+                        <div class="detail-row"><span>Poids</span><strong th:text="${vache.poidsKg != null ? vache.poidsKg + ' kg' : '-'}">600 kg</strong></div>
+                        <div class="detail-row"><span>Mère</span><strong th:text="${vache.mere != null ? vache.mere.numeroBoucle : '-'}">#09876</strong></div>
+                        <div class="detail-row"><span>BCS</span><strong th:text="${vache.scoreBcs != null ? vache.scoreBcs : '-'}">-</strong></div>
+                        <div class="detail-row"><span>Locomotion</span><strong th:text="${vache.scoreLocomotion != null ? vache.scoreLocomotion : '-'}">-</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
