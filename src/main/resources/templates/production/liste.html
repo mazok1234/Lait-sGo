@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Productions de Lait</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h2 class="page-title">🥛 Production de Lait Globale</h2>
+            <div class="btn-group">
+                <a th:href="@{/production/nouvelle}" class="btn btn-secondary">+ Nouvelle Production</a>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Code Vache</th>
+                    <th>Nom Vache</th>
+                    <th>Quantité (L)</th>
+                    <th>Période</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="p : ${productions}">
+                    <td th:text="${p.codeVache}">-</td>
+                    <td th:text="${p.nomVache}">-</td>
+                    <td th:text="${p.quantite}">0</td>
+                    <td th:text="${p.periode}">-</td>
+                    <td th:text="${p.dateProduction}">-</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
