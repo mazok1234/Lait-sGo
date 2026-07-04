@@ -6,17 +6,11 @@
 <body>
 <div th:fragment="mainContent" class="page-content">
     <div class="cheptel-wrapper">
-        
-
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
             <div>
                 <h1 style="font-size: 2rem; font-weight: 700; letter-spacing: -0.03em; color: #0b1a2e; display: flex; align-items: center; gap: 0.6rem;">
                     <i class="fas fa-cow" style="color: #2f6ed4;"></i> Cheptel
                 </h1>
-            </div>
-            <div class="flex-row">
-                <span class="badge-sub"><i class="far fa-calendar-alt"></i> Tableau</span>
-                <span class="badge-sub"><i class="far fa-clock"></i> mise à jour</span>
             </div>
         </div>
 
@@ -24,140 +18,135 @@
             <div class="grid-metrics">
                 <div class="metric-tile">
                     <div class="label"><i class="fas fa-tag"></i> Total vaches</div>
-                    <div class="value" th:text="${vaches != null ? vaches.size() : 0}">0</div>
+                    <div class="value" th:text="${totalVaches}">0</div>
                     <div class="sub">effectif global</div>
                 </div>
                 <div class="metric-tile">
                     <div class="label"><i class="fas fa-heartbeat"></i> Statut</div>
                     <div class="value" style="font-size: 1.1rem; display: flex; flex-wrap: wrap; gap: 0.2rem 0.6rem;">
-                        <span class="stat-badge green">en_lactation 0</span>
-                        <span class="stat-badge alert">reformee 0</span>
+                        <span class="stat-badge green" th:text="'En lactation ' + ${enLactationCount}">En lactation 0</span>
+                        <span class="stat-badge alert" th:text="'Réformée ' + ${reformeeCount}">Réformée 0</span>
                     </div>
                 </div>
                 <div class="metric-tile">
                     <div class="label"><i class="fas fa-exclamation-triangle"></i> Alertes</div>
-                    <div class="value" style="color:#b34033;">0</div>
+                    <div class="value" style="color:#b34033;" th:text="${surveillanceCount}">0</div>
                     <div class="sub">vaches à surveiller</div>
                 </div>
                 <div class="metric-tile">
                     <div class="label"><i class="fas fa-sitemap"></i> Généalogie</div>
-                    <div class="value">0</div>
+                    <div class="value" th:text="${avecMereCount}">0</div>
                     <div class="sub">liens mère disponibles</div>
                 </div>
             </div>
 
-            <div class="grid-2col">
-                <div>
-                    <div class="card-header" style="padding: 0 0 0.5rem 0;">
-                        <h2 style="font-size: 1.2rem;"><i class="fas fa-list-ul"></i> Liste des vaches</h2>
-                        <span class="badge-sub" th:text="${vaches != null ? vaches.size() + ' affichées' : '0 affichées'}"><i class="far fa-file-alt"></i> 0 affichées</span>
-                    </div>
+            <div class="card-header" style="padding: 0 0 0.5rem 0;">
+                <h2 style="font-size: 1.2rem;"><i class="fas fa-list-ul"></i> Liste des vaches</h2>
+                <span class="badge-sub" th:text="${vaches != null ? vaches.size() + ' affichées' : '0 affichées'}">0 affichées</span>
+            </div>
 
-                    <div style="margin-bottom: 1.8rem;">
-                        <div class="filter-grid">
-                            <div class="filter-item">
-                                <div class="label-sm"><i class="fas fa-search"></i> Recherche</div>
-                                <div class="fake-input"><i class="fas fa-chevron-right" style="font-size: 0.5rem;"></i> Numéro, race, statut…</div>
-                            </div>
-                            <div class="filter-item">
-                                <div class="label-sm">Race</div>
-                                <div class="fake-input"><i class="fas fa-chevron-down"></i> Toutes</div>
-                            </div>
-                            <div class="filter-item">
-                                <div class="label-sm">Statut</div>
-                                <div class="fake-input"><i class="fas fa-chevron-down"></i> Tous</div>
-                            </div>
-                            <div class="filter-item">
-                                <div class="label-sm">Santé</div>
-                                <div class="fake-input"><i class="fas fa-chevron-down"></i> Tous niveaux</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
-                            <tr>
-                                <th>Référence</th>
-                                <th>Race</th>
-                                <th>Statut</th>
-                                <th>Santé</th>
-                                <th>Actions</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:if="${#lists.isEmpty(vaches)}">
-                                <td colspan="5">
-                                    <div class="empty-state" style="padding: 24px 12px;">
-                                        <i class="fas fa-cow"></i>
-                                        <p>Aucune vache enregistrée</p>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <tr th:each="v : ${vaches}">
-                                <td th:text="${v.numeroBoucle}">#12345</td>
-                                <td th:text="${v.race != null ? v.race.libelle : ''}">Prim'Holstein</td>
-                                <td th:text="${v.statut != null ? v.statut.libelle : ''}">En lactation</td>
-                                <td>
-                                    <span class="stat-badge" th:classappend="${v.scoreLocomotion != null and v.scoreLocomotion < 3} ? ' alert' : ' green'">
-                                        <span th:text="${v.scoreLocomotion != null and v.scoreLocomotion < 3} ? 'Surveillance' : 'Stable'">Stable</span>
-                                    </span>
-                                </td>
-                                <td>
-                                    <a th:href="@{'/cheptel/vaches/' + ${v.id}}" class="action-pill" style="background:#eef4fa;">
-                                        <i class="far fa-eye"></i>
-                                    </a>
-                                    <a th:href="@{'/cheptel/vaches/' + ${v.id} + '/edit'}" class="action-pill" style="background:#eef4fa;">
-                                        <i class="far fa-edit"></i>
-                                    </a>
-                                    <a th:href="@{'/cheptel/vaches/' + ${v.id} + '/delete'}" class="action-pill" style="background:#fce8e6;color:#b34033;" onclick="return confirm('Supprimer cette vache ?');">
-                                        <i class="far fa-trash-alt"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div style="margin-top: 0.8rem; display: flex; gap: 0.4rem;">
-<a th:href="@{/cheptel/vaches}" class="action-pill" style="background: #1f3f66; color: white;"><i class="fas fa-plus"></i> Nouvelle vache</a>
-                        <a th:href="@{/cheptel/races}" class="action-pill" style="background: #eef4fa;"><i class="fas fa-plus"></i> Nouvelle race</a>
-                    </div>
+            <form th:action="@{/cheptel}" method="get" class="filter-grid" style="margin-bottom: 1.8rem;">
+                <div class="filter-item">
+                    <div class="label-sm"><i class="fas fa-search"></i> Recherche</div>
+                    <input type="text" name="q" th:value="${param.q}" placeholder="Numéro…">
                 </div>
-
-                <div>
-                    <div class="card-header" style="padding: 0 0 0.5rem 0;">
-                        <h2 style="font-size: 1.2rem;"><i class="fas fa-id-card"></i> Fiche vache</h2>
-                        <span class="badge-sub">détail</span>
-                    </div>
-                    <div class="placeholder-box" style="margin-bottom: 1rem;">
-                        <i class="fas fa-cow" style="font-size: 2rem; color: #a7bcd6; display: block; margin-bottom: 0.3rem;"></i>
-                        Sélectionner une vache pour afficher la fiche détaillée
-                    </div>
-
-                    <div class="detail-grid">
-                        <div class="detail-row"><span>Numéro</span><strong>#12345</strong></div>
-                        <div class="detail-row"><span>Race</span><strong>Prim'Holstein</strong></div>
-                        <div class="detail-row"><span>Statut</span><strong>En lactation</strong></div>
-                        <div class="detail-row"><span>Mère</span><strong>Vache #09876</strong></div>
-                    </div>
-
-                    <div class="tab-group">
-                        <span class="tab-pill active">Santé</span>
-                        <span class="tab-pill">Reproduction</span>
-                        <span class="tab-pill">Lactation</span>
-                        <span class="tab-pill">Généalogie</span>
-                    </div>
-
-                    <div class="note-box">
-                        <i class="fas fa-notes-medical" style="margin-right: 0.4rem;"></i> Événements, alertes, traitements et observations s'affichent ici.
-                    </div>
+                <div class="filter-item">
+                    <div class="label-sm">Race</div>
+                    <select name="raceId">
+                        <option value="">Toutes</option>
+                        <option th:each="r : ${races}" th:value="${r.id}" th:text="${r.libelle}" th:selected="${param.raceId == r.id}">Race</option>
+                    </select>
                 </div>
+                <div class="filter-item">
+                    <div class="label-sm">Vie</div>
+                    <select name="vieId">
+                        <option value="">Tous</option>
+                        <option th:each="s : ${statutsVie}" th:value="${s.id}" th:text="${s.libelle}" th:selected="${param.vieId == s.id}">Statut</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <div class="label-sm">Repro</div>
+                    <select name="reproId">
+                        <option value="">Tous</option>
+                        <option th:each="s : ${statutsRepro}" th:value="${s.id}" th:text="${s.libelle}" th:selected="${param.reproId == s.id}">Statut</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <div class="label-sm">Lactation</div>
+                    <select name="lactationId">
+                        <option value="">Tous</option>
+                        <option th:each="s : ${statutsLactation}" th:value="${s.id}" th:text="${s.libelle}" th:selected="${param.lactationId == s.id}">Statut</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <div class="label-sm">Santé</div>
+                    <select name="santeId">
+                        <option value="">Tous</option>
+                        <option th:each="s : ${statutsSante}" th:value="${s.id}" th:text="${s.libelle}" th:selected="${param.santeId == s.id}">Statut</option>
+                    </select>
+                </div>
+                <div class="filter-item" style="display:flex;align-items:flex-end;">
+                    <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;"><i class="fas fa-filter"></i> Filtrer</button>
+                </div>
+            </form>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Référence</th>
+                        <th>Race</th>
+                        <th>Vie</th>
+                        <th>Repro</th>
+                        <th>Lactation</th>
+                        <th>Santé</th>
+                        <th>Surveillance</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(vaches)}">
+                        <td colspan="8">
+                            <div class="empty-state" style="padding: 24px 12px;">
+                                <i class="fas fa-cow"></i>
+                                <p>Aucune vache trouvée</p>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr th:each="item : ${vaches}">
+                        <td th:text="${item.vache.numeroBoucle}">#12345</td>
+                        <td th:text="${item.vache.race != null ? item.vache.race.libelle : ''}">Prim'Holstein</td>
+                        <td th:text="${item.vie}">-</td>
+                        <td th:text="${item.repro}">-</td>
+                        <td th:text="${item.lactation}">-</td>
+                        <td th:text="${item.sante}">-</td>
+                        <td>
+                            <span class="stat-badge" th:classappend="${(item.vache.scoreLocomotion != null and item.vache.scoreLocomotion < 3) or (item.vache.scoreBcs != null and (item.vache.scoreBcs < 2.5 or item.vache.scoreBcs > 4.0))} ? ' alert' : ' green'">
+                                <span th:text="${(item.vache.scoreLocomotion != null and item.vache.scoreLocomotion < 3) or (item.vache.scoreBcs != null and (item.vache.scoreBcs < 2.5 or item.vache.scoreBcs > 4.0))} ? 'Surveillance' : 'Stable'">Stable</span>
+                            </span>
+                        </td>
+                        <td>
+                            <a th:href="@{'/cheptel/vaches/' + ${item.vache.id}}" class="action-pill" style="background:#eef4fa;">
+                                <i class="far fa-eye"></i>
+                            </a>
+                            <a th:href="@{'/cheptel/vaches/' + ${item.vache.id} + '/edit'}" class="action-pill" style="background:#eef4fa;">
+                                <i class="far fa-edit"></i>
+                            </a>
+                            <a th:href="@{'/cheptel/vaches/' + ${item.vache.id} + '/delete'}" class="action-pill" style="background:#fce8e6;color:#b34033;" onclick="return confirm('Supprimer cette vache ?');">
+                                <i class="far fa-trash-alt"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 0.8rem; display: flex; gap: 0.4rem;">
+                <a th:href="@{/cheptel/vaches/nouveau}" class="action-pill" style="background: #1f3f66; color: white;"><i class="fas fa-plus"></i> Nouvelle vache</a>
+                <a th:href="@{/cheptel/races}" class="action-pill" style="background: #eef4fa;"><i class="fas fa-plus"></i> Nouvelle race</a>
             </div>
         </div>
-
-        
     </div>
 </div>
 </body>

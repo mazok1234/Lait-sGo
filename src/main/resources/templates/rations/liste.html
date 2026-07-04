@@ -35,7 +35,7 @@
                         <strong th:text="${r.nom}" style="font-size:0.9rem;">Lactation haute</strong>
                     </div>
                     <div style="display:flex;gap:6px;align-items:center;">
-                        <span style="font-size:0.74rem;opacity:.75;min-width:58px;">Stade:</span>
+                        <span style="font-size:0.74rem;opacity:.75;min-width:58px;">Phase:</span>
                         <span th:text="${r.stade}" style="font-size:0.82rem;">Lactation haute</span>
                     </div>
                     <div style="display:flex;gap:6px;align-items:center;">
@@ -54,6 +54,10 @@
                     UFL total
                 </p>
                 <div style="margin-top:10px;display:flex;justify-content:flex-end;gap:8px;">
+                    <a th:href="@{/rations/details/{id}(id=${rationSelectionnee.id})}"
+                       class="btn btn-sm" style="border:1px solid #007AFF;color:#007AFF;">
+                        <i class="fas fa-eye"></i> Détails
+                    </a>
                     <a th:href="@{/rations/edit/{id}(id=${rationSelectionnee.id})}"
                        class="btn btn-sm" style="border:1px solid #6B7280;color:#6B7280;">
                         <i class="fas fa-pen"></i> Modifier ration

@@ -67,13 +67,11 @@
                         </form>
                     </td>
                 </tr>
-                <tr th:if="${#lists.isEmpty(historique)}">
-                    <td colspan="6" class="text-center" style="padding:32px;color:#9CA3AF;">
-                        Aucune insémination enregistrée pour cette vache.
-                        <br>
-                        <a th:href="@{/reproduction/nouvelle}" class="btn btn-primary" style="margin-top:12px;">Enregistrer la première IA</a>
-                    </td>
-                </tr>
+                 <tr th:if="${#lists.isEmpty(historique)}">
+                     <td colspan="6" class="text-center" style="padding:32px;color:#9CA3AF;">
+                         Aucune insémination enregistrée pour cette vache.
+                     </td>
+                 </tr>
                 </tbody>
             </table>
         </div>

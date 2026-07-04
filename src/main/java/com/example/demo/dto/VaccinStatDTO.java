@@ -2,20 +2,12 @@ package com.example.demo.dto;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.stream.Collectors;
-import com.example.demo.entity.HistoriqueVaccin;
-
-
-
 
 public class VaccinStatDTO {
-
     private String nomVaccin;
     private Long nombreBovins;
     private LocalDate derniereVaccination;
     private LocalDate prochaineDate;
-
 
     public VaccinStatDTO(String nomVaccin, Long nombreBovins, LocalDate derniereVaccination, LocalDate prochaineDate) {
         this.nomVaccin = nomVaccin;
@@ -92,5 +84,5 @@ public class VaccinStatDTO {
             return prochaineDate.isAfter(today.plusDays(7));
         }
         return false;
-    }   
+    }
 }

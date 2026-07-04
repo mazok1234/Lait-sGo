@@ -76,10 +76,6 @@
                         <td th:text="${aliment.seuilAlerteKg != null ? #numbers.formatDecimal(aliment.seuilAlerteKg,1,2) + ' kg' : '-'}">-</td>
                         <td th:text="${aliment.prixParKilo != null ? #numbers.formatDecimal(aliment.prixParKilo,1,2) + ' Ar' : '-'}">-</td>
                         <td style="text-align:center;display:flex;justify-content:center;gap:6px;">
-                            <a th:href="@{/mouvementsAlim/new(alimentId=${aliment.id})}"
-                               class="btn btn-sm btn-primary" style="font-size:0.78rem;">
-                                <i class="fas fa-exchange-alt"></i> +Mvt
-                            </a>
                             <a th:href="@{/aliments/edit/{id}(id=${aliment.id})}"
                                class="btn btn-sm" style="border:1px solid #6B7280;color:#6B7280;">
                                 <i class="fas fa-pen"></i>

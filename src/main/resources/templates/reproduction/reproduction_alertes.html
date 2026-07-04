@@ -24,6 +24,7 @@
                     <th>Vêlage prévu</th>
                     <th>Jours restants</th>
                     <th>Urgence</th>
+                    <th>Action</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -38,9 +39,14 @@
                               th:text="${a.niveauUrgence}">
                         </span>
                     </td>
+                    <td>
+                        <a th:href="@{/cheptel/vaches/nouveau(reproductionId=${a.id})}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-baby"></i> Commencer le vêlage
+                        </a>
+                    </td>
                 </tr>
                 <tr th:if="${alertes.isEmpty()}">
-                    <td colspan="5" class="text-center" style="padding:32px;color:#9CA3AF;">
+                    <td colspan="6" class="text-center" style="padding:32px;color:#9CA3AF;">
                         <i class="fas fa-check-circle" style="color:#059669;opacity:0.5;"></i><br>
                         Aucune alerte de vêlage à venir. Toutes les gestantes sont suivies.
                     </td>

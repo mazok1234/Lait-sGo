@@ -29,14 +29,14 @@
                 </div>
 
                 <div style="display:flex;flex-direction:column;gap:6px;">
-                    <label for="idStadePhysiologique" style="font-size:0.875rem;font-weight:600;">Stade physiologique</label>
-                    <select id="idStadePhysiologique" th:field="*{idStadePhysiologique}"
+                    <label for="idPhaseLactation" style="font-size:0.875rem;font-weight:600;">Phase de lactation</label>
+                    <select id="idPhaseLactation" th:field="*{idPhaseLactation}"
                             style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;background:white;width:100%;">
-                        <option value="">-- Selectionner un stade --</option>
+                        <option value="">-- Selectionner une phase --</option>
                         <option th:each="s : ${stades}" th:value="${s.id}"
                                 th:text="${s.libelle + ' (jours ' + s.jourMin + ' a ' + s.jourMax + ')'}"></option>
                     </select>
-                    <span th:if="${#fields.hasErrors('idStadePhysiologique')}" th:errors="*{idStadePhysiologique}"
+                    <span th:if="${#fields.hasErrors('idPhaseLactation')}" th:errors="*{idPhaseLactation}"
                           style="color:#DC2626;font-size:0.8rem;"></span>
                 </div>
 

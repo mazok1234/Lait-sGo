@@ -29,11 +29,8 @@
     </div>
 
     <div class="card card-table">
-        <div class="card-header" style="justify-content:space-between;">
+        <div class="card-header">
             <span class="card-title">Inséminations en attente</span>
-            <a th:href="@{/reproduction/nouvelle}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Nouvelle IA
-            </a>
         </div>
 
         <div class="card-body">
@@ -57,16 +54,21 @@
                     <td th:text="${ia.inséminateur}">-</td>
                     <td th:text="${ia.typeInjection}">-</td>
                     <td><span class="badge badge-niveau badge-niveau-warning" th:text="${ia.statutIA}"></span></td>
-                    <td style="text-align:center;display:flex;justify-content:center;gap:6px;">
-                        <a th:href="@{/reproduction/historique/{vacheId}(vacheId=${ia.vacheId})}"
-                           class="btn btn-sm" style="border:1px solid #007AFF;color:#007AFF;">
-                            <i class="fas fa-eye"></i>
-                        </a>
-                        <button type="button" class="btn btn-sm btn-primary"
-                                th:onclick="'updateStatus(' + ${ia.id} + ')'">
-                            <i class="fas fa-pen"></i>
-                        </button>
-                    </td>
+                     <td style="text-align:center;display:flex;justify-content:center;gap:6px;">
+                         <form th:action="@{/reproduction/update-statut/{id}(id=${ia.id})}" method="post" style="display:inline;">
+                             <input type="hidden" name="statut" value="gestante">
+                             <button type="submit" class="btn btn-sm" style="border:1px solid #059669;color:#059669;" title="Confirmer gestante">
+                                 <i class="fas fa-check"></i>
+                             </button>
+                         </form>
+                         <form th:action="@{/reproduction/update-statut/{id}(id=${ia.id})}" method="post" style="display:inline;">
+                             <input type="hidden" name="statut" value="echouee">
+                             <button type="submit" class="btn btn-sm" style="border:1px solid #DC2626;color:#DC2626;" title="Marquer échouée"
+                                     onclick="return confirm('Marquer cette IA comme échouée ?');">
+                                 <i class="fas fa-times"></i>
+                             </button>
+                         </form>
+                     </td>
                 </tr>
                 <tr th:if="${iaEnAttente.isEmpty()}">
                     <td colspan="7" class="text-center" style="padding:32px;color:#9CA3AF;">
@@ -77,28 +79,6 @@
             </table>
         </div>
     </div>
-
-    <script>
-        function updateStatus(iaId) {
-            var newStatus = prompt("Nouveau statut (gestante/echouee):");
-            if (newStatus && (newStatus === 'gestante' || newStatus === 'echouee')) {
-                var form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '/reproduction/update-statut/' + iaId;
-
-                var input1 = document.createElement('input');
-                input1.type = 'hidden';
-                input1.name = 'statut';
-                input1.value = newStatus;
-                form.appendChild(input1);
-
-                document.body.appendChild(form);
-                form.submit();
-            } else if (newStatus) {
-                alert("Statut invalide. Veuillez entrer 'gestante' ou 'echouee'.");
-            }
-        }
-    </script>
 
 </div>
 </body>

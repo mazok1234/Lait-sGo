@@ -11,6 +11,30 @@
         <p class="page-subtitle">Suivi journalier de la production par vache</p>
     </div>
 
+    <div class="stats-grid stats-grid-3">
+        <div class="card kpi-card">
+            <div class="card-icon"><i class="fas fa-tint icon-info"></i></div>
+            <div>
+                <div class="card-label">Production du jour</div>
+                <div class="card-value" th:text="${totalProductionJour} + ' L'">0 L</div>
+            </div>
+        </div>
+        <div class="card kpi-card">
+            <div class="card-icon"><i class="fas fa-truck-loading icon-warning"></i></div>
+            <div>
+                <div class="card-label">Sortie du jour</div>
+                <div class="card-value" th:text="${totalSortieJour} + ' L'">0 L</div>
+            </div>
+        </div>
+        <div class="card kpi-card">
+            <div class="card-icon"><i class="fas fa-warehouse icon-success"></i></div>
+            <div>
+                <div class="card-label">Stock restant</div>
+                <div class="card-value" th:text="${stockRestant} + ' L'">0 L</div>
+            </div>
+        </div>
+    </div>
+
     <div class="card card-table">
         <div class="card-header" style="justify-content:space-between;">
             <span class="card-title">Historique des productions</span>
@@ -20,22 +44,41 @@
         </div>
 
         <div class="card-body">
+            <div th:if="${errorMessage}" class="card"
+                 style="padding:12px 16px;margin-bottom:1.2rem;border:1px solid #f6c6c0;background:#fce8e6;color:#b34033;"
+                 th:text="${errorMessage}"></div>
+
             <table class="table">
                 <thead>
                 <tr>
                     <th>Vache</th>
-                    <th>Quantité (L)</th>
+                    <th>Matin (L)</th>
+                    <th>Soir (L)</th>
+                    <th>Total (L)</th>
+                    <th>Restant (L)</th>
                     <th>Date</th>
+                    <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="p : ${productions}">
                     <td th:text="${p.vache.numeroBoucle}">-</td>
+                    <td th:text="${p.quantiteMatin != null ? p.quantiteMatin : '-'}">-</td>
+                    <td th:text="${p.quantiteSoir != null ? p.quantiteSoir : '-'}">-</td>
                     <td th:text="${p.quantiteLitres}">0</td>
+                    <td th:text="${p.quantiteRestante}">0</td>
                     <td th:text="${p.dateProduction}">-</td>
+                    <td>
+                        <a th:href="@{'/productions/' + ${p.id} + '/edit'}" class="action-pill" style="background:#eef4fa;">
+                            <i class="far fa-edit"></i>
+                        </a>
+                        <a th:href="@{'/productions/' + ${p.id} + '/delete'}" class="action-pill" style="background:#fce8e6;color:#b34033;" onclick="return confirm('Supprimer cette production ?');">
+                            <i class="far fa-trash-alt"></i>
+                        </a>
+                    </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(productions)}">
-                    <td colspan="3" class="text-center" style="padding:32px;color:#9CA3AF;">
+                    <td colspan="7" class="text-center" style="padding:32px;color:#9CA3AF;">
                         Aucune production enregistrée.
                     </td>
                 </tr>

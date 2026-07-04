@@ -3,7 +3,6 @@ package com.example.demo.dto;
 import java.time.LocalDate;
 
 public class ReproductionDTO {
-
     private Long id;
     private Long vacheId;
     private String numeroBoucleVache;
@@ -17,7 +16,6 @@ public class ReproductionDTO {
     private LocalDate dateVelageReel;
     private String sexeVeau;
 
-    // ============ CONSTRUCTEURS ============
     public ReproductionDTO() {
     }
 
@@ -30,7 +28,6 @@ public class ReproductionDTO {
         this.statutIA = "en_attente";
     }
 
-    // ============ GETTERS ============
     public Long getId() {
         return id;
     }
@@ -79,7 +76,6 @@ public class ReproductionDTO {
         return sexeVeau;
     }
 
-    // ============ SETTERS ============
     public void setId(Long id) {
         this.id = id;
     }

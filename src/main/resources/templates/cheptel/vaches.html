@@ -13,6 +13,10 @@
 
         <div class="card">
             <div class="card-body">
+                <div th:if="${errorMessage}" class="card"
+                     style="padding:12px 16px;margin-bottom:1.2rem;border:1px solid #f6c6c0;background:#fce8e6;color:#b34033;"
+                     th:text="${errorMessage}"></div>
+
                 <form th:action="@{/cheptel/vaches}" method="get" class="filter-grid">
                     <div class="filter-item">
                         <div class="label-sm"><i class="fas fa-search"></i> Recherche</div>
@@ -25,13 +29,6 @@
                             <option th:each="r : ${races}" th:value="${r.id}" th:text="${r.libelle}" th:selected="${param.raceId == r.id}">Race</option>
                         </select>
                     </div>
-                    <div class="filter-item">
-                        <div class="label-sm">Statut</div>
-                        <select name="statutId">
-                            <option value="">Tous</option>
-                            <option th:each="s : ${statuts}" th:value="${s.id}" th:text="${s.libelle}" th:selected="${param.statutId == s.id}">Statut</option>
-                        </select>
-                    </div>
                     <div class="filter-item" style="display:flex;align-items:flex-end;">
                         <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;"><i class="fas fa-filter"></i> Filtrer</button>
                     </div>
@@ -40,22 +37,25 @@
                 <div class="table-wrap">
                     <table th:unless="${#lists.isEmpty(vaches)}">
                         <thead>
-                            <tr><th>Référence</th><th>Race</th><th>Statut</th><th>Santé</th><th>Actions</th></tr>
+                            <tr><th>Référence</th><th>Race</th><th>Vie</th><th>Repro</th><th>Lactation</th><th>Santé</th><th>Surveillance</th><th>Actions</th></tr>
                         </thead>
                         <tbody>
-                            <tr th:each="v : ${vaches}">
-                                <td th:text="${v.numeroBoucle}">#12345</td>
-                                <td th:text="${v.race != null ? v.race.libelle : ''}">Prim'Holstein</td>
-                                <td th:text="${v.statut != null ? v.statut.libelle : ''}">En lactation</td>
+                            <tr th:each="item : ${vaches}">
+                                <td th:text="${item.vache.numeroBoucle}">#12345</td>
+                                <td th:text="${item.vache.race != null ? item.vache.race.libelle : ''}">Prim'Holstein</td>
+                                <td th:text="${item.vie}">-</td>
+                                <td th:text="${item.repro}">-</td>
+                                <td th:text="${item.lactation}">-</td>
+                                <td th:text="${item.sante}">-</td>
                                 <td>
-                                    <span th:classappend="${v.scoreLocomotion != null and v.scoreLocomotion < 3} ? 'alert' : 'green'">
-                                        <span th:text="${v.scoreLocomotion != null and v.scoreLocomotion < 3} ? 'Surveillance' : 'Stable'">Stable</span>
+                                    <span th:classappend="${(item.vache.scoreLocomotion != null and item.vache.scoreLocomotion < 3) or (item.vache.scoreBcs != null and (item.vache.scoreBcs < 2.5 or item.vache.scoreBcs > 4.0))} ? 'alert' : 'green'">
+                                        <span th:text="${(item.vache.scoreLocomotion != null and item.vache.scoreLocomotion < 3) or (item.vache.scoreBcs != null and (item.vache.scoreBcs < 2.5 or item.vache.scoreBcs > 4.0))} ? 'Surveillance' : 'Stable'">Stable</span>
                                     </span>
                                 </td>
                                 <td>
-                                    <a th:href="@{'/cheptel/vaches/' + ${v.id}}" class="action-pill"><i class="far fa-eye"></i></a>
-                                    <a th:href="@{'/cheptel/vaches/' + ${v.id} + '/edit'}" class="action-pill"><i class="far fa-edit"></i></a>
-                                    <a th:href="@{'/cheptel/vaches/' + ${v.id} + '/delete'}" class="action-pill" style="background:#fce8e6;color:#b34033;" onclick="return confirm('Supprimer cette vache ?');"><i class="far fa-trash-alt"></i></a>
+                                    <a th:href="@{'/cheptel/vaches/' + ${item.vache.id}}" class="action-pill"><i class="far fa-eye"></i></a>
+                                    <a th:href="@{'/cheptel/vaches/' + ${item.vache.id} + '/edit'}" class="action-pill"><i class="far fa-edit"></i></a>
+                                    <a th:href="@{'/cheptel/vaches/' + ${item.vache.id} + '/delete'}" class="action-pill" style="background:#fce8e6;color:#b34033;" onclick="return confirm('Supprimer cette vache ?');"><i class="far fa-trash-alt"></i></a>
                                 </td>
                             </tr>
                         </tbody>
@@ -67,10 +67,10 @@
                 </div>
 
                 <div class="pagination" th:unless="${#lists.isEmpty(vaches) or totalPages <= 1}">
-                    <button class="btn btn-outline btn-sm" th:disabled="${page == 0}" th:onclick="'location.href=\'' + @{/cheptel/vaches(page=0, q=${param.q}, raceId=${param.raceId}, statutId=${param.statutId})} + '\''">Première</button>
-                    <button class="btn btn-outline btn-sm" th:disabled="${page == 0}" th:onclick="'location.href=\'' + @{/cheptel/vaches(page=${page - 1}, q=${param.q}, raceId=${param.raceId}, statutId=${param.statutId})} + '\''">Précédente</button>
+                    <button class="btn btn-outline btn-sm" th:disabled="${page == 0}" th:onclick="'location.href=\'' + @{/cheptel/vaches(page=0, q=${param.q}, raceId=${param.raceId})} + '\''">Première</button>
+                    <button class="btn btn-outline btn-sm" th:disabled="${page == 0}" th:onclick="'location.href=\'' + @{/cheptel/vaches(page=${page - 1}, q=${param.q}, raceId=${param.raceId})} + '\''">Précédente</button>
                     <span class="page-info" th:text="'Page ' + ${page + 1} + ' / ' + ${totalPages}">Page 1</span>
-                    <button class="btn btn-outline btn-sm" th:disabled="${page >= totalPages - 1}" th:onclick="'location.href=\'' + @{/cheptel/vaches(page=${page + 1}, q=${param.q}, raceId=${param.raceId}, statutId=${param.statutId})} + '\''">Suivante</button>
+                    <button class="btn btn-outline btn-sm" th:disabled="${page >= totalPages - 1}" th:onclick="'location.href=\'' + @{/cheptel/vaches(page=${page + 1}, q=${param.q}, raceId=${param.raceId})} + '\''">Suivante</button>
                 </div>
             </div>
         </div>

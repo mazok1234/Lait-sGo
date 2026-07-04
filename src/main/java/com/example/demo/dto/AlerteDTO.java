@@ -3,11 +3,10 @@ package com.example.demo.dto;
 import java.time.LocalDateTime;
 
 public class AlerteDTO {
-
     private Long id;
     private String titre;
     private String description;
-    private String niveauCode;    // "danger", "warning", "info" — pour les classes CSS
+    private String niveauCode;
     private String niveauLibelle;
     private String typeCode;
     private String typeLibelle;
@@ -17,7 +16,6 @@ public class AlerteDTO {
     private Boolean acquittee;
     private LocalDateTime createdAt;
 
-    // Getters / Setters complets
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getTitre() { return titre; }

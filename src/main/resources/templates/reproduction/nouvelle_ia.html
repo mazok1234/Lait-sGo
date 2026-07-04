@@ -44,7 +44,10 @@
 
                     <div class="form-group">
                         <label>Type d'IA</label>
-                        <input type="text" id="typeInjection" name="typeInjection" placeholder="ex: IA fraîche">
+                        <select id="typeInjection" name="typeInjection">
+                            <option value="">-- Sélectionner --</option>
+                            <option th:each="t : ${typesIA}" th:value="${t.libelle}" th:text="${t.libelle}"></option>
+                        </select>
                     </div>
 
                     <div class="form-group">

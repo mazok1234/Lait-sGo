@@ -62,14 +62,9 @@
                           style="color:#DC2626;font-size:0.8rem;"></span>
                 </div>
 
-                <!-- Date -->
-                <div style="display:flex;flex-direction:column;gap:6px;">
-                    <label for="dateMouvement" style="font-size:0.875rem;font-weight:600;">Date</label>
-                    <input type="date" id="dateMouvement" th:field="*{dateMouvement}"
-                           style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
-                    <span th:if="${#fields.hasErrors('dateMouvement')}" th:errors="*{dateMouvement}"
-                          style="color:#DC2626;font-size:0.8rem;"></span>
-                </div>
+                <!-- Date (automatique) -->
+                <input type="hidden" id="dateMouvement" th:field="*{dateMouvement}"
+                       th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}">
 
                 <!-- Boutons -->
                 <div style="display:flex;justify-content:space-between;margin-top:8px;">

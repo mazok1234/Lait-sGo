@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion — Lait's Go</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #FCF8FB;
+            color: #1A1A2E;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 380px;
+            background: #FFFFFF;
+            border: 1px solid #F0EEF0;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 20, 40, 0.06), 0 2px 6px rgba(0, 0, 0, 0.03);
+            padding: 2.2rem 2rem;
+        }
+        .login-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1A1A2E;
+            margin-bottom: 0.4rem;
+        }
+        .login-logo i { font-size: 1.7rem; color: #007AFF; }
+        .login-subtitle {
+            text-align: center;
+            color: #6B7280;
+            font-size: 0.85rem;
+            margin-bottom: 1.8rem;
+        }
+        .form-group { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1.1rem; }
+        .form-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: #4b637c;
+        }
+        .form-group input {
+            padding: 0.7rem 0.9rem;
+            border: 1px solid #dce3ed;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            background: #fafcff;
+            color: #0b1a2e;
+            outline: none;
+            transition: 0.15s;
+            font-family: inherit;
+        }
+        .form-group input:focus {
+            border-color: #2f6ed4;
+            box-shadow: 0 0 0 3px rgba(47, 110, 212, 0.12);
+        }
+        .btn-login {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 12px;
+            background-color: #007AFF;
+            color: #FFFFFF;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            margin-top: 0.4rem;
+            transition: background-color 0.15s, box-shadow 0.15s;
+        }
+        .btn-login:hover {
+            background-color: #0066D6;
+            box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+        }
+        .flash {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 1.2rem;
+            font-size: 0.82rem;
+            font-weight: 500;
+        }
+        .flash-success { background: #E8F5E9; color: #2E7D32; }
+        .flash-error { background: #FFEBEE; color: #C62828; }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="login-logo">
+            <i class="fas fa-cow"></i>
+            <span>Lait's Go</span>
+        </div>
+        <div class="login-subtitle">Connexion à votre espace</div>
+
+        <div th:if="${errorMessage}" class="flash flash-error">
+            <i class="fas fa-exclamation-circle"></i> <span th:text="${errorMessage}"></span>
+        </div>
+        <div th:if="${successMessage}" class="flash flash-success">
+            <i class="fas fa-check-circle"></i> <span th:text="${successMessage}"></span>
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label for="username">Email</label>
+                <input type="email" id="username" name="username" required autofocus placeholder="nom@laitgo.mg">
+            </div>
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" name="password" required minlength="4" placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn-login"><i class="fas fa-arrow-right-to-bracket"></i> Se connecter</button>
+        </form>
+    </div>
+
+</body>
+</html>

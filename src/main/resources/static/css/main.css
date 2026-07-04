@@ -124,6 +124,30 @@ ul {
     color: #DC2626;
 }
 
+.sidebar-footer form { margin: 0; }
+
+.logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 8px;
+    background: none;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #6B7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+    background-color: #FEF2F2;
+    color: #DC2626;
+}
+
 /* --- Main Content --- */
 .main-content {
     margin-left: 260px;
@@ -736,13 +760,6 @@ ul {
 .cheptel-wrapper .btn-outline { background: white; border: 1px solid #d0ddea; color: #1f3f66; }
 .cheptel-wrapper .btn-outline i { color: #4b6f95; }
 
-.cheptel-wrapper .grid-2col {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 1.8rem;
-    margin-top: 1.8rem;
-}
-
 .cheptel-wrapper .grid-metrics {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -852,16 +869,6 @@ ul {
 .cheptel-wrapper .action-pill i { font-size: 0.7rem; color: #4f73a0; }
 .cheptel-wrapper .action-pill:hover { background: #e3ebf6; border-color: #bdcfe0; }
 
-.cheptel-wrapper .placeholder-box {
-    background: #f6faff;
-    border-radius: 20px;
-    padding: 2rem 1.2rem;
-    text-align: center;
-    color: #4b6889;
-    border: 1px dashed #c8d8ea;
-    font-size: 0.9rem;
-}
-
 .cheptel-wrapper .detail-grid {
     display: flex;
     flex-direction: column;
@@ -878,39 +885,6 @@ ul {
 }
 
 .cheptel-wrapper .detail-row strong { color: #0b1a2e; }
-
-.cheptel-wrapper .tab-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.3rem 0.8rem;
-    margin: 0.8rem 0 1rem;
-}
-
-.cheptel-wrapper .tab-pill {
-    background: #f1f6fd;
-    padding: 0.3rem 1rem;
-    border-radius: 40px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: #1f3f66;
-    border: 1px solid #dce6f2;
-}
-
-.cheptel-wrapper .tab-pill.active {
-    background: #1f3f66;
-    color: white;
-    border-color: #1f3f66;
-}
-
-.cheptel-wrapper .note-box {
-    background: #f2f8ff;
-    border-left: 4px solid #2f6ed4;
-    padding: 0.9rem 1.2rem;
-    border-radius: 14px;
-    color: #1f3a5f;
-    font-size: 0.85rem;
-    margin-top: 0.4rem;
-}
 
 .cheptel-wrapper .race-form-inline {
     display: flex;
@@ -956,17 +930,6 @@ ul {
     letter-spacing: 0.03em;
     color: #62748c;
 }
-
-.cheptel-wrapper .filter-item .fake-input {
-    color: #1e3b5c;
-    font-weight: 500;
-    padding: 0.3rem 0;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-}
-
-.cheptel-wrapper .fake-input i { color: #8196b0; font-size: 0.8rem; }
 
 .cheptel-wrapper .btn-danger-sm {
     background: #fce8e6;
@@ -1037,7 +1000,6 @@ ul {
 .cheptel-wrapper .text-muted { color: #62748c; }
 
 @media (max-width: 1000px) {
-    .cheptel-wrapper .grid-2col { grid-template-columns: 1fr; }
     .cheptel-wrapper .filter-grid { grid-template-columns: 1fr 1fr; }
     .cheptel-wrapper .form-grid { grid-template-columns: 1fr; }
     .cheptel-wrapper .form-group.full-width { grid-column: 1; }
@@ -1097,6 +1059,11 @@ ul {
 .icon-info {
     background-color: #EFF6FF;
     color: #007AFF;
+}
+
+.icon-success {
+    background-color: #E3F3E8;
+    color: #1D6F42;
 }
 
 /* --- Badges de niveau --- */

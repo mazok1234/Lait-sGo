@@ -32,7 +32,10 @@
                     <div class="detail-grid">
                         <div class="detail-row"><span>Numéro</span><strong th:text="${vache.numeroBoucle}">#12345</strong></div>
                         <div class="detail-row"><span>Race</span><strong th:text="${vache.race != null ? vache.race.libelle : ''}">Prim'Holstein</strong></div>
-                        <div class="detail-row"><span>Statut</span><strong th:text="${vache.statut != null ? vache.statut.libelle : ''}">En lactation</strong></div>
+                        <div class="detail-row"><span>Statut vie</span><strong th:text="${statutVie}">-</strong></div>
+                        <div class="detail-row"><span>Statut reproduction</span><strong th:text="${statutRepro}">-</strong></div>
+                        <div class="detail-row"><span>Statut lactation</span><strong th:text="${statutLactation}">-</strong></div>
+                        <div class="detail-row"><span>Statut santé</span><strong th:text="${statutSante}">-</strong></div>
                         <div class="detail-row"><span>Naissance</span><strong th:text="${vache.dateNaissance}">2024-03-15</strong></div>
                         <div class="detail-row"><span>Poids</span><strong th:text="${vache.poidsKg != null ? vache.poidsKg + ' kg' : '-'}">600 kg</strong></div>
                         <div class="detail-row"><span>Mère</span><strong th:text="${vache.mere != null ? vache.mere.numeroBoucle : '-'}">#09876</strong></div>

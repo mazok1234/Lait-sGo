@@ -5,9 +5,21 @@
 <body>
 <div th:fragment="mainContent" class="page-content">
 
-    <div class="page-header">
-        <h1 class="page-title">Reproduction</h1>
-        <p class="page-subtitle">Suivi des chaleurs et des gestations</p>
+    <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+        <div>
+            <h1 class="page-title">Reproduction</h1>
+            <p class="page-subtitle">Suivi des chaleurs et des gestations</p>
+        </div>
+        <a th:href="@{/reproduction/nouvelle}" class="btn btn-primary">
+            <i class="fas fa-syringe"></i> Nouvelle IA
+        </a>
+    </div>
+
+    <div th:if="${error}" class="flash flash-error" style="margin-bottom:20px;">
+        <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+    </div>
+    <div th:if="${success}" class="flash flash-success" style="margin-bottom:20px;">
+        <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
     </div>
 
     <div class="stats-grid stats-grid-3">
@@ -38,8 +50,8 @@
         <div class="card-header" style="justify-content:space-between;flex-wrap:wrap;gap:12px;">
             <span class="card-title">Suivi des chaleurs</span>
             <form th:action="@{/reproduction}" method="get" class="filters" style="margin:0;">
-                <input type="number" name="mois" min="1" max="12" th:value="${selectedMonth}" placeholder="Mois" style="width:90px;">
-                <input type="number" name="annee" min="2000" max="2100" th:value="${selectedYear}" placeholder="Année" style="width:100px;">
+                <input type="number" name="mois" min="1" max="12" th:value="${param.mois != null ? selectedMonth : ''}" placeholder="Mois" style="width:90px;">
+                <input type="number" name="annee" min="2000" max="2100" th:value="${param.annee != null ? selectedYear : ''}" placeholder="Année" style="width:100px;">
                 <select name="vacheId" style="padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-family:'Inter',sans-serif;font-size:0.85rem;">
                     <option value="" th:selected="${selectedVacheId == null}">Toutes les vaches</option>
                     <option th:each="v : ${vaches}"
@@ -58,7 +70,7 @@
                 <tr>
                     <th>Vache</th>
                     <th>Date de chaleur</th>
-                    <th>Origine</th>
+                    <th>Jours restants</th>
                     <th>Statut</th>
                 </tr>
                 </thead>
@@ -66,7 +78,10 @@
                 <tr th:each="ligne : ${chaleurs}">
                     <td th:text="${ligne.numeroBoucle}">-</td>
                     <td th:text="${ligne.dateChaleur}">-</td>
-                    <td th:text="${ligne.origine}">-</td>
+                    <td>
+                        <span th:if="${ligne.joursRestants == 0}" style="color:#059669;font-weight:600;">Prêt</span>
+                        <span th:if="${ligne.joursRestants > 0}" th:text="${ligne.joursRestants + ' jours'}">-</span>
+                    </td>
                     <td><span class="badge badge-niveau badge-niveau-info" th:text="${ligne.statut}"></span></td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(chaleurs)}">
