@@ -143,6 +143,18 @@ public class RationController {
         return "redirect:/rations?rationId=" + rationId;
     }
 
+    @PostMapping("/nourrir/{id}")
+    public String nourrirVaches(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            rationService.nourrirVaches(id);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Mouvement de sortie enregistre pour toutes les vaches de cette ration.");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/rations/details/" + id;
+    }
+
     @GetMapping("/details/{id}")
     public String details(@PathVariable Long id, Model model) {
         Ration ration = rationService.findById(id);

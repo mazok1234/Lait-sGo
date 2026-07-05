@@ -519,3 +519,6 @@ INSERT INTO protocole_vaccin (nom_vaccin, age_min_jours, age_max_jours, duree_ra
 ('Vaccin Fièvre Aphteuse (Primo)', 60, 120, 180),    -- À faire entre 2 et 4 mois, rappel tous les 6 mois
 ('Vaccin Charbon Symptomatique', 90, 180, 365),     -- À faire à partir de 3 mois, rappel annuel
 ('Rhinotrachéite Infectieuse Bovine (IBR)', 150, 360, 365);
+
+SELECT setval('ref_race_id_seq', (SELECT MAX(id) FROM ref_race));
+SELECT setval('ref_type_ia_id_seq', (SELECT MAX(id) FROM ref_type_ia));

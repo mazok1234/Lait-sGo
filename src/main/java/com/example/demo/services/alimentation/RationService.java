@@ -1,11 +1,14 @@
 package com.example.demo.services.alimentation;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.entity.alimentation.MouvementAliment;
 import com.example.demo.entity.alimentation.Ration;
 import com.example.demo.entity.alimentation.RationAliment;
 import com.example.demo.repository.alimentation.RationAlimentRepository;
@@ -15,11 +18,14 @@ import com.example.demo.repository.alimentation.RationRepository;
 public class RationService {
     private final RationRepository rationRepository;
     private final RationAlimentRepository rationAlimentRepository;
+    private final MouvementAlimentService mouvementAlimentService;
 
     public RationService(RationRepository rationRepository,
-                         RationAlimentRepository rationAlimentRepository) {
+                         RationAlimentRepository rationAlimentRepository,
+                         MouvementAlimentService mouvementAlimentService) {
         this.rationRepository = rationRepository;
         this.rationAlimentRepository = rationAlimentRepository;
+        this.mouvementAlimentService = mouvementAlimentService;
     }
 
     public List<RationCardVm> getRationCards() {
@@ -106,7 +112,38 @@ public class RationService {
         );
         }
 
-        public List<RationActiveVacheVm> getRationsActivesVaches() {
+        @Transactional
+    public void nourrirVaches(Long rationId) {
+        List<RationAliment> aliments = findAlimentsByRationId(rationId);
+        if (aliments.isEmpty()) {
+            throw new IllegalStateException("Cette ration n'a aucun aliment a distribuer.");
+        }
+
+        long nbVaches = rationRepository.countVachesForRation(rationId);
+        if (nbVaches == 0) {
+            throw new IllegalStateException("Aucune vache n'est actuellement concernee par cette ration.");
+        }
+
+        LocalDate aujourdHui = LocalDate.now();
+        List<MouvementAliment> mouvements = new ArrayList<>();
+        for (RationAliment ligne : aliments) {
+            MouvementAliment mouvement = new MouvementAliment();
+            mouvement.setAliment(ligne.getAliment());
+            mouvement.setTypeMouvement("sortie");
+            mouvement.setQuantiteKg(ligne.getQuantiteKg().multiply(BigDecimal.valueOf(nbVaches)));
+            mouvement.setDateMouvement(aujourdHui);
+
+            String erreur = mouvementAlimentService.getErreurDateSortie(mouvement);
+            if (erreur != null) {
+                throw new IllegalStateException(ligne.getAliment().getNom() + " : " + erreur);
+            }
+            mouvements.add(mouvement);
+        }
+
+        mouvements.forEach(mouvementAlimentService::save);
+    }
+
+    public List<RationActiveVacheVm> getRationsActivesVaches() {
         return rationRepository.findRationsActivesVaches().stream()
             .map(v -> new RationActiveVacheVm(
                 v.getVacheId(),
