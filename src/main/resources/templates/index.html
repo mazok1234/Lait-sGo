@@ -14,6 +14,7 @@
 
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -28,12 +29,36 @@
         <nav class="sidebar-nav">
             <ul>
 
-                <li sec:authorize="hasRole('ADMIN')">
-                    <a href="/admin">
-                        <i class="fas fa-user-shield"></i>
-                        <span>Administration</span>
+                <li sec:authorize="hasRole('ADMIN')" class="has-submenu" data-submenu-paths="/admin">
+                    <a href="#" class="submenu-toggle">
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <i class="fas fa-user-shield"></i>
+                            <span>Administration</span>
+                        </div>
+                        <i class="fas fa-chevron-down submenu-arrow"></i>
                     </a>
+                    <ul class="submenu">
+                        <li>
+                            <a href="/admin">
+                                <i class="fas fa-chart-pie"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/admin/statistiques">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Statistiques</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/admin/rapports">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Rapports</span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
+                <th:block sec:authorize="!hasRole('ADMIN')">
                 <li>
                     <a href="/cheptel">
                         <i class="fas fa-paw"></i>
@@ -156,6 +181,7 @@
                         <span>Ventes</span>
                     </a>
                 </li>
+                </th:block>
 
             </ul>
         </nav>

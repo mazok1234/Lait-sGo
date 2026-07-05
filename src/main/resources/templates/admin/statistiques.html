@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+<head>
+    <title>Statistiques Administrateur</title>
+</head>
+<body>
+<div th:fragment="mainContent" class="page-content">
+
+    <div class="page-header">
+        <h1 class="page-title">Statistiques</h1>
+        <p class="page-subtitle">Analyse visuelle des performances</p>
+    </div>
+
+    <div class="content-grid" style="grid-template-columns: 1fr 1fr;">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Lait produit par mois</h2>
+            </div>
+            <div class="card-body" style="padding:20px;">
+                <canvas id="prodChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Revenus des ventes par mois</h2>
+            </div>
+            <div class="card-body" style="padding:20px;">
+                <canvas id="venteChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var prodStats = /*[[${prodStats}]]*/ [];
+        var venteStats = /*[[${venteStats}]]*/ [];
+        
+        function formatMonth(month, year) {
+            const date = new Date(year, month - 1, 1);
+            return date.toLocaleString('fr-FR', { month: 'short', year: 'numeric' });
+        }
+
+        var prodLabels = prodStats.map(s => formatMonth(s.month, s.year));
+        var prodData = prodStats.map(s => s.total);
+
+        var venteLabels = venteStats.map(s => formatMonth(s.month, s.year));
+        var venteData = venteStats.map(s => s.total);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (document.getElementById('prodChart')) {
+                var ctxProd = document.getElementById('prodChart').getContext('2d');
+                new Chart(ctxProd, {
+                    type: 'bar',
+                    data: {
+                        labels: prodLabels,
+                        datasets: [{
+                            label: 'Lait Produit (L)',
+                            data: prodData,
+                            backgroundColor: '#3B82F6',
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+            }
+
+            if (document.getElementById('venteChart')) {
+                var ctxVente = document.getElementById('venteChart').getContext('2d');
+                new Chart(ctxVente, {
+                    type: 'bar',
+                    data: {
+                        labels: venteLabels,
+                        datasets: [{
+                            label: 'Revenus (Ar)',
+                            data: venteData,
+                            backgroundColor: '#10B981',
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+            }
+        });
+        /*]]>*/
+    </script>
+</div>
+</body>
+</html>
