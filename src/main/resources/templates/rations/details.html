@@ -9,6 +9,22 @@
         <p class="page-subtitle" th:text="${phase}">Phase de lactation</p>
     </div>
 
+    <div th:if="${successMessage}" class="flash flash-success" style="margin-bottom:20px;">
+        <i class="fas fa-check-circle"></i> <span th:text="${successMessage}"></span>
+    </div>
+    <div th:if="${errorMessage}" class="flash flash-error" style="margin-bottom:20px;">
+        <i class="fas fa-exclamation-circle"></i> <span th:text="${errorMessage}"></span>
+    </div>
+
+    <div style="margin-bottom:20px;">
+        <form th:action="@{/rations/nourrir/{id}(id=${ration.id})}" method="post"
+              onsubmit="return confirm('Enregistrer une sortie de stock pour nourrir toutes les vaches de cette ration ?');">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-utensils"></i> Nourrir les vaches de cette ration
+            </button>
+        </form>
+    </div>
+
     <div class="content-grid" style="grid-template-columns: 1fr 1fr; gap: 20px;">
 
         <!-- Colonne 1 : Composition de la ration -->
