@@ -91,53 +91,56 @@ public class VaccinService {
         }
 
         public List<HistoriqueVaccin> getVaccinsPrioritaires() {
-            List<HistoriqueVaccin> derniers = historiqueRepository.findLastByVaccin();
-            LocalDate today = LocalDate.now();
+                List<HistoriqueVaccin> derniers = historiqueRepository.findLastByVaccin();
+                LocalDate today = LocalDate.now();
 
-            List<HistoriqueVaccin> sorted = derniers.stream()
-                            .sorted((a, b) -> {
-                                    LocalDate dateA = a.getDateVaccination()
-                                                    .plusDays(a.getProtocoleVaccin().getDureeRappelJours());
-                                    LocalDate dateB = b.getDateVaccination()
-                                                    .plusDays(b.getProtocoleVaccin().getDureeRappelJours());
-                                    return dateA.compareTo(dateB);
-                            })
-                            .toList();
+                List<HistoriqueVaccin> sorted = derniers.stream()
+                                .sorted((a, b) -> {
+                                        LocalDate dateA = a.getDateVaccination()
+                                                        .plusDays(a.getProtocoleVaccin().getDureeRappelJours());
+                                        LocalDate dateB = b.getDateVaccination()
+                                                        .plusDays(b.getProtocoleVaccin().getDureeRappelJours());
+                                        return dateA.compareTo(dateB);
+                                })
+                                .toList();
 
-            sorted.forEach(h -> {
-                    LocalDate prochaineDate = h.getDateVaccination()
-                                    .plusDays(h.getProtocoleVaccin().getDureeRappelJours());
+                sorted.forEach(h -> {
+                        LocalDate prochaineDate = h.getDateVaccination()
+                                        .plusDays(h.getProtocoleVaccin().getDureeRappelJours());
 
-                    String niveauCode;
-                    String typeCode;
-                    String titre;
+                        String niveauCode;
+                        String typeCode;
+                        String titre;
 
-                    if (prochaineDate.isBefore(today)) {
-                            niveauCode = "urgent";
-                            typeCode = "vaccin_en_retard";
-                            titre = "Retard critique : " + h.getProtocoleVaccin().getNomVaccin();
-                    } else {
-                            niveauCode = "attention";
-                            typeCode = "rappel_vaccin";
-                            titre = "Rappel à planifier : " + h.getProtocoleVaccin().getNomVaccin();
-                    }
+                        if (prochaineDate.isBefore(today)) {
+                                niveauCode = "urgent";
+                                typeCode = "vaccin_en_retard";
+                                titre = "Retard critique : " + h.getProtocoleVaccin().getNomVaccin();
+                        } else {
+                                niveauCode = "attention";
+                                typeCode = "rappel_vaccin";
+                                titre = "Rappel à planifier : " + h.getProtocoleVaccin().getNomVaccin();
+                        }
 
-                    alerteService.envoyerAlerte(
-                                    typeCode,
-                                    niveauCode,
-                                    titre,
-                                    "Rappel requis pour la vache " + h.getVache().getNumeroBoucle() + " avant le "
-                                                    + prochaineDate + ".",
-                                    h.getVache().getId());
+                        // alerteService.envoyerAlerte(
+                        // typeCode,
+                        // niveauCode,
+                        // titre,
+                        // "Rappel requis pour la vache " + h.getVache().getNumeroBoucle() + " avant le
+                        // "
+                        // + prochaineDate + ".",
+                        // h.getVache().getId());
 
-                        Optional<Alerte> alerteOpt = alerteService.obtenirAlerteActive(h.getVache().getId(), typeCode);                    if (alerteOpt.isPresent()) {
-                            h.setAlerteId(alerteOpt.get().getId());
-                    } else {
-                            h.setAlerteId(null);
-                    }
-            });
+                        // Optional<Alerte> alerteOpt =
+                        // alerteService.obtenirAlerteActive(h.getVache().getId(), typeCode);
+                        // if (alerteOpt.isPresent()) {
+                        // h.setAlerteId(alerteOpt.get().getId());
+                        // } else {
+                        // h.setAlerteId(null);
+                        // }
+                });
 
-            return sorted;
+                return sorted;
         }
 
         public List<VaccinStatDTO> getStatistiquesVaccins() {
@@ -177,27 +180,27 @@ public class VaccinService {
                                 .toList();
         }
 
-    public List<String> statut(List<HistoriqueVaccin> vaccins){
-        List<String> statuts = new ArrayList<>();
-        LocalDate today = LocalDate.now();
+        public List<String> statut(List<HistoriqueVaccin> vaccins) {
+                List<String> statuts = new ArrayList<>();
+                LocalDate today = LocalDate.now();
 
-        for (HistoriqueVaccin h : vaccins) {
-            LocalDate prochaineDate = h.getDateVaccination()
-                    .plusDays(h.getProtocoleVaccin().getDureeRappelJours());
+                for (HistoriqueVaccin h : vaccins) {
+                        LocalDate prochaineDate = h.getDateVaccination()
+                                        .plusDays(h.getProtocoleVaccin().getDureeRappelJours());
 
-                    long joursRetard = ChronoUnit.DAYS.between(prochaineDate, today);
+                        long joursRetard = ChronoUnit.DAYS.between(prochaineDate, today);
 
-                if(joursRetard > 0){
-                    statuts.add("EN RETARD " + joursRetard + "j");
+                        if (joursRetard > 0) {
+                                statuts.add("EN RETARD " + joursRetard + "j");
+                        }
+                        if (joursRetard <= 0 && joursRetard > -7) {
+                                statuts.add("A REVOIR " + joursRetard + "j");
+                        }
+                        if (joursRetard <= -7) {
+                                statuts.add("------");
+                        }
                 }
-                if(joursRetard <= 0 && joursRetard > -7){
-                    statuts.add("A REVOIR " + joursRetard + "j");
-                }
-                if(joursRetard <= -7){
-                    statuts.add("------");
-                }
+
+                return statuts;
         }
-
-        return statuts;
-    }
 }
