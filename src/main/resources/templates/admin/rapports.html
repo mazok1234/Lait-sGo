@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+
+<head>
+    <title>Rapports Administrateur</title>
+</head>
+
+<body>
+    <div th:fragment="mainContent" class="page-content">
+
+        <div class="page-header">
+            <h1 class="page-title">Rapports d'activité</h1>
+            <p class="page-subtitle">Dernières productions et ventes enregistrées</p>
+        </div>
+
+        <div class="card card-table" style="margin-bottom: 24px;">
+            <div class="card-header">
+                <h2 class="card-title">Dernières Productions (Lait)</h2>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Vache</th>
+                            <th>Lactation (ID)</th>
+                            <th>Quantité (L)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="prod : ${productions}">
+                            <td th:text="${#temporals.format(prod.dateProduction, 'dd/MM/yyyy')}">-</td>
+                            <td th:text="${prod.vache != null ? prod.vache.nom : '-'}">-</td>
+                            <td th:text="${prod.lactation != null ? prod.lactation.id : '-'}">-</td>
+                            <td th:text="${#numbers.formatDecimal(prod.quantiteLitres, 1, 2) + ' L'}">0 L</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(productions)}">
+                            <td colspan="4" class="text-center" style="padding:32px;color:#9CA3AF;">
+                                Aucune production trouvée.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card card-table">
+            <div class="card-header">
+                <h2 class="card-title">Dernières Ventes</h2>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Quantité (L)</th>
+                            <th>Prix Unitaire (Ar)</th>
+                            <th>Total (Ar)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="vente : ${ventes}">
+                            <td th:text="${#temporals.format(vente.dateVente, 'dd/MM/yyyy')}">-</td>
+                            <td th:text="${#numbers.formatDecimal(vente.quantiteLait, 1, 2) + ' L'}">0 L</td>
+                            <td th:text="${#numbers.formatDecimal(vente.prixUnitaire, 1, 2) + ' Ar'}">0 Ar</td>
+                            <td
+                                th:text="${#numbers.formatDecimal(vente.quantiteLait * vente.prixUnitaire, 1, 2) + ' Ar'}">
+                                0 Ar</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(ventes)}">
+                            <td colspan="4" class="text-center" style="padding:32px;color:#9CA3AF;">
+                                Aucune vente trouvée.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>
