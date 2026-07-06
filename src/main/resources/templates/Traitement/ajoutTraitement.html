@@ -49,9 +49,18 @@
                     <select id="medicamentId" th:field="*{medicamentId}"
                             style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;background:white;width:100%;">
                         <option value="">-- Sélectionner un médicament --</option>
-                        <option th:each="med : ${medicaments}" th:value="${med.id}" th:text="${med.nom}"></option>
+                        <option th:each="med : ${medicaments}"
+                                th:value="${med.id}"
+                                th:text="${med.nom + ' - ' + med.prixUnitaire + ' Ar'}"></option>
                     </select>
                     <span th:if="${#fields.hasErrors('medicamentId')}" th:errors="*{medicamentId}" style="color:#DC2626;font-size:0.8rem;"></span>
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:6px;max-width:220px;">
+                    <label for="nbrMedicament" style="font-size:0.875rem;font-weight:600;">Nombre de médicaments</label>
+                    <input type="number" min="1" step="1" id="nbrMedicament" th:field="*{nbrMedicament}"
+                           style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
+                    <span th:if="${#fields.hasErrors('nbrMedicament')}" th:errors="*{nbrMedicament}" style="color:#DC2626;font-size:0.8rem;"></span>
                 </div>
 
                 <div style="display:grid;grid-template-columns:1fr 180px;gap:16px;">

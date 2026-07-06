@@ -41,6 +41,9 @@
                     <th>Vache</th>
                     <th>Maladie</th>
                     <th>Médicament</th>
+                    <th>Nb médicaments</th>
+                    <th>Prix unitaire</th>
+                    <th>Prix total</th>
                     <th>Dose</th>
                     <th>Durée</th>
                     <th>Délai</th>
@@ -54,6 +57,9 @@
                     <td th:text="${traitement.evenementSante != null and traitement.evenementSante.vache != null ? traitement.evenementSante.vache.numeroBoucle : '-'}">-</td>
                     <td th:text="${traitement.evenementSante != null and traitement.evenementSante.maladie != null ? traitement.evenementSante.maladie.nom : '-'}">-</td>
                     <td th:text="${traitement.medicament != null ? traitement.medicament.nom : '-'}">-</td>
+                    <td th:text="${traitement.evenementSante != null and traitement.evenementSante.nbrMedicament != null ? traitement.evenementSante.nbrMedicament : '-'}">-</td>
+                    <td th:text="${traitement.prixUnitaireMedicament != null ? #numbers.formatDecimal(traitement.prixUnitaireMedicament,1,2) + ' Ar' : '-'}">-</td>
+                    <td th:text="${traitement.prixTotalMedicament != null ? #numbers.formatDecimal(traitement.prixTotalMedicament,1,2) + ' Ar' : '-'}">-</td>
                     <td th:text="${traitement.dose != null ? #numbers.formatDecimal(traitement.dose,1,2) + ' ' + traitement.unite : '-'}">-</td>
                     <td th:text="${traitement.dureeTraitement != null ? traitement.dureeTraitement + ' j' : '-'}">-</td>
                     <td th:text="${traitement.delaiAttenteJ != null ? traitement.delaiAttenteJ + ' j' : '-'}">-</td>
@@ -75,7 +81,7 @@
                     </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(traitements)}">
-                    <td colspan="9" class="text-center" style="padding:32px;color:#9CA3AF;">
+                    <td colspan="12" class="text-center" style="padding:32px;color:#9CA3AF;">
                         Aucun traitement enregistré.
                     </td>
                 </tr>

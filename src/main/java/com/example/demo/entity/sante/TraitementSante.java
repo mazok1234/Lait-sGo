@@ -71,6 +71,11 @@ public class TraitementSante {
     @NotNull(message = "Le medicament est obligatoire")
     private Long medicamentId;
 
+    @Transient
+    @NotNull(message = "Le nombre de medicaments est obligatoire")
+    @Min(value = 1, message = "Le nombre de medicaments doit etre au moins de 1")
+    private Integer nbrMedicament;
+
     public Long getId() {
         return id;
     }
@@ -174,5 +179,30 @@ public class TraitementSante {
 
     public void setMedicamentId(Long medicamentId) {
         this.medicamentId = medicamentId;
+    }
+
+    public Integer getNbrMedicament() {
+        if (evenementSante != null && evenementSante.getNbrMedicament() != null) {
+            return evenementSante.getNbrMedicament();
+        }
+        return nbrMedicament;
+    }
+
+    public void setNbrMedicament(Integer nbrMedicament) {
+        this.nbrMedicament = nbrMedicament;
+    }
+
+    public java.math.BigDecimal getPrixUnitaireMedicament() {
+        if (medicament == null) {
+            return null;
+        }
+        return medicament.getPrixUnitaire();
+    }
+
+    public java.math.BigDecimal getPrixTotalMedicament() {
+        if (getPrixUnitaireMedicament() == null || getNbrMedicament() == null) {
+            return null;
+        }
+        return getPrixUnitaireMedicament().multiply(java.math.BigDecimal.valueOf(getNbrMedicament().longValue()));
     }
 }

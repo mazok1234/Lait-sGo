@@ -20,9 +20,12 @@ public class Medicament {
     @Column(name = "nom", nullable = false, length = 150)
     private String nom;
 
-    @Min(value = 0, message = "Le delai d'attente lait doit etre positif")
+@Min(value = 0, message = "Le delai d'attente lait doit etre positif")
     @Column(name = "delai_attente_lait_defaut")
     private Integer delaiAttenteLaitDefaut = 0;
+
+    @Column(name = "prix_unitaire", nullable = false, precision = 10, scale = 2)
+    private java.math.BigDecimal prixUnitaire = java.math.BigDecimal.ZERO;
 
     @Min(value = 0, message = "Le delai d'attente viande doit etre positif")
     @Column(name = "delai_attente_viande_defaut")
@@ -59,4 +62,13 @@ public class Medicament {
     public void setDelaiAttenteViandeDefaut(Integer delaiAttenteViandeDefaut) {
         this.delaiAttenteViandeDefaut = delaiAttenteViandeDefaut;
     }
+
+    public java.math.BigDecimal getPrixUnitaire() {
+        return prixUnitaire;
+    }
+
+    public void setPrixUnitaire(java.math.BigDecimal prixUnitaire) {
+        this.prixUnitaire = prixUnitaire;
+    }
 }
+

@@ -1,7 +1,5 @@
 package com.example.demo.services.sante;
 
-import com.example.demo.services.cheptel.StatutLactationVacheService;
-
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -10,17 +8,18 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.entity.cheptel.RefStatutLactationVache;
+import com.example.demo.entity.cheptel.Vache;
 import com.example.demo.entity.sante.EvenementSante;
 import com.example.demo.entity.sante.Maladie;
 import com.example.demo.entity.sante.Medicament;
-import com.example.demo.entity.cheptel.RefStatutLactationVache;
 import com.example.demo.entity.sante.TraitementSante;
-import com.example.demo.entity.cheptel.Vache;
+import com.example.demo.repository.cheptel.VacheRepository;
 import com.example.demo.repository.sante.EvenementSanteRepository;
 import com.example.demo.repository.sante.MaladieRepository;
 import com.example.demo.repository.sante.MedicamentRepository;
 import com.example.demo.repository.sante.TraitementSanteRepository;
-import com.example.demo.repository.cheptel.VacheRepository;
+import com.example.demo.services.cheptel.StatutLactationVacheService;
 
 @Service
 public class TraitementSanteService {
@@ -100,6 +99,7 @@ public class TraitementSanteService {
         TraitementSante traitement = new TraitementSante();
         traitement.setDateDebut(LocalDate.now());
         traitement.setDelaiAttenteJ(0);
+        traitement.setNbrMedicament(1);
         return traitement;
     }
 
@@ -131,7 +131,13 @@ public class TraitementSanteService {
         if (evenement.getDescription() == null || evenement.getDescription().isBlank()) {
             evenement.setDescription(maladie.getNom());
         }
+        if (traitement.getNbrMedicament() == null || traitement.getNbrMedicament() < 1) {
+            throw new IllegalArgumentException("Le nombre de medicaments doit etre au moins de 1");
+        }
+
+        evenement.setNbrMedicament(traitement.getNbrMedicament());
         evenement = evenementRepository.save(evenement);
+
 
         traitement.setEvenementSante(evenement);
         traitement.setMedicament(medicament);
@@ -202,6 +208,9 @@ public class TraitementSanteService {
         }
         if (traitement.getMedicament() != null) {
             traitement.setMedicamentId(traitement.getMedicament().getId());
+        }
+        if (traitement.getEvenementSante() != null && traitement.getEvenementSante().getNbrMedicament() != null) {
+            traitement.setNbrMedicament(traitement.getEvenementSante().getNbrMedicament());
         }
     }
 }
