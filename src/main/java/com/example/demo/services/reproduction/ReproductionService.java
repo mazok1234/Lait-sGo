@@ -159,7 +159,7 @@ public class ReproductionService {
     public Map<String, Object> getDashboardCounters() {
         Map<String, Object> counters = new HashMap<>();
 
-        String sqlAlertes = "SELECT COUNT(*) FROM alerte WHERE acquittee = FALSE";
+        String sqlAlertes = "SELECT COUNT(*) FROM alerte WHERE acquittee = FALSE and type_alerte = 'rappel_velage'";
         String sqlGestations = "SELECT COUNT(*) FROM reproduction WHERE gestation_confirmee = TRUE AND date_velage_reel IS NULL";
 
         counters.put("alertesActives", jdbcTemplate.queryForObject(sqlAlertes, Integer.class));
