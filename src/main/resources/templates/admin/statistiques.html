@@ -8,7 +8,76 @@
 
     <div class="page-header">
         <h1 class="page-title">Statistiques</h1>
-        <p class="page-subtitle">Analyse visuelle des performances</p>
+        <p class="page-subtitle">Analyse visuelle des performances et suivi financier global</p>
+    </div>
+
+    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom:18px;">
+        <div class="card stat-card">
+            <div class="stat-icon" style="background-color:#ECFDF5;color:#059669;">
+                <i class="fas fa-coins"></i>
+            </div>
+            <div class="stat-body">
+                <div class="stat-label">Revenus totaux</div>
+                <div class="stat-value" th:text="${#numbers.formatDecimal(totalRevenus, 1, 2) + ' Ar'}">0 Ar</div>
+            </div>
+        </div>
+
+        <div class="card stat-card">
+            <div class="stat-icon" style="background-color:#FEF2F2;color:#DC2626;">
+                <i class="fas fa-file-invoice-dollar"></i>
+            </div>
+            <div class="stat-body">
+                <div class="stat-label">Dépenses alimentation</div>
+                <div class="stat-value" th:text="${#numbers.formatDecimal(totalDepenses, 1, 2) + ' Ar'}">0 Ar</div>
+            </div>
+        </div>
+
+        <div class="card stat-card">
+            <div class="stat-icon" style="background-color:#EFF6FF;color:#2563EB;">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="stat-body">
+                <div class="stat-label">Bénéfice estimé</div>
+                <div class="stat-value" th:text="${#numbers.formatDecimal(totalBenefice, 1, 2) + ' Ar'}">0 Ar</div>
+            </div>
+        </div>
+
+        <div class="card stat-card">
+            <div class="stat-icon" style="background-color:#FFF7ED;color:#EA580C;">
+                <i class="fas fa-percent"></i>
+            </div>
+            <div class="stat-body">
+                <div class="stat-label">Marge bénéfice</div>
+                <div class="stat-value" th:text="${#numbers.formatDecimal(margeBeneficePct, 1, 2) + ' %'}">0 %</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom:18px;">
+        <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+            <h2 class="card-title" style="margin:0;">Détails du mois sélectionné</h2>
+            <span id="selectedMonthBadge" style="font-size:.85rem;color:#475569;background:#F1F5F9;padding:6px 10px;border-radius:999px;">Touchez un point/barre du graphe</span>
+        </div>
+        <div class="card-body" style="padding:16px 20px;">
+            <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
+                <div style="background:#EFF6FF;border:1px solid #DBEAFE;border-radius:10px;padding:12px;">
+                    <div style="font-size:.8rem;color:#1E3A8A;">Production</div>
+                    <div id="selectedProd" style="font-size:1.1rem;font-weight:700;color:#1E40AF;">-</div>
+                </div>
+                <div style="background:#ECFDF5;border:1px solid #D1FAE5;border-radius:10px;padding:12px;">
+                    <div style="font-size:.8rem;color:#065F46;">Revenus</div>
+                    <div id="selectedRev" style="font-size:1.1rem;font-weight:700;color:#047857;">-</div>
+                </div>
+                <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px;">
+                    <div style="font-size:.8rem;color:#991B1B;">Dépenses</div>
+                    <div id="selectedDep" style="font-size:1.1rem;font-weight:700;color:#B91C1C;">-</div>
+                </div>
+                <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:12px;">
+                    <div style="font-size:.8rem;color:#9A3412;">Bénéfice</div>
+                    <div id="selectedBen" style="font-size:1.1rem;font-weight:700;color:#C2410C;">-</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="content-grid" style="grid-template-columns: 1fr 1fr;">
@@ -16,8 +85,9 @@
             <div class="card-header">
                 <h2 class="card-title">Lait produit par mois</h2>
             </div>
-            <div class="card-body" style="padding:20px;">
+            <div class="card-body" style="padding:20px;height:320px;">
                 <canvas id="prodChart"></canvas>
+                <div id="prodChartEmpty" style="display:none;text-align:center;color:#64748B;padding-top:110px;">Aucune donnée mensuelle.</div>
             </div>
         </div>
 
@@ -25,8 +95,29 @@
             <div class="card-header">
                 <h2 class="card-title">Revenus des ventes par mois</h2>
             </div>
-            <div class="card-body" style="padding:20px;">
+            <div class="card-body" style="padding:20px;height:320px;">
                 <canvas id="venteChart"></canvas>
+                <div id="venteChartEmpty" style="display:none;text-align:center;color:#64748B;padding-top:110px;">Aucune donnée mensuelle.</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Rentabilité mensuelle</h2>
+            </div>
+            <div class="card-body" style="padding:20px;height:320px;">
+                <canvas id="rentabiliteChart"></canvas>
+                <div id="rentabiliteChartEmpty" style="display:none;text-align:center;color:#64748B;padding-top:110px;">Aucune donnée mensuelle.</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Revenus vs dépenses (mensuel)</h2>
+            </div>
+            <div class="card-body" style="padding:20px;height:320px;">
+                <canvas id="financeCompareChart"></canvas>
+                <div id="financeCompareChartEmpty" style="display:none;text-align:center;color:#64748B;padding-top:110px;">Aucune donnée mensuelle.</div>
             </div>
         </div>
     </div>
@@ -35,19 +126,172 @@
         /*<![CDATA[*/
         var prodStats = /*[[${prodStats}]]*/ [];
         var venteStats = /*[[${venteStats}]]*/ [];
+        var depenseStats = /*[[${depenseStats}]]*/ [];
+        var rentabiliteStats = /*[[${rentabiliteStats}]]*/ [];
         
+        function monthKey(month, year) {
+            return year + '-' + String(month).padStart(2, '0');
+        }
+
         function formatMonth(month, year) {
             const date = new Date(year, month - 1, 1);
             return date.toLocaleString('fr-FR', { month: 'short', year: 'numeric' });
         }
 
-        var prodLabels = prodStats.map(s => formatMonth(s.month, s.year));
+        function formatMonthAxis(month, year) {
+            const date = new Date(year, month - 1, 1);
+            return date.toLocaleString('fr-FR', { month: 'short', year: '2-digit' });
+        }
+
+        function formatYAxisCompact(value) {
+            var n = Number(value || 0);
+            if (Math.abs(n) >= 1000000) {
+                return (n / 1000000).toLocaleString('fr-FR', { maximumFractionDigits: 1 }) + ' M';
+            }
+            if (Math.abs(n) >= 1000) {
+                return (n / 1000).toLocaleString('fr-FR', { maximumFractionDigits: 1 }) + ' k';
+            }
+            if (Math.abs(n) >= 10) {
+                return n.toLocaleString('fr-FR', { maximumFractionDigits: 0 });
+            }
+            if (Math.abs(n) >= 1) {
+                return n.toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+            }
+            return n.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function toggleEmptyState(canvasId, emptyId, hasData) {
+            var canvas = document.getElementById(canvasId);
+            var empty = document.getElementById(emptyId);
+            if (!canvas || !empty) {
+                return;
+            }
+            canvas.style.display = hasData ? 'block' : 'none';
+            empty.style.display = hasData ? 'none' : 'block';
+        }
+
+        function formatAr(value) {
+            return Number(value || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' Ar';
+        }
+
+        function formatLitres(value) {
+            return Number(value || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' L';
+        }
+
+        var prodMap = {};
+        var revMap = {};
+        var depMap = {};
+        var benMap = {};
+
+        prodStats.forEach(function (s) { prodMap[monthKey(s.month, s.year)] = Number(s.total || 0); });
+        venteStats.forEach(function (s) { revMap[monthKey(s.month, s.year)] = Number(s.total || 0); });
+        depenseStats.forEach(function (s) { depMap[monthKey(s.month, s.year)] = Number(s.total || 0); });
+        rentabiliteStats.forEach(function (s) { benMap[monthKey(s.month, s.year)] = Number(s.benefice || 0); });
+
+        function updateSelectedMonth(month, year) {
+            var key = monthKey(month, year);
+            var prod = prodMap[key] || 0;
+            var rev = revMap[key] || 0;
+            var dep = depMap[key] || 0;
+            var ben = benMap[key] || (rev - dep);
+
+            var badge = document.getElementById('selectedMonthBadge');
+            var prodEl = document.getElementById('selectedProd');
+            var revEl = document.getElementById('selectedRev');
+            var depEl = document.getElementById('selectedDep');
+            var benEl = document.getElementById('selectedBen');
+
+            if (badge) badge.textContent = formatMonth(month, year);
+            if (prodEl) prodEl.textContent = formatLitres(prod);
+            if (revEl) revEl.textContent = formatAr(rev);
+            if (depEl) depEl.textContent = formatAr(dep);
+            if (benEl) {
+                benEl.textContent = formatAr(ben);
+                benEl.style.color = ben >= 0 ? '#166534' : '#B91C1C';
+            }
+        }
+
+        function getMonthYearFromStats(stats, index) {
+            if (!stats || index == null || index < 0 || index >= stats.length) {
+                return null;
+            }
+            return { month: Number(stats[index].month), year: Number(stats[index].year) };
+        }
+
+        var commonChartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
+            },
+            plugins: {
+                tooltip: {
+                    enabled: true,
+                    callbacks: {
+                        title: function (items) {
+                            return items && items.length ? 'Mois: ' + items[0].label : '';
+                        }
+                    }
+                },
+                legend: {
+                    labels: {
+                        usePointStyle: true,
+                        boxWidth: 10
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        autoSkip: true,
+                        maxTicksLimit: 8,
+                        maxRotation: 45,
+                        minRotation: 0,
+                        padding: 6,
+                        font: {
+                            size: 11
+                        }
+                    },
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grace: '8%',
+                    ticks: {
+                        callback: function(value) {
+                            return formatYAxisCompact(value);
+                        },
+                        font: {
+                            size: 11
+                        }
+                    }
+                }
+            }
+        };
+
+        var prodLabels = prodStats.map(s => formatMonthAxis(s.month, s.year));
         var prodData = prodStats.map(s => s.total);
 
-        var venteLabels = venteStats.map(s => formatMonth(s.month, s.year));
+        var venteLabels = venteStats.map(s => formatMonthAxis(s.month, s.year));
         var venteData = venteStats.map(s => s.total);
 
+        var rentabiliteLabels = rentabiliteStats.map(s => formatMonthAxis(s.month, s.year));
+        var beneficeData = rentabiliteStats.map(s => s.benefice);
+
+        var financeLabels = rentabiliteStats.map(s => formatMonthAxis(s.month, s.year));
+        var revenusData = rentabiliteStats.map(s => s.revenus);
+        var depensesData = rentabiliteStats.map(s => s.depenses);
+
         document.addEventListener('DOMContentLoaded', function() {
+            toggleEmptyState('prodChart', 'prodChartEmpty', prodData.length > 0);
+            toggleEmptyState('venteChart', 'venteChartEmpty', venteData.length > 0);
+            toggleEmptyState('rentabiliteChart', 'rentabiliteChartEmpty', beneficeData.length > 0);
+            toggleEmptyState('financeCompareChart', 'financeCompareChartEmpty', revenusData.length > 0 || depensesData.length > 0);
+
             if (document.getElementById('prodChart')) {
                 var ctxProd = document.getElementById('prodChart').getContext('2d');
                 new Chart(ctxProd, {
@@ -58,13 +302,20 @@
                             label: 'Lait Produit (L)',
                             data: prodData,
                             backgroundColor: '#3B82F6',
-                            borderRadius: 6
+                            borderRadius: 6,
+                            maxBarThickness: 36
                         }]
                     },
                     options: {
-                        responsive: true,
-                        scales: {
-                            y: { beginAtZero: true }
+                        ...commonChartOptions,
+                        onClick: function(evt, elements, chart) {
+                            if (elements && elements.length) {
+                                var idx = elements[0].index;
+                                var monthYear = getMonthYearFromStats(prodStats, idx);
+                                if (monthYear) {
+                                    updateSelectedMonth(monthYear.month, monthYear.year);
+                                }
+                            }
                         }
                     }
                 });
@@ -80,16 +331,105 @@
                             label: 'Revenus (Ar)',
                             data: venteData,
                             backgroundColor: '#10B981',
-                            borderRadius: 6
+                            borderRadius: 6,
+                            maxBarThickness: 36
                         }]
                     },
                     options: {
-                        responsive: true,
-                        scales: {
-                            y: { beginAtZero: true }
+                        ...commonChartOptions,
+                        onClick: function(evt, elements, chart) {
+                            if (elements && elements.length) {
+                                var idx = elements[0].index;
+                                var monthYear = getMonthYearFromStats(venteStats, idx);
+                                if (monthYear) {
+                                    updateSelectedMonth(monthYear.month, monthYear.year);
+                                }
+                            }
                         }
                     }
                 });
+            }
+
+            if (document.getElementById('rentabiliteChart')) {
+                var ctxRentabilite = document.getElementById('rentabiliteChart').getContext('2d');
+                new Chart(ctxRentabilite, {
+                    type: 'line',
+                    data: {
+                        labels: rentabiliteLabels,
+                        datasets: [{
+                            label: 'Bénéfice (Ar)',
+                            data: beneficeData,
+                            borderColor: '#2563EB',
+                            backgroundColor: 'rgba(37, 99, 235, 0.15)',
+                            fill: true,
+                            tension: 0.25,
+                            pointRadius: 4,
+                            pointHoverRadius: 7,
+                            pointHitRadius: 22
+                        }]
+                    },
+                    options: {
+                        ...commonChartOptions,
+                        onClick: function(evt, elements, chart) {
+                            if (elements && elements.length) {
+                                var idx = elements[0].index;
+                                var monthYear = getMonthYearFromStats(rentabiliteStats, idx);
+                                if (monthYear) {
+                                    updateSelectedMonth(monthYear.month, monthYear.year);
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            if (document.getElementById('financeCompareChart')) {
+                var ctxFinance = document.getElementById('financeCompareChart').getContext('2d');
+                new Chart(ctxFinance, {
+                    type: 'bar',
+                    data: {
+                        labels: financeLabels,
+                        datasets: [
+                            {
+                                label: 'Revenus (Ar)',
+                                data: revenusData,
+                                backgroundColor: '#10B981',
+                                borderRadius: 6,
+                                maxBarThickness: 32
+                            },
+                            {
+                                label: 'Dépenses (Ar)',
+                                data: depensesData,
+                                backgroundColor: '#EF4444',
+                                borderRadius: 6,
+                                maxBarThickness: 32
+                            }
+                        ]
+                    },
+                    options: {
+                        ...commonChartOptions,
+                        onClick: function(evt, elements, chart) {
+                            if (elements && elements.length) {
+                                var idx = elements[0].index;
+                                var monthYear = getMonthYearFromStats(rentabiliteStats, idx);
+                                if (monthYear) {
+                                    updateSelectedMonth(monthYear.month, monthYear.year);
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            if (rentabiliteStats.length > 0) {
+                var first = rentabiliteStats[0];
+                updateSelectedMonth(Number(first.month), Number(first.year));
+            } else if (prodStats.length > 0) {
+                var firstProd = prodStats[0];
+                updateSelectedMonth(Number(firstProd.month), Number(firstProd.year));
+            } else if (venteStats.length > 0) {
+                var firstVente = venteStats[0];
+                updateSelectedMonth(Number(firstVente.month), Number(firstVente.year));
             }
         });
         /*]]>*/
