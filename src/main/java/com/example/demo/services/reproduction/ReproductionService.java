@@ -8,6 +8,8 @@ import com.example.demo.services.cheptel.StatutReproService;
 
 import com.example.demo.services.cheptel.StatutVieService;
 
+import com.example.demo.services.alerte.AlerteService;
+
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -55,6 +57,9 @@ public class ReproductionService {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private AlerteService alerteService;
 
     @Transactional
     public ReproductionDTO enregistrerIA(ReproductionDTO dto) {
@@ -409,11 +414,20 @@ public class ReproductionService {
     public Reproduction confirmerVelage(Long reproductionId, LocalDate dateVelageReel, String sexeVeau) {
         Reproduction reproduction = reproductionRepository.findById(reproductionId)
                 .orElseThrow(() -> new IllegalArgumentException("Reproduction introuvable"));
-
+ 
         reproduction.setDateVelageReel(dateVelageReel);
         reproduction.setSexeVeau(sexeVeau);
         reproductionRepository.save(reproduction);
-
+ 
+        // ← ACQUITTEMENT AUTO — vêlage confirmé, l'alerte rappel_velage disparaît
+        if (reproduction.getVache() != null) {
+            alerteService.acquitterAutomatiquement(
+                "rappel_velage",
+                reproduction.getVache().getId()
+            );
+        }
+        // ← FIN ACQUITTEMENT
+ 
         mettreAJourMereApresVelage(reproduction.getVache(), dateVelageReel);
         return reproduction;
     }

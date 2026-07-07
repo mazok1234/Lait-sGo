@@ -1,5 +1,6 @@
 package com.example.demo.services.sante;
 
+import com.example.demo.services.alerte.AlerteService;
 import com.example.demo.services.cheptel.StatutLactationVacheService;
 
 import java.time.LocalDate;
@@ -24,28 +25,32 @@ import com.example.demo.repository.cheptel.VacheRepository;
 
 @Service
 public class TraitementSanteService {
-    private static final String STATUT_EN_LACTATION = "En_lactation";
-    private static final String STATUT_TARIE = "Tarie";
 
-    private final TraitementSanteRepository traitementRepository;
-    private final EvenementSanteRepository evenementRepository;
-    private final VacheRepository vacheRepository;
-    private final MaladieRepository maladieRepository;
-    private final MedicamentRepository medicamentRepository;
+    private static final String STATUT_EN_LACTATION = "En_lactation";
+    private static final String STATUT_TARIE        = "Tarie";
+
+    private final TraitementSanteRepository  traitementRepository;
+    private final EvenementSanteRepository   evenementRepository;
+    private final VacheRepository            vacheRepository;
+    private final MaladieRepository          maladieRepository;
+    private final MedicamentRepository       medicamentRepository;
     private final StatutLactationVacheService statutLactationService;
+    private final AlerteService              alerteService; // ← ajouté
 
     public TraitementSanteService(TraitementSanteRepository traitementRepository,
-                                  EvenementSanteRepository evenementRepository,
-                                  VacheRepository vacheRepository,
-                                  MaladieRepository maladieRepository,
-                                  MedicamentRepository medicamentRepository,
-                                  StatutLactationVacheService statutLactationService) {
-        this.traitementRepository = traitementRepository;
-        this.evenementRepository = evenementRepository;
-        this.vacheRepository = vacheRepository;
-        this.maladieRepository = maladieRepository;
-        this.medicamentRepository = medicamentRepository;
+                                   EvenementSanteRepository evenementRepository,
+                                   VacheRepository vacheRepository,
+                                   MaladieRepository maladieRepository,
+                                   MedicamentRepository medicamentRepository,
+                                   StatutLactationVacheService statutLactationService,
+                                   AlerteService alerteService) { // ← ajouté
+        this.traitementRepository  = traitementRepository;
+        this.evenementRepository   = evenementRepository;
+        this.vacheRepository       = vacheRepository;
+        this.maladieRepository     = maladieRepository;
+        this.medicamentRepository  = medicamentRepository;
         this.statutLactationService = statutLactationService;
+        this.alerteService         = alerteService; // ← ajouté
     }
 
     public List<TraitementSante> findAll() {
@@ -53,7 +58,9 @@ public class TraitementSanteService {
     }
 
     public long countVachesTariees() {
-        return statutLactationService.findVacheIdsByStatut(statutLactationService.getByLibelle(STATUT_TARIE).getId()).size();
+        return statutLactationService
+                .findVacheIdsByStatut(statutLactationService.getByLibelle(STATUT_TARIE).getId())
+                .size();
     }
 
     @Transactional
@@ -63,7 +70,8 @@ public class TraitementSanteService {
 
         for (TraitementSante traitement : traitementRepository.findAllByOrderByDateDebutDesc()) {
             if (isTreatmentActif(traitement, today)) {
-                Vache vache = traitement.getEvenementSante() != null ? traitement.getEvenementSante().getVache() : null;
+                Vache vache = traitement.getEvenementSante() != null
+                        ? traitement.getEvenementSante().getVache() : null;
                 if (vache != null && vache.getId() != null) {
                     vachesAvecTraitementActif.add(vache.getId());
                 }
@@ -71,9 +79,7 @@ public class TraitementSanteService {
         }
 
         for (Vache vache : vacheRepository.findAll()) {
-            if (vache.getId() == null) {
-                continue;
-            }
+            if (vache.getId() == null) continue;
 
             boolean doitEtreTariee = vachesAvecTraitementActif.contains(vache.getId());
             String statutActuel = statutLactationService.getStatutActuel(vache.getId())
@@ -81,18 +87,18 @@ public class TraitementSanteService {
             boolean estDejaTariee = STATUT_TARIE.equals(statutActuel);
 
             if (doitEtreTariee && !estDejaTariee) {
-                statutLactationService.changerStatut(vache, statutLactationService.getByLibelle(STATUT_TARIE).getId(), today);
+                statutLactationService.changerStatut(vache,
+                        statutLactationService.getByLibelle(STATUT_TARIE).getId(), today);
             } else if (!doitEtreTariee && estDejaTariee) {
-                statutLactationService.changerStatut(vache, statutLactationService.getByLibelle(STATUT_EN_LACTATION).getId(), today);
+                statutLactationService.changerStatut(vache,
+                        statutLactationService.getByLibelle(STATUT_EN_LACTATION).getId(), today);
             }
         }
     }
 
     public TraitementSante findById(Long id) {
         TraitementSante traitement = traitementRepository.findById(id).orElse(null);
-        if (traitement != null) {
-            syncIds(traitement);
-        }
+        if (traitement != null) syncIds(traitement);
         return traitement;
     }
 
@@ -109,14 +115,9 @@ public class TraitementSanteService {
 
         if (traitement.getId() != null) {
             TraitementSante existant = traitementRepository.findById(traitement.getId()).orElse(null);
-            if (existant != null) {
-                evenement = existant.getEvenementSante();
-            }
+            if (existant != null) evenement = existant.getEvenementSante();
         }
-
-        if (evenement == null) {
-            evenement = new EvenementSante();
-        }
+        if (evenement == null) evenement = new EvenementSante();
 
         Vache vache = vacheRepository.findById(traitement.getVacheId())
                 .orElseThrow(() -> new IllegalArgumentException("Vache introuvable"));
@@ -139,6 +140,25 @@ public class TraitementSanteService {
 
         TraitementSante saved = traitementRepository.save(traitement);
         syncIds(saved);
+
+        // ← INJECTION ALERTE — données disponibles dans saved
+        if (saved.getDateFin() != null && saved.getDelaiAttenteJ() != null) {
+            LocalDate dispoDate = saved.getDateFin().plusDays(saved.getDelaiAttenteJ());
+            alerteService.envoyerAlerte(
+                "traitement_en_cours",
+                "attention",
+                "Vache en traitement — " + vache.getNumeroBoucle(),
+                "Indisponible pour la traite jusqu'au " + dispoDate
+                    + " — Maladie : " + maladie.getNom()
+                    + " | Médicament : " + medicament.getNom()
+                    + " | Traitement du " + saved.getDateDebut()
+                    + " au " + saved.getDateFin()
+                    + " (délai d'attente : " + saved.getDelaiAttenteJ() + " jours).",
+                vache.getId()
+            );
+        }
+        // ← FIN INJECTION
+
         synchronizeVacheStatuses();
         return saved;
     }
@@ -146,62 +166,49 @@ public class TraitementSanteService {
     @Transactional
     public void deleteById(Long id) {
         TraitementSante traitement = traitementRepository.findById(id).orElse(null);
-        if (traitement == null) {
-            return;
+        if (traitement == null) return;
+
+        // ← ACQUITTEMENT AUTO — traitement supprimé = vache disponible
+        if (traitement.getEvenementSante() != null
+                && traitement.getEvenementSante().getVache() != null) {
+            alerteService.acquitterAutomatiquement(
+                "traitement_en_cours",
+                traitement.getEvenementSante().getVache().getId()
+            );
         }
+        // ← FIN ACQUITTEMENT
 
         EvenementSante evenement = traitement.getEvenementSante();
         traitementRepository.delete(traitement);
-        if (evenement != null) {
-            evenementRepository.delete(evenement);
-        }
+        if (evenement != null) evenementRepository.delete(evenement);
         synchronizeVacheStatuses();
     }
 
-    public List<Vache> findAllVaches() {
-        return vacheRepository.findAll();
+    public List<Vache>      findAllVaches()      { return vacheRepository.findAll(); }
+    public List<Maladie>    findAllMaladies()    { return maladieRepository.findAll(); }
+    public List<Medicament> findAllMedicaments() { return medicamentRepository.findAll(); }
+
+    private LocalDate calculerDateFin(LocalDate dateDebut, Integer duree) {
+        if (dateDebut == null || duree == null || duree < 1) return null;
+        return dateDebut.plusDays(duree.longValue() - 1L);
     }
 
-    public List<Maladie> findAllMaladies() {
-        return maladieRepository.findAll();
+    private boolean isTreatmentActif(TraitementSante t, LocalDate today) {
+        if (t == null || t.getDateDebut() == null) return false;
+        LocalDate dateFin = calculerDateFin(t.getDateDebut(), t.getDureeTraitement());
+        if (dateFin == null || t.getDelaiAttenteJ() == null) return false;
+        LocalDate dateFinAttente = dateFin.plusDays(t.getDelaiAttenteJ().longValue());
+        return !today.isBefore(t.getDateDebut()) && !today.isAfter(dateFinAttente);
     }
 
-    public List<Medicament> findAllMedicaments() {
-        return medicamentRepository.findAll();
-    }
-
-    private LocalDate calculerDateFin(LocalDate dateDebut, Integer dureeTraitement) {
-        if (dateDebut == null || dureeTraitement == null || dureeTraitement < 1) {
-            return null;
+    private void syncIds(TraitementSante t) {
+        if (t.getEvenementSante() != null) {
+            if (t.getEvenementSante().getVache() != null)
+                t.setVacheId(t.getEvenementSante().getVache().getId());
+            if (t.getEvenementSante().getMaladie() != null)
+                t.setMaladieId(t.getEvenementSante().getMaladie().getId());
         }
-        return dateDebut.plusDays(dureeTraitement.longValue() - 1L);
-    }
-
-    private boolean isTreatmentActif(TraitementSante traitement, LocalDate today) {
-        if (traitement == null || traitement.getDateDebut() == null) {
-            return false;
-        }
-
-        LocalDate dateFinTraitement = calculerDateFin(traitement.getDateDebut(), traitement.getDureeTraitement());
-        if (dateFinTraitement == null || traitement.getDelaiAttenteJ() == null) {
-            return false;
-        }
-
-        LocalDate dateFinAttente = dateFinTraitement.plusDays(traitement.getDelaiAttenteJ().longValue());
-        return !today.isBefore(traitement.getDateDebut()) && !today.isAfter(dateFinAttente);
-    }
-
-    private void syncIds(TraitementSante traitement) {
-        if (traitement.getEvenementSante() != null) {
-            if (traitement.getEvenementSante().getVache() != null) {
-                traitement.setVacheId(traitement.getEvenementSante().getVache().getId());
-            }
-            if (traitement.getEvenementSante().getMaladie() != null) {
-                traitement.setMaladieId(traitement.getEvenementSante().getMaladie().getId());
-            }
-        }
-        if (traitement.getMedicament() != null) {
-            traitement.setMedicamentId(traitement.getMedicament().getId());
-        }
+        if (t.getMedicament() != null)
+            t.setMedicamentId(t.getMedicament().getId());
     }
 }
