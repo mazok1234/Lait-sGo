@@ -8,8 +8,8 @@ public class AlerteDTO {
     private String description;
     private String niveauCode;
     private String niveauLibelle;
-    private String typeCode;
-    private String typeLibelle;
+    private String typeAlerte;    // code brut : "vaccin_en_retard", "stock_aliment_bas"...
+    private String moduleSource;  // calculé dans le service : "Santé", "Alimentation"...
     private Long vacheId;
     private String vacheNom;
     private String vacheBoucle;
@@ -26,10 +26,10 @@ public class AlerteDTO {
     public void setNiveauCode(String niveauCode) { this.niveauCode = niveauCode; }
     public String getNiveauLibelle() { return niveauLibelle; }
     public void setNiveauLibelle(String niveauLibelle) { this.niveauLibelle = niveauLibelle; }
-    public String getTypeCode() { return typeCode; }
-    public void setTypeCode(String typeCode) { this.typeCode = typeCode; }
-    public String getTypeLibelle() { return typeLibelle; }
-    public void setTypeLibelle(String typeLibelle) { this.typeLibelle = typeLibelle; }
+    public String getTypeAlerte() { return typeAlerte; }
+    public void setTypeAlerte(String typeAlerte) { this.typeAlerte = typeAlerte; }
+    public String getModuleSource() { return moduleSource; }
+    public void setModuleSource(String moduleSource) { this.moduleSource = moduleSource; }
     public Long getVacheId() { return vacheId; }
     public void setVacheId(Long vacheId) { this.vacheId = vacheId; }
     public String getVacheNom() { return vacheNom; }

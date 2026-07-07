@@ -11,7 +11,7 @@
       <i class="fas fa-arrow-left"></i> Retour aux alertes
     </a>
     <h1 class="page-title" th:text="${alerte.titre}">Titre</h1>
-    <p class="page-subtitle" th:text="${alerte.typeLibelle}">Type</p>
+    <p class="page-subtitle" th:text="${alerte.moduleSource}">Module</p>
   </div>
 
   <div class="detail-wrapper">
@@ -19,7 +19,7 @@
       <div class="card-header detail-card-header">
         <div>
           <h2 class="card-title" th:text="${alerte.titre}">Titre de l'alerte</h2>
-          <p class="card-subtitle" th:text="${alerte.typeLibelle}">Type</p>
+          <p class="card-subtitle" th:text="${alerte.moduleSource}">Module</p>
         </div>
         <span th:switch="${alerte.niveauCode}">
           <span th:case="'urgent'" class="badge-niveau badge-niveau-danger badge-niveau-lg">
@@ -40,16 +40,6 @@
 
         <div class="detail-grid">
           <div class="detail-info-card">
-            <span class="detail-info-label">Concerne</span>
-            <span th:if="${alerte.vacheId != null}" class="detail-info-value detail-link">
-              <i class="fas fa-paw"></i>
-              <a th:href="@{/cheptel/{id}(id=${alerte.vacheId})}" th:text="${alerte.vacheBoucle != null ? alerte.vacheBoucle : 'Vache #' + alerte.vacheId}"></a>
-            </span>
-            <span th:if="${alerte.vacheId == null}" class="detail-info-value detail-ferme">
-              <i class="fas fa-warehouse"></i> Alerte ferme
-            </span>
-          </div>
-          <div class="detail-info-card">
             <span class="detail-info-label">Reçue le</span>
             <span class="detail-info-value detail-date">
               <i class="fas fa-clock detail-date-icon"></i>
@@ -61,6 +51,13 @@
             <span class="detail-info-value">
               <span class="status-badge" th:classappend="${alerte.acquittee} ? ' status-badge-success' : ' status-badge-pending'"
                     th:text="${alerte.acquittee} ? 'Acquittée' : 'En attente'"></span>
+            </span>
+          </div>
+          <div class="detail-info-card">
+            <span class="detail-info-label">Module</span>
+            <span class="detail-info-value">
+              <i class="fas fa-layer-group"></i>
+              <span th:text="${alerte.moduleSource}"></span>
             </span>
           </div>
         </div>

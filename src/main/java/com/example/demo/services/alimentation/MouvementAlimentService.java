@@ -1,7 +1,9 @@
 package com.example.demo.services.alimentation;
 
 import com.example.demo.entity.alimentation.MouvementAliment;
+import com.example.demo.repository.alimentation.AlimentRepository;       // ← ajouté
 import com.example.demo.repository.alimentation.MouvementAlimentRepository;
+import com.example.demo.services.alerte.AlerteService;                   // ← ajouté
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -11,10 +13,17 @@ import java.util.List;
 
 @Service
 public class MouvementAlimentService {
-    private final MouvementAlimentRepository mouvementRepo;
 
-    public MouvementAlimentService(MouvementAlimentRepository mouvementRepo) {
-        this.mouvementRepo = mouvementRepo;
+    private final MouvementAlimentRepository mouvementRepo;
+    private final AlerteService              alerteService;   // ← ajouté
+    private final AlimentRepository          alimentRepository; // ← ajouté
+
+    public MouvementAlimentService(MouvementAlimentRepository mouvementRepo,
+                                    AlerteService alerteService,
+                                    AlimentRepository alimentRepository) { // ← ajouté
+        this.mouvementRepo     = mouvementRepo;
+        this.alerteService     = alerteService;
+        this.alimentRepository = alimentRepository;
     }
 
     public List<MouvementAliment> findAll() {
@@ -37,14 +46,45 @@ public class MouvementAlimentService {
                 mouvement.setCreatedBy(existant.getCreatedBy());
             }
         }
+        if (mouvement.getCreatedAt() == null) mouvement.setCreatedAt(LocalDateTime.now());
+        if (mouvement.getCreatedBy() == null)  mouvement.setCreatedBy(null);
 
-        if (mouvement.getCreatedAt() == null) {
-            mouvement.setCreatedAt(LocalDateTime.now());
+        MouvementAliment saved = mouvementRepo.save(mouvement);
+
+        // ← INJECTION ALERTE — vérification du seuil après chaque mouvement
+        if (mouvement.getAliment() != null && mouvement.getAliment().getId() != null) {
+            Long alimentId = mouvement.getAliment().getId();
+            BigDecimal stockActuel = getStockActuel(alimentId);
+
+            alimentRepository.findById(alimentId).ifPresent(aliment -> {
+                if (aliment.getSeuilAlerteKg() != null
+                        && aliment.getSeuilAlerteKg().compareTo(BigDecimal.ZERO) > 0) {
+
+                    if ("sortie".equalsIgnoreCase(mouvement.getTypeMouvement())
+                            && stockActuel.compareTo(aliment.getSeuilAlerteKg()) <= 0) {
+
+                        // Stock sous le seuil → alerte urgent
+                        alerteService.envoyerAlerte(
+                            "stock_aliment_bas",
+                            "urgent",
+                            "Stock insuffisant — " + aliment.getNom(),
+                            "Stock actuel : " + stockActuel + " kg"
+                                + ", seuil configuré : " + aliment.getSeuilAlerteKg() + " kg.",
+                            null
+                        );
+
+                    } else if ("entree".equalsIgnoreCase(mouvement.getTypeMouvement())
+                            && stockActuel.compareTo(aliment.getSeuilAlerteKg()) > 0) {
+
+                        // Stock reconstitué → acquittement automatique
+                        alerteService.acquitterAutomatiquement("stock_aliment_bas", null);
+                    }
+                }
+            });
         }
-        if (mouvement.getCreatedBy() == null) {
-            mouvement.setCreatedBy(null);
-        }
-        return mouvementRepo.save(mouvement);
+        // ← FIN INJECTION
+
+        return saved;
     }
 
     public void deleteById(Long id) {
@@ -57,27 +97,19 @@ public class MouvementAlimentService {
     }
 
     public String getErreurDateSortie(MouvementAliment mouvement) {
-        if (mouvement == null || mouvement.getTypeMouvement() == null || mouvement.getDateMouvement() == null) {
-            return null;
-        }
+        if (mouvement == null || mouvement.getTypeMouvement() == null
+                || mouvement.getDateMouvement() == null) return null;
+        if (!"sortie".equalsIgnoreCase(mouvement.getTypeMouvement())) return null;
+        if (mouvement.getAliment() == null || mouvement.getAliment().getId() == null) return null;
 
-        if (!"sortie".equalsIgnoreCase(mouvement.getTypeMouvement())) {
-            return null;
-        }
-
-        if (mouvement.getAliment() == null || mouvement.getAliment().getId() == null) {
-            return null;
-        }
-
-        LocalDate premiereDateEntree = mouvementRepo.findPremiereDateEntreeByAlimentId(mouvement.getAliment().getId());
+        LocalDate premiereDateEntree = mouvementRepo
+                .findPremiereDateEntreeByAlimentId(mouvement.getAliment().getId());
         if (premiereDateEntree == null) {
             return "Impossible de faire une sortie sans entree de stock";
         }
-
         if (mouvement.getDateMouvement().isBefore(premiereDateEntree)) {
             return "La date d'une sortie ne peut pas etre inferieure a la premiere date d'entree du stock";
         }
-
         return null;
     }
 }

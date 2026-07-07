@@ -22,7 +22,7 @@ public class AlerteApiController {
     @PostMapping
     public ResponseEntity<Alerte> creerAlerte(@Valid @RequestBody AlerteCreateRequest req) {
         Alerte alerte = alerteService.creerAlerte(
-            req.getIdType(), req.getIdNiveau(),
+            req.getIdType().toString(),req.getIdNiveau(),
             req.getTitre(), req.getDescription(), req.getVacheId()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(alerte);
