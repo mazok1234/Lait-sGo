@@ -5,11 +5,11 @@
 ALTER TABLE medicament
     ADD COLUMN IF NOT EXISTS prix_unitaire DECIMAL(10,2) DEFAULT 0;
 
-ALTER TABLE evenement_sante
-    ADD COLUMN IF NOT EXISTS nbr_medicament INT DEFAULT 0;
+-- à corriger : nbr_medicament doit être sur traitement_sante, pas evenement_sante
+ALTER TABLE traitement_sante
+    ADD COLUMN IF NOT EXISTS nbr_medicament INT NOT NULL DEFAULT 1;
 
---Donne test--
-
+    
 INSERT INTO medicament (id, nom, delai_attente_lait_defaut, delai_attente_viande_defaut, prix_unitaire) VALUES
 (1, 'Amoxicilline 15%', 3, 8, 1000),
 (2, 'Oxytetracycline LA', 4, 15, 900.80),
