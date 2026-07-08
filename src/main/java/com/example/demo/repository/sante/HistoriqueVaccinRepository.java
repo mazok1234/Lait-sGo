@@ -12,20 +12,21 @@ public interface HistoriqueVaccinRepository extends JpaRepository<HistoriqueVacc
     List<HistoriqueVaccin> findByVache(Vache vache);
 
     @Query("""
-        SELECT h FROM HistoriqueVaccin h
-        WHERE h.dateVaccination = (
-            SELECT MAX(h2.dateVaccination)
-            FROM HistoriqueVaccin h2
-            WHERE h2.protocoleVaccin = h.protocoleVaccin
-        )
-        """)
+            SELECT h FROM HistoriqueVaccin h
+            WHERE h.dateVaccination = (
+                SELECT MAX(h2.dateVaccination)
+                FROM HistoriqueVaccin h2
+                WHERE h2.protocoleVaccin = h.protocoleVaccin
+                AND h2.vache = h.vache
+            )
+            """)
     List<HistoriqueVaccin> findLastByVaccin();
 
     @Query("SELECT h FROM HistoriqueVaccin h " +
-           "WHERE ( :vacheId IS NULL OR h.vache.id = :vacheId ) " +
-           "AND ( :datedebut IS NULL OR h.dateVaccination >= :datedebut ) " +
-           "AND ( :datefin IS NULL OR h.dateVaccination <= :datefin )")
+            "WHERE ( :vacheId IS NULL OR h.vache.id = :vacheId ) " +
+            "AND ( :datedebut IS NULL OR h.dateVaccination >= :datedebut ) " +
+            "AND ( :datefin IS NULL OR h.dateVaccination <= :datefin )")
     List<HistoriqueVaccin> findVaccins(@Param("vacheId") Long vacheId,
-                                              @Param("datedebut") LocalDate datedebut,
-                                              @Param("datefin") LocalDate datefin);
+            @Param("datedebut") LocalDate datedebut,
+            @Param("datefin") LocalDate datefin);
 }

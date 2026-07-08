@@ -2,6 +2,7 @@ package com.example.demo.services.sante;
 
 import com.example.demo.services.alerte.AlerteService;
 import com.example.demo.entity.alerte.Alerte;
+import com.example.demo.repository.alerte.AlerteRepository;
 import com.example.demo.entity.sante.HistoriqueVaccin;
 import com.example.demo.entity.cheptel.Vache;
 import com.example.demo.repository.sante.HistoriqueVaccinRepository;
@@ -22,13 +23,16 @@ public class VaccinService {
     private final VacheRepository vacheRepository;
     private final HistoriqueVaccinRepository historiqueRepository;
     private final AlerteService alerteService;
+    private final AlerteRepository alerteRepo;
 
     public VaccinService(VacheRepository vacheRepository,
-                         AlerteService alerteService,
-                         HistoriqueVaccinRepository historiqueRepository) {
-        this.vacheRepository    = vacheRepository;
+            AlerteService alerteService,
+            HistoriqueVaccinRepository historiqueRepository,
+            AlerteRepository alerteRepo) {
+        this.vacheRepository = vacheRepository;
+        this.alerteService = alerteService;
         this.historiqueRepository = historiqueRepository;
-        this.alerteService      = alerteService;
+        this.alerteRepo = alerteRepo;
     }
 
     // ---------------------------------------------------------------
@@ -38,7 +42,7 @@ public class VaccinService {
         Vache vache = vacheRepository.findById(vacheId)
                 .orElseThrow(() -> new RuntimeException("Vache introuvable"));
         List<HistoriqueVaccin> historiques = historiqueRepository.findByVache(vache);
-        List<HistoriqueVaccin> enRetard    = new ArrayList<>();
+        List<HistoriqueVaccin> enRetard = new ArrayList<>();
         LocalDate today = LocalDate.now();
 
         for (HistoriqueVaccin h : historiques) {
@@ -50,14 +54,13 @@ public class VaccinService {
                 long joursRetard = ChronoUnit.DAYS.between(prochaineDate, today);
 
                 alerteService.envoyerAlerte(
-                    "vaccin_en_retard",
-                    "urgent",
-                    "Vaccin en retard — " + h.getVache().getNumeroBoucle(),
-                    "Vaccin " + h.getProtocoleVaccin().getNomVaccin()
-                        + " en retard de " + joursRetard + " jour(s)"
-                        + " (rappel prévu le " + prochaineDate + ").",
-                    h.getVache().getId()
-                );
+                        "vaccin_en_retard",
+                        "urgent",
+                        "Vaccin en retard — " + h.getVache().getNumeroBoucle(),
+                        "Vaccin " + h.getProtocoleVaccin().getNomVaccin()
+                                + " en retard de " + joursRetard + " jour(s)"
+                                + " (rappel prévu le " + prochaineDate + ").",
+                        h.getVache().getId());
             }
         }
         return enRetard;
@@ -68,7 +71,7 @@ public class VaccinService {
     // ---------------------------------------------------------------
     public List<HistoriqueVaccin> getVaccinsARevoirParMois(int mois, int annee) {
         List<HistoriqueVaccin> derniers = historiqueRepository.findLastByVaccin();
-        List<HistoriqueVaccin> result   = new ArrayList<>();
+        List<HistoriqueVaccin> result = new ArrayList<>();
 
         for (HistoriqueVaccin h : derniers) {
             LocalDate prochaineDate = h.getDateVaccination()
@@ -79,13 +82,12 @@ public class VaccinService {
                 result.add(h);
 
                 alerteService.envoyerAlerte(
-                    "rappel_vaccin",
-                    "info",
-                    "Rappel vaccin — " + h.getVache().getNumeroBoucle(),
-                    "Vaccin " + h.getProtocoleVaccin().getNomVaccin()
-                        + " à revoir le " + prochaineDate + ".",
-                    h.getVache().getId()
-                );
+                        "rappel_vaccin",
+                        "info",
+                        "Rappel vaccin — " + h.getVache().getNumeroBoucle(),
+                        "Vaccin " + h.getProtocoleVaccin().getNomVaccin()
+                                + " à revoir le " + prochaineDate + ".",
+                        h.getVache().getId());
             }
         }
         return result;
@@ -121,37 +123,39 @@ public class VaccinService {
             if (prochaineDate.isBefore(today)) {
                 // Déjà en retard → urgent
                 long joursRetard = ChronoUnit.DAYS.between(prochaineDate, today);
-                niveauCode  = "urgent";
-                typeCode    = "vaccin_en_retard";
-                titre       = "Vaccin en retard — " + h.getVache().getNumeroBoucle();
+                niveauCode = "urgent";
+                typeCode = "vaccin_en_retard";
+                titre = "Vaccin en retard — " + h.getVache().getNumeroBoucle();
                 description = "Vaccin " + h.getProtocoleVaccin().getNomVaccin()
-                    + " en retard de " + joursRetard + " jour(s)"
-                    + " (rappel prévu le " + prochaineDate + ").";
+                        + " en retard de " + joursRetard + " jour(s)"
+                        + " (rappel prévu le " + prochaineDate + ").";
             } else if (joursAvant <= 7) {
                 // Dans moins de 7 jours → attention
-                niveauCode  = "attention";
-                typeCode    = "vaccin_prioritaire";
-                titre       = "Vaccin prioritaire dans " + joursAvant + "j — "
-                                + h.getVache().getNumeroBoucle();
+                niveauCode = "attention";
+                typeCode = "vaccin_prioritaire";
+                titre = "Vaccin prioritaire dans " + joursAvant + "j — "
+                        + h.getVache().getNumeroBoucle();
                 description = "Vaccin " + h.getProtocoleVaccin().getNomVaccin()
-                    + " — prochain rappel le " + prochaineDate + ".";
+                        + " — prochain rappel le " + prochaineDate + ".";
             } else {
                 // Plus de 7 jours → info
-                niveauCode  = "info";
-                typeCode    = "rappel_vaccin";
-                titre       = "Rappel vaccin — " + h.getVache().getNumeroBoucle();
+                niveauCode = "info";
+                typeCode = "rappel_vaccin";
+                titre = "Rappel vaccin — " + h.getVache().getNumeroBoucle();
                 description = "Vaccin " + h.getProtocoleVaccin().getNomVaccin()
-                    + " — prochain rappel le " + prochaineDate
-                    + " (dans " + joursAvant + " jours).";
+                        + " — prochain rappel le " + prochaineDate
+                        + " (dans " + joursAvant + " jours).";
             }
 
             alerteService.envoyerAlerte(
-                typeCode,
-                niveauCode,
-                titre,
-                description,
-                h.getVache().getId()
-            );
+                    typeCode,
+                    niveauCode,
+                    titre,
+                    description,
+                    h.getVache().getId());
+            // pour récupérer l'ID de l'alerte active pour le lien
+            alerteRepo.findTopByVacheIdAndTypeAlerteAndAcquitteeFalseOrderByCreatedAtDesc(
+                    h.getVache().getId(), typeCode).ifPresent(a -> h.setAlerteId(a.getId()));
         });
 
         return sorted;
@@ -191,9 +195,12 @@ public class VaccinService {
             LocalDate prochaineDate = h.getDateVaccination()
                     .plusDays(h.getProtocoleVaccin().getDureeRappelJours());
             long joursRetard = ChronoUnit.DAYS.between(prochaineDate, today);
-            if (joursRetard > 0)            statuts.add("EN RETARD " + joursRetard + "j");
-            else if (joursRetard > -7)      statuts.add("A REVOIR " + joursRetard + "j");
-            else                            statuts.add("------");
+            if (joursRetard > 0)
+                statuts.add("EN RETARD " + joursRetard + "j");
+            else if (joursRetard > -7)
+                statuts.add("A REVOIR " + joursRetard + "j");
+            else
+                statuts.add("------");
         }
         return statuts;
     }

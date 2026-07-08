@@ -24,13 +24,12 @@ public class AlerteService {
     // Mapping type → module (logique métier — pas en BDD)
     private static final Map<String, String> MODULE_PAR_TYPE = new HashMap<>();
     static {
-        MODULE_PAR_TYPE.put("vaccin_en_retard",    "Santé — Vaccination");
-        MODULE_PAR_TYPE.put("rappel_vaccin",        "Santé — Vaccination");
-        MODULE_PAR_TYPE.put("vaccin_prioritaire",   "Santé — Vaccination");
-        MODULE_PAR_TYPE.put("traitement_en_cours",  "Santé — Traitement");
-        MODULE_PAR_TYPE.put("rappel_velage",        "Reproduction");
-        MODULE_PAR_TYPE.put("stock_aliment_bas",    "Alimentation");
-        MODULE_PAR_TYPE.put("stock_lait_bas",       "Vente");
+        MODULE_PAR_TYPE.put("vaccin_en_retard", "Santé — Vaccination");
+        MODULE_PAR_TYPE.put("rappel_vaccin", "Santé — Vaccination");
+        MODULE_PAR_TYPE.put("vaccin_prioritaire", "Santé — Vaccination");
+        MODULE_PAR_TYPE.put("traitement_en_cours", "Santé — Traitement");
+        MODULE_PAR_TYPE.put("rappel_velage", "Reproduction");
+        MODULE_PAR_TYPE.put("stock_lait_bas", "Vente");
         MODULE_PAR_TYPE.put("bcs_hors_plage", "Cheptel");
     }
 
@@ -39,7 +38,7 @@ public class AlerteService {
             VacheRepository vacheRepo) {
         this.alerteRepo = alerteRepo;
         this.niveauRepo = niveauRepo;
-        this.vacheRepo  = vacheRepo;
+        this.vacheRepo = vacheRepo;
     }
 
     // ----------------------------------------------------------------
@@ -231,7 +230,10 @@ public class AlerteService {
         dto.setNiveauCode(a.getNiveau().getCode());
         dto.setNiveauLibelle(a.getNiveau().getLibelle());
         dto.setTypeAlerte(a.getTypeAlerte());
-        dto.setModuleSource(MODULE_PAR_TYPE.getOrDefault(a.getTypeAlerte(), "Système"));
+        dto.setModuleSource(
+                a.getTypeAlerte().startsWith("stock_aliment_bas")
+                        ? "Alimentation"
+                        : MODULE_PAR_TYPE.getOrDefault(a.getTypeAlerte(), "Système"));
         dto.setVacheId(a.getVacheId());
         dto.setAcquittee(a.getAcquittee());
         dto.setCreatedAt(a.getCreatedAt());
