@@ -95,4 +95,27 @@ public class ProductionService {
         lactation.setStatut(statutActive);
         return lactationRepository.save(lactation);
     }
+    
+    public boolean checkBaisseCritique(Production p) {
+    if (p.getVache() == null || p.getQuantiteLitres() == null) return false;
+    
+    List<Production> historique = productionRepository.findByVacheOrderByDateProductionDesc(p.getVache());
+    if (historique == null || historique.isEmpty()) return false;
+
+    BigDecimal somme = BigDecimal.ZERO;
+    int count = 0;
+    for (int i = 0; i < historique.size() && i < 7; i++) {
+        if (!historique.get(i).getId().equals(p.getId())) {
+            somme = somme.add(historique.get(i).getQuantiteLitres());
+            count++;
+        }
+    }
+
+    if (count > 0) {
+        BigDecimal moyenne = somme.divide(BigDecimal.valueOf(count), 2, java.math.RoundingMode.HALF_UP);
+        BigDecimal seuilCritique = moyenne.multiply(BigDecimal.valueOf(0.80)); // -20%
+        return p.getQuantiteLitres().compareTo(seuilCritique) < 0;
+    }
+    return false;
+}
 }
