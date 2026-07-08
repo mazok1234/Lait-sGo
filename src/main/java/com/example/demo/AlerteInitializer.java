@@ -33,29 +33,13 @@ public class AlerteInitializer {
     @EventListener(ApplicationReadyEvent.class)
     public void initAlertes() {
         try {
-            // Déclenche la détection des vêlages proches
-            reproductionAlerteService.getAlertesVelage();
-            System.out.println("[AlerteInitializer] Alertes vêlage vérifiées.");
-        } catch (Exception e) {
-            System.err.println("[AlerteInitializer] Erreur vêlage : " + e.getMessage());
-        }
-
-        try {
-            // Déclenche la détection des vaccins prioritaires
-            vaccinService.getVaccinsPrioritaires();
-            System.out.println("[AlerteInitializer] Alertes vaccins vérifiées.");
-        } catch (Exception e) {
-            System.err.println("[AlerteInitializer] Erreur vaccins : " + e.getMessage());
-        }
-
-        try {
             alimentService.findAll().forEach(aliment -> {
                 BigDecimal stock = mouvementAlimentService.getStockActuel(aliment.getId());
                 if (aliment.getSeuilAlerteKg() != null
                         && aliment.getSeuilAlerteKg().compareTo(BigDecimal.ZERO) > 0
                         && stock.compareTo(aliment.getSeuilAlerteKg()) <= 0) {
                     alerteService.envoyerAlerte(
-                            "stock_aliment_bas_" + aliment.getId(), // ex: "stock_aliment_bas_1"
+                            "stock_aliment_bas_" + aliment.getId(),
                             "urgent",
                             "Stock insuffisant — " + aliment.getNom(),
                             "Stock actuel : " + stock + " kg, seuil : " + aliment.getSeuilAlerteKg() + " kg.",
@@ -67,4 +51,5 @@ public class AlerteInitializer {
             System.err.println("[AlerteInitializer] Erreur stocks : " + e.getMessage());
         }
     }
+
 }

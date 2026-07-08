@@ -35,4 +35,7 @@ public interface AlerteRepository extends JpaRepository<Alerte, Long> {
 
     // Pour detacherVache
     List<Alerte> findByVacheId(Long vacheId);
+
+    Optional<Alerte> findTopByVacheIdAndTypeAlerteAndAcquitteeTrueOrderByCreatedAtDesc(
+    Long vacheId, String typeAlerte);
 }
