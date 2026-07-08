@@ -95,4 +95,8 @@ public class ProductionService {
         lactation.setStatut(statutActive);
         return lactationRepository.save(lactation);
     }
+    
+    public List<java.util.Map<String, Object>> getProductionParRace() {
+        return productionRepository.getProductionParRace();
+    }
 }

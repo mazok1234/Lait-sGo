@@ -24,6 +24,7 @@ import com.example.demo.services.cheptel.StatutReproService;
 import com.example.demo.services.cheptel.StatutSanteService;
 import com.example.demo.services.cheptel.StatutVieService;
 import com.example.demo.services.cheptel.VacheService;
+import com.example.demo.services.production.ProductionService;
 
 @Controller
 public class CheptelPageController {
@@ -34,11 +35,12 @@ public class CheptelPageController {
     private final StatutLactationVacheService statutLactationService;
     private final StatutSanteService statutSanteService;
     private final ReproductionService reproductionService;
+    private final ProductionService productionService;
 
     public CheptelPageController(VacheService vacheService, RaceService raceService,
             StatutVieService statutVieService, StatutReproService statutReproService,
             StatutLactationVacheService statutLactationService, StatutSanteService statutSanteService,
-            ReproductionService reproductionService) {
+            ReproductionService reproductionService, ProductionService productionService) {
         this.vacheService = vacheService;
         this.raceService = raceService;
         this.statutVieService = statutVieService;
@@ -46,6 +48,7 @@ public class CheptelPageController {
         this.statutLactationService = statutLactationService;
         this.statutSanteService = statutSanteService;
         this.reproductionService = reproductionService;
+        this.productionService = productionService;
     }
 
     @GetMapping("/cheptel")
@@ -207,6 +210,31 @@ public class CheptelPageController {
             v.setMere(vacheService.getById(form.getMereId()));
         }
 
+        Integer vieId = form.getVieId();
+        // Si on a un sexe (cas d'un vêlage), déterminer automatiquement le statut vie approprié
+        if (form.getSexe() != null && !form.getSexe().isBlank()) {
+            String libelleStatut = "M".equals(form.getSexe()) ? "Veau" : "Genisse";
+            var statut = statutVieService.getByLibelle(libelleStatut);
+            if (statut != null) {
+                vieId = statut.getId();
+            }
+        }
+        // Si aucun statut vie n'est défini, essayer de récupérer un statut par défaut
+        if (vieId == null) {
+            try {
+                var statutDefaut = statutVieService.getByLibelle("Genisse");
+                if (statutDefaut != null) {
+                    vieId = statutDefaut.getId();
+                }
+            } catch (IllegalStateException e) {
+                // Si le statut par défaut n'existe pas, prendre le premier statut disponible
+                var statuts = statutVieService.findAll();
+                if (!statuts.isEmpty()) {
+                    vieId = statuts.get(0).getId();
+                }
+            }
+        }
+
         try {
             vacheService.create(v);
         } catch (IllegalArgumentException e) {
@@ -216,23 +244,63 @@ public class CheptelPageController {
             return "redirect:/cheptel/vaches/nouveau" + suffix;
         }
 
-        Integer vieId = form.getVieId();
-        if (form.getSexe() != null && !form.getSexe().isBlank()) {
-            vieId = statutVieService.getByLibelle("M".equals(form.getSexe()) ? "Veau" : "Genisse").getId();
-        }
-
         LocalDate today = LocalDate.now();
         if (vieId != null) {
             statutVieService.ouvrirInitial(v, vieId, today);
         }
+        // Gérer le statut reproduction
         if (form.getReproId() != null) {
             statutReproService.ouvrirInitial(v, form.getReproId(), today);
+        } else {
+            // Si pas de statut défini, prendre par défaut "Vide"
+            try {
+                var statutReproDefaut = statutReproService.getByLibelle("Vide");
+                if (statutReproDefaut != null) {
+                    statutReproService.ouvrirInitial(v, statutReproDefaut.getId(), today);
+                }
+            } catch (Exception e) {
+                // Si aucun statut par défaut, prendre le premier disponible
+                var statutsRepro = statutReproService.findAll();
+                if (!statutsRepro.isEmpty()) {
+                    statutReproService.ouvrirInitial(v, statutsRepro.get(0).getId(), today);
+                }
+            }
         }
+        // Gérer le statut lactation
         if (form.getLactationId() != null) {
             statutLactationService.ouvrirInitial(v, form.getLactationId(), today);
+        } else {
+            // Si pas de statut défini, prendre par défaut "Tarie"
+            try {
+                var statutLactationDefaut = statutLactationService.getByLibelle("Tarie");
+                if (statutLactationDefaut != null) {
+                    statutLactationService.ouvrirInitial(v, statutLactationDefaut.getId(), today);
+                }
+            } catch (Exception e) {
+                // Si aucun statut par défaut, prendre le premier disponible
+                var statutsLactation = statutLactationService.findAll();
+                if (!statutsLactation.isEmpty()) {
+                    statutLactationService.ouvrirInitial(v, statutsLactation.get(0).getId(), today);
+                }
+            }
         }
+        // Gérer le statut santé
         if (form.getSanteId() != null) {
             statutSanteService.ouvrirInitial(v, form.getSanteId(), today);
+        } else {
+            // Si pas de statut défini, prendre par défaut "Saine"
+            try {
+                var statutSanteDefaut = statutSanteService.getByLibelle("Saine");
+                if (statutSanteDefaut != null) {
+                    statutSanteService.ouvrirInitial(v, statutSanteDefaut.getId(), today);
+                }
+            } catch (Exception e) {
+                // Si aucun statut par défaut, prendre le premier disponible
+                var statutsSante = statutSanteService.findAll();
+                if (!statutsSante.isEmpty()) {
+                    statutSanteService.ouvrirInitial(v, statutsSante.get(0).getId(), today);
+                }
+            }
         }
 
         if (reproductionId != null) {
@@ -330,6 +398,13 @@ public class CheptelPageController {
     public String deleteRace(@PathVariable Integer id) {
         raceService.delete(id);
         return "redirect:/cheptel/races";
+    }
+    
+    @GetMapping("/cheptel/races/comparaison-productivite")
+    public String comparaisonProductivite(Model model) {
+        var productionParRace = productionService.getProductionParRace();
+        model.addAttribute("productionParRace", productionParRace);
+        return "cheptel/comparaison-races";
     }
 
     public static class VacheAvecStatuts {
