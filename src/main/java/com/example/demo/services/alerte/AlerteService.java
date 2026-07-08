@@ -3,8 +3,10 @@ package com.example.demo.services.alerte;
 import com.example.demo.dto.AlerteDTO;
 import com.example.demo.entity.alerte.Alerte;
 import com.example.demo.entity.alerte.RefNiveauAlerte;
+import com.example.demo.entity.alerte.RefTypeAlerte;
 import com.example.demo.repository.alerte.AlerteRepository;
 import com.example.demo.repository.alerte.RefNiveauAlerteRepository;
+import com.example.demo.repository.alerte.RefTypeAlerteRepository;
 import com.example.demo.repository.cheptel.VacheRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,7 @@ public class AlerteService {
 
     private final AlerteRepository alerteRepo;
     private final RefNiveauAlerteRepository niveauRepo;
+    private final RefTypeAlerteRepository typeRepo;
     private final VacheRepository vacheRepo;
 
     // Mapping type → module (logique métier — pas en BDD)
@@ -35,9 +38,11 @@ public class AlerteService {
 
     public AlerteService(AlerteRepository alerteRepo,
             RefNiveauAlerteRepository niveauRepo,
+            RefTypeAlerteRepository typeRepo,
             VacheRepository vacheRepo) {
         this.alerteRepo = alerteRepo;
         this.niveauRepo = niveauRepo;
+        this.typeRepo = typeRepo;
         this.vacheRepo = vacheRepo;
     }
 
@@ -48,9 +53,11 @@ public class AlerteService {
             String titre, String description, Long vacheId) {
         RefNiveauAlerte niveau = niveauRepo.findById(idNiveau)
                 .orElseThrow(() -> new IllegalArgumentException("Niveau introuvable : " + idNiveau));
+        RefTypeAlerte type = typeRepo.findByCode(typeAlerte)
+                .orElseThrow(() -> new IllegalArgumentException("Type d'alerte inconnu : " + typeAlerte));
         Alerte alerte = new Alerte();
         alerte.setNiveau(niveau);
-        alerte.setTypeAlerte(typeAlerte);
+        alerte.setType(type);
         alerte.setTitre(titre);
         alerte.setDescription(description);
         alerte.setVacheId(vacheId);
@@ -66,13 +73,13 @@ public class AlerteService {
         List<Alerte> nonAcquittees;
         if (niveauCode != null && typeAlerte != null) {
             nonAcquittees = alerteRepo
-                    .findByAcquitteeFalseAndNiveau_CodeAndTypeAlerteOrderByCreatedAtDesc(niveauCode, typeAlerte);
+                    .findByAcquitteeFalseAndNiveau_CodeAndType_CodeOrderByCreatedAtDesc(niveauCode, typeAlerte);
         } else if (niveauCode != null) {
             nonAcquittees = alerteRepo
                     .findByAcquitteeFalseAndNiveau_CodeOrderByCreatedAtDesc(niveauCode);
         } else if (typeAlerte != null) {
             nonAcquittees = alerteRepo
-                    .findByAcquitteeFalseAndTypeAlerteOrderByCreatedAtDesc(typeAlerte);
+                    .findByAcquitteeFalseAndType_CodeOrderByCreatedAtDesc(typeAlerte);
         } else {
             nonAcquittees = alerteRepo.findByAcquitteeFalseOrderByCreatedAtDesc();
         }
@@ -162,8 +169,8 @@ public class AlerteService {
 
             // Chercher une alerte active existante
             Optional<Alerte> alerteExistante = vacheId != null
-                    ? alerteRepo.findTopByVacheIdAndTypeAlerteAndAcquitteeFalseOrderByCreatedAtDesc(vacheId, typeAlerte)
-                    : alerteRepo.findTopByVacheIdIsNullAndTypeAlerteAndAcquitteeFalseOrderByCreatedAtDesc(typeAlerte);
+                    ? alerteRepo.findTopByVacheIdAndType_CodeAndAcquitteeFalseOrderByCreatedAtDesc(vacheId, typeAlerte)
+                    : alerteRepo.findTopByVacheIdIsNullAndType_CodeAndAcquitteeFalseOrderByCreatedAtDesc(typeAlerte);
 
             if (alerteExistante.isPresent()) {
                 Alerte existante = alerteExistante.get();
@@ -196,8 +203,8 @@ public class AlerteService {
     public void acquitterAutomatiquement(String typeAlerte, Long vacheId) {
         try {
             List<Alerte> alertes = vacheId != null
-                    ? alerteRepo.findByTypeAlerteAndVacheIdAndAcquitteeFalse(typeAlerte, vacheId)
-                    : alerteRepo.findByTypeAlerteAndAcquitteeFalse(typeAlerte);
+                    ? alerteRepo.findByType_CodeAndVacheIdAndAcquitteeFalse(typeAlerte, vacheId)
+                    : alerteRepo.findByType_CodeAndAcquitteeFalse(typeAlerte);
 
             alertes.forEach(a -> {
                 a.setAcquittee(true);
@@ -229,11 +236,11 @@ public class AlerteService {
         dto.setDescription(a.getDescription());
         dto.setNiveauCode(a.getNiveau().getCode());
         dto.setNiveauLibelle(a.getNiveau().getLibelle());
-        dto.setTypeAlerte(a.getTypeAlerte());
+        dto.setTypeAlerte(a.getType().getCode());
         dto.setModuleSource(
-                a.getTypeAlerte().startsWith("stock_aliment_bas")
+                a.getType().getCode().startsWith("stock_aliment_bas")
                         ? "Alimentation"
-                        : MODULE_PAR_TYPE.getOrDefault(a.getTypeAlerte(), "Système"));
+                        : MODULE_PAR_TYPE.getOrDefault(a.getType().getCode(), "Système"));
         dto.setVacheId(a.getVacheId());
         dto.setAcquittee(a.getAcquittee());
         dto.setCreatedAt(a.getCreatedAt());

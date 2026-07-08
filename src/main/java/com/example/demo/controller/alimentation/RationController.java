@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.example.demo.entity.alimentation.Ration;
 import com.example.demo.entity.alimentation.RationAliment;
 import com.example.demo.repository.alimentation.AlimentRepository;
+import com.example.demo.services.alimentation.AffectationRationVacheService;
 import com.example.demo.services.alimentation.RationService;
 
 import jakarta.validation.Valid;
@@ -26,10 +27,14 @@ public class RationController {
     private final RationService rationService;
     private final AlimentRepository alimentRepository;
 
+    private final AffectationRationVacheService affectationService;
+
     public RationController(RationService rationService,
-                            AlimentRepository alimentRepository) {
+                            AlimentRepository alimentRepository,
+                            AffectationRationVacheService affectationService) {
         this.rationService = rationService;
         this.alimentRepository = alimentRepository;
+        this.affectationService = affectationService;
     }
 
     @GetMapping
@@ -153,6 +158,30 @@ public class RationController {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
         return "redirect:/rations/details/" + id;
+    }
+
+    // ========== Suggestions ==========
+
+    @GetMapping("/suggestions")
+    public String suggestions(Model model) {
+        model.addAttribute("suggestions", rationService.getSuggestions());
+        model.addAttribute("rations", rationService.getRationCards());
+        return "rations/suggestions";
+    }
+
+    @PostMapping("/suggestions/appliquer")
+    public String appliquerSuggestion(@RequestParam Long vacheId,
+                                      @RequestParam Long rationSuggereeId,
+                                      RedirectAttributes redirectAttributes) {
+        try {
+            affectationService.appliquerSuggestion(vacheId, rationSuggereeId);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "La suggestion a ete appliquee avec succes.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Erreur lors de l'application de la suggestion : " + e.getMessage());
+        }
+        return "redirect:/rations/suggestions";
     }
 
     @GetMapping("/details/{id}")

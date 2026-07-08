@@ -172,4 +172,43 @@ public class RationService {
                                       Long rationId,
                                       String rationRecommandee) {
     }
+
+    // ========== Suggestions ==========
+
+    public List<SuggestionVm> getSuggestions() {
+        return rationRepository.findAllSuggestions().stream()
+            .map(s -> new SuggestionVm(
+                s.getVacheId(),
+                s.getNumeroBoucle(),
+                s.getScoreBcs(),
+                s.getScoreLocomotion(),
+                s.getJoursEnLait(),
+                s.getPhaseActuelle(),
+                s.getProductionMoyenne7j(),
+                s.getStatutSanteLibelle(),
+                s.getRationActuelleId(),
+                s.getRationActuelleNom(),
+                s.getRationSuggereeId(),
+                s.getRationSuggereeNom(),
+                s.getPrioriteSuggestion(),
+                s.getRaisonSuggestion()
+            ))
+            .toList();
+    }
+
+    public record SuggestionVm(Long vacheId,
+                               String numeroBoucle,
+                               BigDecimal scoreBcs,
+                               Short scoreLocomotion,
+                               Integer joursEnLait,
+                               String phaseActuelle,
+                               BigDecimal productionMoyenne7j,
+                               String statutSanteLibelle,
+                               Long rationActuelleId,
+                               String rationActuelleNom,
+                               Long rationSuggereeId,
+                               String rationSuggereeNom,
+                               Integer prioriteSuggestion,
+                               String raisonSuggestion) {
+    }
 }

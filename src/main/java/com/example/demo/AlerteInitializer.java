@@ -39,7 +39,7 @@ public class AlerteInitializer {
                         && aliment.getSeuilAlerteKg().compareTo(BigDecimal.ZERO) > 0
                         && stock.compareTo(aliment.getSeuilAlerteKg()) <= 0) {
                     alerteService.envoyerAlerte(
-                            "stock_aliment_bas_" + aliment.getId(),
+                            "stock_aliment_bas",
                             "urgent",
                             "Stock insuffisant — " + aliment.getNom(),
                             "Stock actuel : " + stock + " kg, seuil : " + aliment.getSeuilAlerteKg() + " kg.",
