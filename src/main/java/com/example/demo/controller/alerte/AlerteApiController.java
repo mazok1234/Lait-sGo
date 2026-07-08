@@ -1,5 +1,6 @@
 package com.example.demo.controller.alerte;
 
+import com.example.demo.AlerteInitializer;
 import com.example.demo.entity.alerte.Alerte;
 import com.example.demo.services.alerte.AlerteService;
 import jakarta.validation.Valid;
@@ -14,9 +15,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/alertes")
 public class AlerteApiController {
     private final AlerteService alerteService;
+    private final AlerteInitializer alerteInitializer;
 
-    public AlerteApiController(AlerteService alerteService) {
+    public AlerteApiController(AlerteService alerteService, AlerteInitializer alerteInitializer) {
         this.alerteService = alerteService;
+        this.alerteInitializer = alerteInitializer;
     }
 
     @PostMapping
@@ -26,6 +29,12 @@ public class AlerteApiController {
             req.getTitre(), req.getDescription(), req.getVacheId()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(alerte);
+    }
+
+    @PostMapping("/rescan")
+    public ResponseEntity<Void> rescanAlertes() {
+        alerteInitializer.rescanAlertes();
+        return ResponseEntity.ok().build();
     }
 
     public static class AlerteCreateRequest {

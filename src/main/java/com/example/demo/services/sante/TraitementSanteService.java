@@ -163,6 +163,24 @@ public class TraitementSanteService {
         return saved;
     }
 
+    public void genererAlertesTraitementsActifs() {
+        LocalDate today = LocalDate.now();
+        traitementRepository.findAllByOrderByDateDebutDesc().stream()
+                .filter(traitement -> isTreatmentActif(traitement, today))
+                .map(traitement -> traitement.getEvenementSante() != null ? traitement.getEvenementSante().getVache() : null)
+                .filter(vache -> vache != null && vache.getId() != null)
+                .distinct()
+                .forEach(vache -> {
+                    alerteService.envoyerAlerte(
+                        "traitement_en_cours",
+                        "attention",
+                        "Traitement en cours — " + vache.getNumeroBoucle(),
+                        "Vache en traitement actif. Vérifier le dossier santé.",
+                        vache.getId()
+                    );
+                });
+    }
+
     @Transactional
     public void deleteById(Long id) {
         TraitementSante traitement = traitementRepository.findById(id).orElse(null);
