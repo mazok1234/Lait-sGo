@@ -2,25 +2,6 @@ CREATE DATABASE laitgo;
 \c laitgo;
 
 
-INSERT INTO ref_role_utilisateur (code, libelle) VALUES
-    ('admin', 'Administrateur'),
-    ('employe', 'Employé')
-ON CONFLICT (code) DO NOTHING;
-
--- Compte admin de test : email admin@laitgo.mg / mot de passe Admin123!
-INSERT INTO utilisateur (nom, email, id_role, mot_de_passe_hash, actif)
-SELECT 'Admin Test', 'admin@laitgo.mg', r.id, '$2y$10$k3CgylH3wYI63CdKC.CpNO0i3RD0ml4ZRYcz7dKt.Q9P7qcJM9uVa', true
-FROM ref_role_utilisateur r WHERE r.code = 'admin'
-ON CONFLICT (email) DO NOTHING;
-
--- Compte employé de test : email employe@laitgo.mg / mot de passe Employe123!
-INSERT INTO utilisateur (nom, email, id_role, mot_de_passe_hash, actif)
-SELECT 'Employe Test', 'employe@laitgo.mg', r.id, '$2y$10$T3bqAFpDJheUhPSV1w/T9.psStGYQsJUhWglT585Kp3fvd5mqwnzC', true
-FROM ref_role_utilisateur r WHERE r.code = 'employe'
-ON CONFLICT (email) DO NOTHING;
-
-
-
 CREATE TABLE ref_statut_vie (
     id      SERIAL PRIMARY KEY,
     libelle VARCHAR(50) NOT NULL UNIQUE
@@ -63,11 +44,6 @@ CREATE TABLE ref_niveau_alerte (
     ordre   SMALLINT     NOT NULL
 );
 
-CREATE TABLE ref_type_alerte (
-    id      SERIAL PRIMARY KEY,
-    code    VARCHAR(40)  NOT NULL UNIQUE,
-    libelle VARCHAR(150) NOT NULL
-);
 
 CREATE TABLE ref_type_aliment (
     id      SERIAL PRIMARY KEY,
@@ -109,6 +85,25 @@ CREATE TABLE utilisateur (
     actif             BOOLEAN      NOT NULL DEFAULT TRUE,
     created_at        TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
+
+INSERT INTO ref_role_utilisateur (code, libelle) VALUES
+    ('admin', 'Administrateur'),
+    ('employe', 'Employé')
+ON CONFLICT (code) DO NOTHING;
+
+-- Compte admin de test : email admin@laitgo.mg / mot de passe Admin123!
+INSERT INTO utilisateur (nom, email, id_role, mot_de_passe_hash, actif)
+SELECT 'Admin Test', 'admin@laitgo.mg', r.id, '$2y$10$k3CgylH3wYI63CdKC.CpNO0i3RD0ml4ZRYcz7dKt.Q9P7qcJM9uVa', true
+FROM ref_role_utilisateur r WHERE r.code = 'admin'
+ON CONFLICT (email) DO NOTHING;
+
+-- Compte employé de test : email employe@laitgo.mg / mot de passe Employe123!
+INSERT INTO utilisateur (nom, email, id_role, mot_de_passe_hash, actif)
+SELECT 'Employe Test', 'employe@laitgo.mg', r.id, '$2y$10$T3bqAFpDJheUhPSV1w/T9.psStGYQsJUhWglT585Kp3fvd5mqwnzC', true
+FROM ref_role_utilisateur r WHERE r.code = 'employe'
+ON CONFLICT (email) DO NOTHING;
+
+
 
 CREATE TABLE vache (
     id               BIGSERIAL    PRIMARY KEY,
@@ -309,15 +304,16 @@ CREATE TABLE affectation_ration_vache (
 CREATE INDEX idx_affectation_vache_actif ON affectation_ration_vache(vache_id, actif);
 CREATE INDEX idx_affectation_ration_actif ON affectation_ration_vache(ration_id, actif);
 
+
 CREATE TABLE alerte (
-    id          BIGSERIAL   PRIMARY KEY,
-    id_niveau   INT         NOT NULL REFERENCES ref_niveau_alerte(id),
-    id_type     INT         NOT NULL REFERENCES ref_type_alerte(id),
+    id          BIGSERIAL    PRIMARY KEY,
+    id_niveau   INT          NOT NULL REFERENCES ref_niveau_alerte(id),
+    type_alerte VARCHAR(50)  NOT NULL,
     titre       VARCHAR(200) NOT NULL,
     description TEXT,
-    vache_id    BIGINT      REFERENCES vache(id),
-    acquittee   BOOLEAN     NOT NULL DEFAULT FALSE,
-    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    vache_id    BIGINT       REFERENCES vache(id),
+    acquittee   BOOLEAN      NOT NULL DEFAULT FALSE,
+    created_at  TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX idx_alerte_acquittee_date ON alerte(acquittee, created_at DESC);
@@ -490,16 +486,6 @@ INSERT INTO ration_aliment (ration_id, aliment_id, quantite_kg) VALUES
 INSERT INTO ration_aliment (ration_id, aliment_id, quantite_kg) VALUES
     (4, 1, 4.0),
     (4, 2, 2.0);
-
-INSERT INTO ref_type_alerte (code, libelle) VALUES
-    ('vaccin_en_retard',   'Vaccin en retard'),
-    ('rappel_vaccin',      'Rappel vaccin'),
-    ('vaccin_prioritaire', 'Vaccin prioritaire'),
-    ('stock_lait_bas',     'Stock de lait insuffisant'),
-    ('rappel_velage',      'Rappel vêlage'),
-    ('rappel_chaleur',     'Rappel vache en chaleur'),
-    ('stock_aliment_bas',  'Stock aliment insuffisant'),
-    ('bcs_hors_plage',     'Score BCS hors plage');
 
 INSERT INTO ref_type_ia (id, libelle) VALUES
     (1, 'IA fraîche'),

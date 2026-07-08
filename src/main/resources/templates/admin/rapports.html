@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+
+<head>
+    <title>Rapports Administrateur</title>
+</head>
+
+<body>
+    <div th:fragment="mainContent" class="page-content">
+
+        <div class="page-header">
+            <h1 class="page-title">Rapports d'activité</h1>
+            <p class="page-subtitle">Dernières productions, ventes et rapport de rentabilité</p>
+        </div>
+
+        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom:18px;">
+            <div class="card stat-card">
+                <div class="stat-icon" style="background-color:#ECFDF5;color:#059669;">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="stat-body">
+                    <div class="stat-label">Revenus totaux</div>
+                    <div class="stat-value" th:text="${#numbers.formatDecimal(totalRevenus, 1, 2) + ' Ar'}">0 Ar</div>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-icon" style="background-color:#FEF2F2;color:#DC2626;">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                </div>
+                <div class="stat-body">
+                    <div class="stat-label">Dépenses alimentation</div>
+                    <div class="stat-value" th:text="${#numbers.formatDecimal(totalDepenses, 1, 2) + ' Ar'}">0 Ar</div>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-icon" style="background-color:#EFF6FF;color:#2563EB;">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-body">
+                    <div class="stat-label">Bénéfice estimé</div>
+                    <div class="stat-value" th:text="${#numbers.formatDecimal(totalBenefice, 1, 2) + ' Ar'}">0 Ar</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-table" style="margin-bottom:24px;">
+            <div class="card-header">
+                <h2 class="card-title">Rapport mensuel de rentabilité (dépenses vs bénéfice)</h2>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Période</th>
+                            <th>Revenus (Ar)</th>
+                            <th>Dépenses (Ar)</th>
+                            <th>Bénéfice (Ar)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="r : ${rentabiliteStats}">
+                            <td th:text="${r.month + '/' + r.year}">-</td>
+                            <td th:text="${#numbers.formatDecimal(r.revenus, 1, 2)}">0</td>
+                            <td th:text="${#numbers.formatDecimal(r.depenses, 1, 2)}">0</td>
+                            <td th:text="${#numbers.formatDecimal(r.benefice, 1, 2)}"
+                                th:style="${r.benefice >= 0} ? 'color:#166534;font-weight:600;' : 'color:#B91C1C;font-weight:600;'">0</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(rentabiliteStats)}">
+                            <td colspan="4" class="text-center" style="padding:32px;color:#9CA3AF;">
+                                Aucune donnée de rentabilité.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card card-table" style="margin-bottom: 24px;">
+            <div class="card-header">
+                <h2 class="card-title">Dernières Productions (Lait)</h2>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Vache</th>
+                            <th>Lactation (ID)</th>
+                            <th>Quantité (L)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="prod : ${productions}">
+                            <td th:text="${#temporals.format(prod.dateProduction, 'dd/MM/yyyy')}">-</td>
+                            <td th:text="${prod.vache != null ? prod.vache.nom : '-'}">-</td>
+                            <td th:text="${prod.lactation != null ? prod.lactation.id : '-'}">-</td>
+                            <td th:text="${#numbers.formatDecimal(prod.quantiteLitres, 1, 2) + ' L'}">0 L</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(productions)}">
+                            <td colspan="4" class="text-center" style="padding:32px;color:#9CA3AF;">
+                                Aucune production trouvée.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card card-table">
+            <div class="card-header">
+                <h2 class="card-title">Dernières Ventes</h2>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Quantité (L)</th>
+                            <th>Prix Unitaire (Ar)</th>
+                            <th>Total (Ar)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="vente : ${ventes}">
+                            <td th:text="${#temporals.format(vente.dateVente, 'dd/MM/yyyy')}">-</td>
+                            <td th:text="${#numbers.formatDecimal(vente.quantiteLait, 1, 2) + ' L'}">0 L</td>
+                            <td th:text="${#numbers.formatDecimal(vente.prixUnitaire, 1, 2) + ' Ar'}">0 Ar</td>
+                            <td
+                                th:text="${#numbers.formatDecimal(vente.quantiteLait * vente.prixUnitaire, 1, 2) + ' Ar'}">
+                                0 Ar</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(ventes)}">
+                            <td colspan="4" class="text-center" style="padding:32px;color:#9CA3AF;">
+                                Aucune vente trouvée.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

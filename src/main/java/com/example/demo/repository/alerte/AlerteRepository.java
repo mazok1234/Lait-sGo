@@ -6,22 +6,48 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AlerteRepository extends JpaRepository<Alerte, Long> {
+
+    // Dashboard principal — non acquittées
     List<Alerte> findByAcquitteeFalseOrderByCreatedAtDesc();
 
-    List<Alerte> findByVacheId(Long vacheId);
+    // Acquittées — affichées en bas de liste
+    List<Alerte> findByAcquitteeTrueOrderByCreatedAtDesc();
 
+    // Filtre par niveau
     List<Alerte> findByAcquitteeFalseAndNiveau_CodeOrderByCreatedAtDesc(String niveauCode);
 
-    List<Alerte> findByAcquitteeFalseAndType_IdOrderByCreatedAtDesc(Integer typeId);
+    // Filtre par type
+    List<Alerte> findByAcquitteeFalseAndTypeAlerteOrderByCreatedAtDesc(String typeAlerte);
+    List<Alerte> findByAcquitteeFalseAndTypeAlerteStartingWithOrderByCreatedAtDesc(String typeAlertePrefix);
 
-    List<Alerte> findByAcquitteeFalseAndNiveau_CodeAndType_IdOrderByCreatedAtDesc(
-            String niveauCode, Integer typeId);
+    // Filtre niveau + type combinés
+    List<Alerte> findByAcquitteeFalseAndNiveau_CodeAndTypeAlerteOrderByCreatedAtDesc(
+            String niveauCode, String typeAlerte);
+    List<Alerte> findByAcquitteeFalseAndNiveau_CodeAndTypeAlerteStartingWithOrderByCreatedAtDesc(
+            String niveauCode, String typeAlertePrefix);
 
-    boolean existsByVacheIdAndType_CodeAndAcquitteeFalse(Long vacheId, String typeCode);
+    // Récupérer alerte active par vache + type (mise à jour de gravité)
+    Optional<Alerte> findTopByVacheIdAndTypeAlerteAndAcquitteeFalseOrderByCreatedAtDesc(
+            Long vacheId, String typeAlerte);
+    Optional<Alerte> findTopByVacheIdIsNullAndTypeAlerteAndAcquitteeFalseOrderByCreatedAtDesc(
+            String typeAlerte);
 
-    boolean existsByVacheIdIsNullAndType_CodeAndAcquitteeFalse(String typeCode);
+    // Acquittement automatique
+    List<Alerte> findByTypeAlerteAndVacheIdAndAcquitteeFalse(String typeAlerte, Long vacheId);
+    List<Alerte> findByTypeAlerteAndAcquitteeFalse(String typeAlerte);
 
-    Optional<Alerte> findByVacheIdAndType_CodeAndAcquitteeFalse(Long vacheId, String typeCode);
+    // Pour detacherVache
+    List<Alerte> findByVacheId(Long vacheId);
 
-    Optional<Alerte> findByVacheIdIsNullAndType_CodeAndAcquitteeFalse(String typeCode);
+    Optional<Alerte> findTopByVacheIdAndTypeAlerteAndAcquitteeTrueOrderByCreatedAtDesc(
+    Long vacheId, String typeAlerte);
+
+    // Variantes "startingWith" pour gérer les types dynamiques (ex: stock_aliment_bas_123)
+    Optional<Alerte> findTopByVacheIdAndTypeAlerteStartingWithAndAcquitteeFalseOrderByCreatedAtDesc(
+            Long vacheId, String typeAlertePrefix);
+    Optional<Alerte> findTopByVacheIdIsNullAndTypeAlerteStartingWithAndAcquitteeFalseOrderByCreatedAtDesc(
+            String typeAlertePrefix);
+
+    List<Alerte> findByTypeAlerteStartingWithAndVacheIdAndAcquitteeFalse(String typeAlertePrefix, Long vacheId);
+    List<Alerte> findByTypeAlerteStartingWithAndAcquitteeFalse(String typeAlertePrefix);
 }

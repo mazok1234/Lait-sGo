@@ -1,7 +1,6 @@
 package com.example.demo.controller.alerte;
 
 import com.example.demo.repository.alerte.RefNiveauAlerteRepository;
-import com.example.demo.repository.alerte.RefTypeAlerteRepository;
 import com.example.demo.services.alerte.AlerteService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,39 +12,47 @@ import java.util.NoSuchElementException;
 @Controller
 @RequestMapping("/alertes")
 public class AlerteController {
+
     private final AlerteService alerteService;
     private final RefNiveauAlerteRepository niveauRepo;
-    private final RefTypeAlerteRepository typeRepo;
 
     public AlerteController(AlerteService alerteService,
-                             RefNiveauAlerteRepository niveauRepo,
-                             RefTypeAlerteRepository typeRepo) {
+            RefNiveauAlerteRepository niveauRepo) {
         this.alerteService = alerteService;
         this.niveauRepo    = niveauRepo;
-        this.typeRepo      = typeRepo;
     }
 
+    // Dashboard — toutes alertes (non acquittées en haut, acquittées en bas)
     @GetMapping
     public String dashboard(
-        @RequestParam(required = false) String niveau,
-        @RequestParam(required = false) Integer type,
-        Model model
-    ) {
-        model.addAttribute("alertes", alerteService.listerNonAcquittees(niveau, type));
-        model.addAttribute("kpis",    alerteService.compterParNiveau());
-        model.addAttribute("niveaux", niveauRepo.findAll());
-        model.addAttribute("types",   typeRepo.findAll());
-        model.addAttribute("niveauActif", niveau);
-        model.addAttribute("typeActif",   type);
+            @RequestParam(required = false) String niveau,
+            @RequestParam(required = false) String type,
+            Model model) {
+        model.addAttribute("alertes",      alerteService.listerToutesAlertes(niveau, type));
+        model.addAttribute("kpis",         alerteService.compterParNiveau());
+        model.addAttribute("niveaux",      niveauRepo.findAllByOrderByOrdreAsc());
+        model.addAttribute("types",        alerteService.getTypesDisponibles());
+        model.addAttribute("niveauActif",  niveau);
+        model.addAttribute("typeActif",    type);
         return "alertes/dashboard";
     }
 
+    // Détail d'une alerte
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
         model.addAttribute("alerte", alerteService.getDetail(id));
         return "alertes/detail";
     }
 
+    // Badge sidebar
+    @GetMapping("/api/count")
+    @ResponseBody
+    public String countBadge() {
+        long count = alerteService.compterNonAcquittees();
+        return String.valueOf(count);
+    }
+
+    // Acquittement manuel
     @PostMapping("/{id}/acquitter")
     public String acquitter(@PathVariable Long id, RedirectAttributes redirectAttrs) {
         try {

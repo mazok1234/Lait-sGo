@@ -31,4 +31,24 @@ public interface MouvementAlimentRepository extends JpaRepository<MouvementAlime
         WHERE m.aliment.id = :alimentId AND LOWER(m.typeMouvement) = 'entree'
     """)
     LocalDate findPremiereDateEntreeByAlimentId(@Param("alimentId") Long alimentId);
+
+    @Query("""
+        SELECT COALESCE(SUM(m.quantiteKg * COALESCE(m.aliment.prixParKilo, 0)), 0)
+        FROM MouvementAliment m
+        WHERE LOWER(m.typeMouvement) = 'sortie'
+    """)
+    BigDecimal getTotalDepensesAlimentation();
+
+    @Query("""
+        SELECT new map(
+            MONTH(m.dateMouvement) as month,
+            YEAR(m.dateMouvement) as year,
+            SUM(m.quantiteKg * COALESCE(m.aliment.prixParKilo, 0)) as total
+        )
+        FROM MouvementAliment m
+        WHERE LOWER(m.typeMouvement) = 'sortie'
+        GROUP BY YEAR(m.dateMouvement), MONTH(m.dateMouvement)
+        ORDER BY year, month
+    """)
+    List<java.util.Map<String, Object>> getDepensesMensuelles();
 }
