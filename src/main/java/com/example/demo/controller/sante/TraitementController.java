@@ -2,83 +2,83 @@ package com.example.demo.controller.sante;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.example.demo.entity.sante.TraitementSante;
+import com.example.demo.dto.EvenementSanteFormDTO;
+import com.example.demo.entity.sante.EvenementSante;
 import com.example.demo.services.sante.TraitementSanteService;
-
-import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/traitements")
 public class TraitementController {
-	private final TraitementSanteService traitementService;
 
-	public TraitementController(TraitementSanteService traitementService) {
-		this.traitementService = traitementService;
-	}
+    private final TraitementSanteService traitementService;
 
-	@GetMapping
-	public String list(Model model) {
-		traitementService.synchronizeVacheStatuses();
-		model.addAttribute("traitements", traitementService.findAll());
-		model.addAttribute("vachesTariees", traitementService.countVachesTariees());
-		return "Traitement/liste";
-	}
+    public TraitementController(TraitementSanteService traitementService) {
+        this.traitementService = traitementService;
+    }
 
-	@GetMapping("/new")
-	public String formNew(Model model) {
-		model.addAttribute("traitement", traitementService.createEmptyForm());
-		addFormOptions(model);
-		return "Traitement/ajoutTraitement";
-	}
+    @GetMapping
+    public String list(Model model) {
+        traitementService.synchronizeVacheStatuses();
+        model.addAttribute("evenements", traitementService.findAllEvenements());
+        model.addAttribute("vachesTariees", traitementService.countVachesTariees());
+        return "Traitement/liste";
+    }
 
-	@PostMapping("/save")
-	public String save(@Valid @ModelAttribute("traitement") TraitementSante traitement,
-			BindingResult result,
-			Model model) {
-		if (result.hasErrors()) {
-			addFormOptions(model);
-			return "Traitement/ajoutTraitement";
-		}
+    @GetMapping("/detail/{id}")
+    public String detail(@PathVariable Long id, Model model) {
+        EvenementSante evenement = traitementService.findEvenementById(id);
+        if (evenement == null) {
+            return "redirect:/traitements";
+        }
+        model.addAttribute("evenement", evenement);
+        return "Traitement/detailTraitement";
+    }
 
-		try {
-			traitementService.save(traitement);
-		} catch (IllegalArgumentException e) {
-			model.addAttribute("erreur", e.getMessage());
-			addFormOptions(model);
-			return "Traitement/ajoutTraitement";
-		}
+    @GetMapping("/new")
+    public String nouveau(Model model) {
+        model.addAttribute("evenementForm", traitementService.createEmptyForm());
+        addFormOptions(model);
+        return "Traitement/ajoutTraitement";
+    }
 
-		return "redirect:/traitements";
-	}
+    @GetMapping("/edit/{id}")
+    public String edit(@PathVariable Long id, Model model) {
+        EvenementSanteFormDTO form = traitementService.findFormById(id);
+        if (form == null) {
+            return "redirect:/traitements";
+        }
+        model.addAttribute("evenementForm", form);
+        addFormOptions(model);
+        return "Traitement/ajoutTraitement";
+    }
 
-	@GetMapping("/edit/{id}")
-	public String edit(@PathVariable Long id, Model model) {
-		TraitementSante traitement = traitementService.findById(id);
-		if (traitement == null) {
-			return "redirect:/traitements";
-		}
+    @PostMapping("/save")
+    public String save(@ModelAttribute("evenementForm") EvenementSanteFormDTO form, Model model) {
+        try {
+            traitementService.saveForm(form);
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("erreur", e.getMessage());
+            addFormOptions(model);
+            return "Traitement/ajoutTraitement";
+        }
+        return "redirect:/traitements";
+    }
 
-		model.addAttribute("traitement", traitement);
-		addFormOptions(model);
-		return "Traitement/ajoutTraitement";
-	}
+    @PostMapping("/delete/{id}")
+    public String delete(@PathVariable Long id) {
+        traitementService.deleteEvenement(id);
+        return "redirect:/traitements";
+    }
 
-	@PostMapping("/delete/{id}")
-	public String delete(@PathVariable Long id) {
-		traitementService.deleteById(id);
-		return "redirect:/traitements";
-	}
-
-	private void addFormOptions(Model model) {
-		model.addAttribute("vaches", traitementService.findAllVaches());
-		model.addAttribute("maladies", traitementService.findAllMaladies());
-		model.addAttribute("medicaments", traitementService.findAllMedicaments());
-	}
+    private void addFormOptions(Model model) {
+        model.addAttribute("vaches", traitementService.findAllVaches());
+        model.addAttribute("maladies", traitementService.findAllMaladies());
+        model.addAttribute("medicaments", traitementService.findAllMedicaments());
+    }
 }
