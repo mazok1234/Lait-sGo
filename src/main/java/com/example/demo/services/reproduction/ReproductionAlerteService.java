@@ -6,6 +6,7 @@ import com.example.demo.repository.reproduction.ReproductionRepository;
 import com.example.demo.services.alerte.AlerteService; // ← ajouté
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -22,6 +23,10 @@ public class ReproductionAlerteService {
     @Autowired
     private AlerteService alerteService; // ← ajouté
 
+    // Reproduction.vache est LAZY : la session doit rester ouverte le temps
+    // de parcourir les resultats et d'accéder à r.getVache().getNumeroBoucle().
+    // Pas readOnly : la boucle appelle alerteService.envoyerAlerte(), qui écrit.
+    @Transactional
     public List<AlerteReproductionDTO> getAlertesVelage() {
         List<Reproduction> reproductions = reproductionRepository.findAll();
         List<AlerteReproductionDTO> alertes = new ArrayList<>();
