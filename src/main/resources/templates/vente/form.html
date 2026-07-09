@@ -13,8 +13,8 @@
 
     <div th:if="${success}" class="flash flash-success" style="margin-bottom:20px;">
         <i class="fas fa-check-circle"></i> Vente enregistrée.
-        <a th:href="@{/vente/{id}/pdf(id=${lastVenteId})}" class="btn btn-sm" style="margin-left:12px;">
-            <i class="fas fa-file-pdf"></i> Télécharger le reçu PDF
+        <a th:href="@{/vente/{id}/excel(id=${lastVenteId})}" class="btn btn-sm" style="margin-left:12px;">
+            <i class="fas fa-file-excel"></i> Télécharger le fichier excel 
         </a>
     </div>
 
