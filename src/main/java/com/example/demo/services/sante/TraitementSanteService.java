@@ -22,6 +22,7 @@ import com.example.demo.repository.sante.MaladieRepository;
 import com.example.demo.repository.sante.MedicamentRepository;
 import com.example.demo.repository.sante.TraitementSanteRepository;
 import com.example.demo.services.cheptel.StatutLactationVacheService;
+import com.example.demo.services.alerte.AlerteService;
 
 @Service
 public class TraitementSanteService {
@@ -35,19 +36,22 @@ public class TraitementSanteService {
     private final MaladieRepository maladieRepository;
     private final MedicamentRepository medicamentRepository;
     private final StatutLactationVacheService statutLactationService;
+    private final AlerteService alerteService;
 
     public TraitementSanteService(TraitementSanteRepository traitementRepository,
-                                   EvenementSanteRepository evenementRepository,
-                                   VacheRepository vacheRepository,
-                                   MaladieRepository maladieRepository,
-                                   MedicamentRepository medicamentRepository,
-                                   StatutLactationVacheService statutLactationService) {
+            EvenementSanteRepository evenementRepository,
+            VacheRepository vacheRepository,
+            MaladieRepository maladieRepository,
+            MedicamentRepository medicamentRepository,
+            StatutLactationVacheService statutLactationService,
+            AlerteService alerteService) {
         this.traitementRepository = traitementRepository;
         this.evenementRepository = evenementRepository;
         this.vacheRepository = vacheRepository;
         this.maladieRepository = maladieRepository;
         this.medicamentRepository = medicamentRepository;
         this.statutLactationService = statutLactationService;
+        this.alerteService = alerteService;
     }
 
     public List<TraitementSante> findAll() {
@@ -60,9 +64,17 @@ public class TraitementSanteService {
                 .size();
     }
 
-    public List<Vache> findAllVaches() { return vacheRepository.findAll(); }
-    public List<Maladie> findAllMaladies() { return maladieRepository.findAll(); }
-    public List<Medicament> findAllMedicaments() { return medicamentRepository.findAll(); }
+    public List<Vache> findAllVaches() {
+        return vacheRepository.findAll();
+    }
+
+    public List<Maladie> findAllMaladies() {
+        return maladieRepository.findAll();
+    }
+
+    public List<Medicament> findAllMedicaments() {
+        return medicamentRepository.findAll();
+    }
 
     /** Prépare un formulaire vierge avec une ligne de médicament par défaut. */
     public EvenementSanteFormDTO createEmptyForm() {
@@ -128,8 +140,7 @@ public class TraitementSanteService {
         evenement.setDescription(
                 (form.getDescription() == null || form.getDescription().isBlank())
                         ? maladie.getNom()
-                        : form.getDescription()
-        );
+                        : form.getDescription());
         evenement = evenementRepository.save(evenement);
 
         boolean auMoinsUneLigneValide = false;
@@ -209,9 +220,11 @@ public class TraitementSanteService {
             boolean estDejaTariee = STATUT_TARIE.equals(statutActuel);
 
             if (doitEtreTariee && !estDejaTariee) {
-                statutLactationService.changerStatut(vache, statutLactationService.getByLibelle(STATUT_TARIE).getId(), today);
+                statutLactationService.changerStatut(vache, statutLactationService.getByLibelle(STATUT_TARIE).getId(),
+                        today);
             } else if (!doitEtreTariee && estDejaTariee) {
-                statutLactationService.changerStatut(vache, statutLactationService.getByLibelle(STATUT_EN_LACTATION).getId(), today);
+                statutLactationService.changerStatut(vache,
+                        statutLactationService.getByLibelle(STATUT_EN_LACTATION).getId(), today);
             }
         }
     }
@@ -236,20 +249,38 @@ public class TraitementSanteService {
     }
 
     public List<EvenementSante> findAllEvenements() {
-    return evenementRepository.findAllByOrderByDateEvenementDesc();
+        return evenementRepository.findAllByOrderByDateEvenementDesc();
     }
 
     public EvenementSante findEvenementById(Long id) {
-    return evenementRepository.findById(id).orElse(null);
+        return evenementRepository.findById(id).orElse(null);
     }
 
     @Transactional
     public void deleteEvenement(Long evenementId) {
-    EvenementSante evenement = evenementRepository.findById(evenementId).orElse(null);
-    if (evenement == null) {
-        return;
+        EvenementSante evenement = evenementRepository.findById(evenementId).orElse(null);
+        if (evenement == null) {
+            return;
+        }
+        evenementRepository.delete(evenement); // cascade + orphanRemoval supprime les traitements liés
+        synchronizeVacheStatuses();
     }
-    evenementRepository.delete(evenement); // cascade + orphanRemoval supprime les traitements liés
-    synchronizeVacheStatuses();
+
+    public void genererAlertesTraitementsActifs() {
+        LocalDate today = LocalDate.now();
+        traitementRepository.findAllByOrderByDateDebutDesc().stream()
+                .filter(traitement -> isTreatmentActif(traitement, today))
+                .map(traitement -> traitement.getEvenementSante() != null ? traitement.getEvenementSante().getVache()
+                        : null)
+                .filter(vache -> vache != null && vache.getId() != null)
+                .distinct()
+                .forEach(vache -> {
+                    alerteService.envoyerAlerte(
+                            "traitement_en_cours",
+                            "attention",
+                            "Traitement en cours — " + vache.getNumeroBoucle(),
+                            "Vache en traitement actif. Vérifier le dossier santé.",
+                            vache.getId());
+                });
     }
 }
