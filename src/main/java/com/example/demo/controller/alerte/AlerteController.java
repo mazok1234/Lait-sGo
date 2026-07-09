@@ -8,10 +8,18 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/alertes")
 public class AlerteController {
+
+    private static final Set<String> AUTO_ACQUITTED_MODULES = Set.of(
+            "Production",
+            "Alimentation",
+            "Vente",
+            "Reproduction"
+    );
 
     private final AlerteService alerteService;
     private final RefNiveauAlerteRepository niveauRepo;
@@ -56,10 +64,10 @@ public class AlerteController {
     @PostMapping("/{id}/acquitter")
     public String acquitter(@PathVariable Long id, RedirectAttributes redirectAttrs) {
         try {
-            if (alerteService.getDetail(id).getModuleSource() != null
-                    && "Production".equalsIgnoreCase(alerteService.getDetail(id).getModuleSource())) {
+            String moduleSource = alerteService.getDetail(id).getModuleSource();
+            if (moduleSource != null && AUTO_ACQUITTED_MODULES.contains(moduleSource)) {
                 redirectAttrs.addFlashAttribute("erreur",
-                        "Les alertes de production sont acquittées automatiquement lors d'une nouvelle production conforme.");
+                        "Les alertes de ce module sont acquittées automatiquement lors d'une mise à jour conforme.");
                 return "redirect:/alertes/" + id;
             }
             alerteService.acquitter(id);

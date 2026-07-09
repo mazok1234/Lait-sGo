@@ -41,6 +41,13 @@ public interface AlerteRepository extends JpaRepository<Alerte, Long> {
 
     Optional<Alerte> findTopByVacheIdAndType_CodeAndAcquitteeTrueOrderByCreatedAtDesc(
     Long vacheId, String typeCode);
+    Optional<Alerte> findTopByVacheIdIsNullAndType_CodeAndAcquitteeTrueOrderByCreatedAtDesc(
+            String typeCode);
+
+    Optional<Alerte> findTopByVacheIdAndType_CodeStartingWithAndAcquitteeTrueOrderByCreatedAtDesc(
+            Long vacheId, String typeCodePrefix);
+    Optional<Alerte> findTopByVacheIdIsNullAndType_CodeStartingWithAndAcquitteeTrueOrderByCreatedAtDesc(
+            String typeCodePrefix);
 
     // Variantes "startingWith" pour gérer les types dynamiques (ex: stock_aliment_bas_123)
     Optional<Alerte> findTopByVacheIdAndType_CodeStartingWithAndAcquitteeFalseOrderByCreatedAtDesc(

@@ -11,6 +11,7 @@ import com.example.demo.repository.cheptel.VacheRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -245,7 +246,7 @@ public class AlerteService {
             RefNiveauAlerte niveau = niveauRepo.findByCode(niveauCode)
                     .orElseThrow(() -> new IllegalArgumentException("Niveau inconnu : " + niveauCode));
 
-            // Chercher une alerte active existante
+            // Chercher une alerte active existante, sinon réactiver la dernière acquittée
             boolean alimPrefix = typeAlerte != null && typeAlerte.startsWith(STOCK_ALIMENT_BAS_PREFIX);
             Optional<Alerte> alerteExistante;
             if (alimPrefix) {
@@ -271,6 +272,26 @@ public class AlerteService {
                 } else {
                     System.out.println("[Alertes] Doublon ignoré : " + typeAlerte);
                 }
+                return;
+            }
+
+            Optional<Alerte> alerteAcquitteeRecente = alimPrefix
+                    ? (vacheId != null
+                            ? alerteRepo.findTopByVacheIdAndType_CodeStartingWithAndAcquitteeTrueOrderByCreatedAtDesc(vacheId, typeAlerte)
+                            : alerteRepo.findTopByVacheIdIsNullAndType_CodeStartingWithAndAcquitteeTrueOrderByCreatedAtDesc(typeAlerte))
+                    : (vacheId != null
+                            ? alerteRepo.findTopByVacheIdAndType_CodeAndAcquitteeTrueOrderByCreatedAtDesc(vacheId, typeAlerte)
+                        : alerteRepo.findTopByVacheIdIsNullAndType_CodeAndAcquitteeTrueOrderByCreatedAtDesc(typeAlerte));
+
+            if (alerteAcquitteeRecente.isPresent()) {
+                Alerte ancienne = alerteAcquitteeRecente.get();
+                ancienne.setNiveau(niveau);
+                ancienne.setTitre(titre);
+                ancienne.setDescription(description);
+                ancienne.setAcquittee(false);
+                ancienne.setCreatedAt(LocalDateTime.now());
+                alerteRepo.save(ancienne);
+                System.out.println("[Alertes] Réactivée : " + typeAlerte + " [" + niveauCode + "]");
                 return;
             }
 
