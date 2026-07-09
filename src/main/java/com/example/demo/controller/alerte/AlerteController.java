@@ -56,6 +56,12 @@ public class AlerteController {
     @PostMapping("/{id}/acquitter")
     public String acquitter(@PathVariable Long id, RedirectAttributes redirectAttrs) {
         try {
+            if (alerteService.getDetail(id).getModuleSource() != null
+                    && "Production".equalsIgnoreCase(alerteService.getDetail(id).getModuleSource())) {
+                redirectAttrs.addFlashAttribute("erreur",
+                        "Les alertes de production sont acquittées automatiquement lors d'une nouvelle production conforme.");
+                return "redirect:/alertes/" + id;
+            }
             alerteService.acquitter(id);
             redirectAttrs.addFlashAttribute("succes", "Alerte acquittée avec succès.");
         } catch (IllegalStateException e) {

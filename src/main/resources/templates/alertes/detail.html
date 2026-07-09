@@ -70,12 +70,16 @@
         </div>
 
         <div class="detail-divider detail-actions-divider">
-          <form th:if="${!alerte.acquittee}"
+          <form th:if="${!alerte.acquittee and alerte.moduleSource != 'Production'}"
                 th:action="@{/alertes/{id}/acquitter(id=${alerte.id})}" method="post">
             <button type="submit" class="btn btn-primary">
               <i class="fas fa-check"></i> Acquitter l'alerte
             </button>
           </form>
+
+          <div th:if="${!alerte.acquittee and alerte.moduleSource == 'Production'}" class="acquit-badge">
+            <i class="fas fa-robot"></i> Acquittement automatique à la prochaine production conforme
+          </div>
 
           <div th:if="${alerte.acquittee}" class="acquit-badge">
             <i class="fas fa-check-circle"></i> Alerte déjà acquittée
