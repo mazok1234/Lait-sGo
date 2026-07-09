@@ -3,8 +3,10 @@ package com.example.demo.services.alerte;
 import com.example.demo.dto.AlerteDTO;
 import com.example.demo.entity.alerte.Alerte;
 import com.example.demo.entity.alerte.RefNiveauAlerte;
+import com.example.demo.entity.alerte.RefTypeAlerte;
 import com.example.demo.repository.alerte.AlerteRepository;
 import com.example.demo.repository.alerte.RefNiveauAlerteRepository;
+import com.example.demo.repository.alerte.RefTypeAlerteRepository;
 import com.example.demo.repository.cheptel.VacheRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,9 +21,11 @@ public class AlerteService {
 
     private final AlerteRepository alerteRepo;
     private final RefNiveauAlerteRepository niveauRepo;
+    private final RefTypeAlerteRepository typeRepo;
     private final VacheRepository vacheRepo;
 
     // Mapping type → module (logique métier — pas en BDD)
+    public static final String STOCK_ALIMENT_BAS_PREFIX = "stock_aliment_bas";
     private static final Map<String, String> MODULE_PAR_TYPE = new HashMap<>();
     static {
         MODULE_PAR_TYPE.put("vaccin_en_retard", "Santé — Vaccination");
@@ -30,14 +34,18 @@ public class AlerteService {
         MODULE_PAR_TYPE.put("traitement_en_cours", "Santé — Traitement");
         MODULE_PAR_TYPE.put("rappel_velage", "Reproduction");
         MODULE_PAR_TYPE.put("stock_lait_bas", "Vente");
+        MODULE_PAR_TYPE.put(STOCK_ALIMENT_BAS_PREFIX, "Alimentation");
         MODULE_PAR_TYPE.put("bcs_hors_plage", "Cheptel");
+        MODULE_PAR_TYPE.put("baisse_production", "Production");
     }
 
     public AlerteService(AlerteRepository alerteRepo,
             RefNiveauAlerteRepository niveauRepo,
+            RefTypeAlerteRepository typeRepo,
             VacheRepository vacheRepo) {
         this.alerteRepo = alerteRepo;
         this.niveauRepo = niveauRepo;
+        this.typeRepo = typeRepo;
         this.vacheRepo = vacheRepo;
     }
 
@@ -48,13 +56,26 @@ public class AlerteService {
             String titre, String description, Long vacheId) {
         RefNiveauAlerte niveau = niveauRepo.findById(idNiveau)
                 .orElseThrow(() -> new IllegalArgumentException("Niveau introuvable : " + idNiveau));
+        RefTypeAlerte type = resolveOrCreateType(typeAlerte);
         Alerte alerte = new Alerte();
         alerte.setNiveau(niveau);
-        alerte.setTypeAlerte(typeAlerte);
+        alerte.setType(type);
         alerte.setTitre(titre);
         alerte.setDescription(description);
         alerte.setVacheId(vacheId);
         return alerteRepo.save(alerte);
+    }
+
+    // Les codes "catalogue" (8 valeurs fixes) sont pré-remplis en base ; les codes
+    // dynamiques par instance (ex: stock_aliment_bas_<alimentId>) sont provisionnés
+    // à la volée pour respecter la contrainte FK id_type -> ref_type_alerte.
+    private RefTypeAlerte resolveOrCreateType(String code) {
+        return typeRepo.findByCode(code).orElseGet(() -> {
+            RefTypeAlerte t = new RefTypeAlerte();
+            t.setCode(code);
+            t.setLibelle(code);
+            return typeRepo.save(t);
+        });
     }
 
     // ----------------------------------------------------------------
@@ -64,15 +85,42 @@ public class AlerteService {
 
         // 1. Alertes non acquittées avec filtres
         List<Alerte> nonAcquittees;
+        List<String> filtreTypes = getTypeFilterKeys(typeAlerte);
+        boolean filtreParModule = typeAlerte != null && filtreTypes.size() > 0;
+
         if (niveauCode != null && typeAlerte != null) {
-            nonAcquittees = alerteRepo
-                    .findByAcquitteeFalseAndNiveau_CodeAndTypeAlerteOrderByCreatedAtDesc(niveauCode, typeAlerte);
+            if (filtreTypes.size() == 1 && STOCK_ALIMENT_BAS_PREFIX.equals(filtreTypes.get(0))) {
+                nonAcquittees = alerteRepo
+                        .findByAcquitteeFalseAndNiveau_CodeAndType_CodeStartingWithOrderByCreatedAtDesc(
+                                niveauCode, STOCK_ALIMENT_BAS_PREFIX);
+            } else if (filtreTypes.size() == 1) {
+                nonAcquittees = alerteRepo
+                        .findByAcquitteeFalseAndNiveau_CodeAndType_CodeOrderByCreatedAtDesc(
+                                niveauCode, filtreTypes.get(0));
+            } else {
+                nonAcquittees = alerteRepo
+                        .findByAcquitteeFalseAndNiveau_CodeOrderByCreatedAtDesc(niveauCode)
+                        .stream()
+                        .filter(a -> matchesAnyType(a.getType().getCode(), filtreTypes))
+                        .collect(Collectors.toList());
+            }
         } else if (niveauCode != null) {
             nonAcquittees = alerteRepo
                     .findByAcquitteeFalseAndNiveau_CodeOrderByCreatedAtDesc(niveauCode);
         } else if (typeAlerte != null) {
-            nonAcquittees = alerteRepo
-                    .findByAcquitteeFalseAndTypeAlerteOrderByCreatedAtDesc(typeAlerte);
+            if (filtreTypes.size() == 1 && STOCK_ALIMENT_BAS_PREFIX.equals(filtreTypes.get(0))) {
+                nonAcquittees = alerteRepo
+                        .findByAcquitteeFalseAndType_CodeStartingWithOrderByCreatedAtDesc(
+                                STOCK_ALIMENT_BAS_PREFIX);
+            } else if (filtreTypes.size() == 1) {
+                nonAcquittees = alerteRepo
+                        .findByAcquitteeFalseAndType_CodeOrderByCreatedAtDesc(filtreTypes.get(0));
+            } else {
+                nonAcquittees = alerteRepo.findByAcquitteeFalseOrderByCreatedAtDesc()
+                        .stream()
+                        .filter(a -> matchesAnyType(a.getType().getCode(), filtreTypes))
+                        .collect(Collectors.toList());
+            }
         } else {
             nonAcquittees = alerteRepo.findByAcquitteeFalseOrderByCreatedAtDesc();
         }
@@ -82,8 +130,13 @@ public class AlerteService {
                 .comparingInt((Alerte a) -> a.getNiveau().getOrdre())
                 .thenComparing(Comparator.comparing(Alerte::getCreatedAt).reversed()));
 
-        // 2. Alertes acquittées (toujours affichées en bas, pas de filtre niveau/type)
+        // 2. Alertes acquittées — appliquer le filtre module si activé, mais jamais filtrer par niveau
         List<Alerte> acquittees = alerteRepo.findByAcquitteeTrueOrderByCreatedAtDesc();
+        if (filtreParModule) {
+            acquittees = acquittees.stream()
+                    .filter(a -> matchesAnyType(a.getType().getCode(), filtreTypes))
+                    .collect(Collectors.toList());
+        }
 
         // 3. Fusionner : non acquittées en premier, acquittées en bas
         return Stream.concat(nonAcquittees.stream(), acquittees.stream())
@@ -151,6 +204,38 @@ public class AlerteService {
                 .collect(Collectors.toList());
     }
 
+    private List<String> getTypeFilterKeys(String selectedType) {
+        if (selectedType == null || selectedType.isBlank()) {
+            return Collections.emptyList();
+        }
+
+        if (selectedType.startsWith(STOCK_ALIMENT_BAS_PREFIX)) {
+            return Collections.singletonList(STOCK_ALIMENT_BAS_PREFIX);
+        }
+
+        String module = MODULE_PAR_TYPE.get(selectedType);
+        if (module != null) {
+            return MODULE_PAR_TYPE.entrySet().stream()
+                    .filter(entry -> entry.getValue().equals(module))
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toList());
+        }
+
+        return Collections.singletonList(selectedType);
+    }
+
+    private boolean matchesAnyType(String typeAlerte, List<String> filtreTypes) {
+        if (filtreTypes == null || filtreTypes.isEmpty()) {
+            return true;
+        }
+        return filtreTypes.stream().anyMatch(filter -> {
+            if (STOCK_ALIMENT_BAS_PREFIX.equals(filter)) {
+                return typeAlerte != null && typeAlerte.startsWith(STOCK_ALIMENT_BAS_PREFIX);
+            }
+            return filter.equals(typeAlerte);
+        });
+    }
+
     // ----------------------------------------------------------------
     // envoyerAlerte — appelé par les autres modules
     // ----------------------------------------------------------------
@@ -161,9 +246,17 @@ public class AlerteService {
                     .orElseThrow(() -> new IllegalArgumentException("Niveau inconnu : " + niveauCode));
 
             // Chercher une alerte active existante
-            Optional<Alerte> alerteExistante = vacheId != null
-                    ? alerteRepo.findTopByVacheIdAndTypeAlerteAndAcquitteeFalseOrderByCreatedAtDesc(vacheId, typeAlerte)
-                    : alerteRepo.findTopByVacheIdIsNullAndTypeAlerteAndAcquitteeFalseOrderByCreatedAtDesc(typeAlerte);
+            boolean alimPrefix = typeAlerte != null && typeAlerte.startsWith(STOCK_ALIMENT_BAS_PREFIX);
+            Optional<Alerte> alerteExistante;
+            if (alimPrefix) {
+            alerteExistante = vacheId != null
+                ? alerteRepo.findTopByVacheIdAndType_CodeStartingWithAndAcquitteeFalseOrderByCreatedAtDesc(vacheId, typeAlerte)
+                : alerteRepo.findTopByVacheIdIsNullAndType_CodeStartingWithAndAcquitteeFalseOrderByCreatedAtDesc(typeAlerte);
+            } else {
+            alerteExistante = vacheId != null
+                ? alerteRepo.findTopByVacheIdAndType_CodeAndAcquitteeFalseOrderByCreatedAtDesc(vacheId, typeAlerte)
+                : alerteRepo.findTopByVacheIdIsNullAndType_CodeAndAcquitteeFalseOrderByCreatedAtDesc(typeAlerte);
+            }
 
             if (alerteExistante.isPresent()) {
                 Alerte existante = alerteExistante.get();
@@ -195,9 +288,14 @@ public class AlerteService {
     // ----------------------------------------------------------------
     public void acquitterAutomatiquement(String typeAlerte, Long vacheId) {
         try {
+            boolean alimPrefix = typeAlerte != null && typeAlerte.startsWith(STOCK_ALIMENT_BAS_PREFIX);
             List<Alerte> alertes = vacheId != null
-                    ? alerteRepo.findByTypeAlerteAndVacheIdAndAcquitteeFalse(typeAlerte, vacheId)
-                    : alerteRepo.findByTypeAlerteAndAcquitteeFalse(typeAlerte);
+                    ? (alimPrefix
+                        ? alerteRepo.findByType_CodeStartingWithAndVacheIdAndAcquitteeFalse(typeAlerte, vacheId)
+                        : alerteRepo.findByType_CodeAndVacheIdAndAcquitteeFalse(typeAlerte, vacheId))
+                    : (alimPrefix
+                        ? alerteRepo.findByType_CodeStartingWithAndAcquitteeFalse(typeAlerte)
+                        : alerteRepo.findByType_CodeAndAcquitteeFalse(typeAlerte));
 
             alertes.forEach(a -> {
                 a.setAcquittee(true);
@@ -229,11 +327,12 @@ public class AlerteService {
         dto.setDescription(a.getDescription());
         dto.setNiveauCode(a.getNiveau().getCode());
         dto.setNiveauLibelle(a.getNiveau().getLibelle());
-        dto.setTypeAlerte(a.getTypeAlerte());
+        String code = a.getType().getCode();
+        dto.setTypeAlerte(code);
         dto.setModuleSource(
-                a.getTypeAlerte().startsWith("stock_aliment_bas")
+                code.startsWith(STOCK_ALIMENT_BAS_PREFIX)
                         ? "Alimentation"
-                        : MODULE_PAR_TYPE.getOrDefault(a.getTypeAlerte(), "Système"));
+                        : MODULE_PAR_TYPE.getOrDefault(code, "Système"));
         dto.setVacheId(a.getVacheId());
         dto.setAcquittee(a.getAcquittee());
         dto.setCreatedAt(a.getCreatedAt());

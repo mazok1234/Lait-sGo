@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.demo.entity.production.Production;
 import com.example.demo.entity.vente.Vente;
+import com.example.demo.services.alerte.AlerteService;
 import com.example.demo.repository.alimentation.RationRepository;
 import com.example.demo.repository.alimentation.MouvementAlimentRepository;
 import com.example.demo.repository.auth.UtilisateurRepository;
@@ -36,17 +37,20 @@ public class AdminController {
     private final MouvementAlimentRepository mouvementAlimentRepository;
     private final ProductionRepository productionRepository;
     private final VenteRepository venteRepository;
+    private final AlerteService alerteService;
 
     public AdminController(VacheRepository vacheRepository, UtilisateurRepository utilisateurRepository,
             RationRepository rationRepository, MouvementAlimentRepository mouvementAlimentRepository,
             ProductionRepository productionRepository,
-            VenteRepository venteRepository) {
+            VenteRepository venteRepository,
+            AlerteService alerteService) {
         this.vacheRepository = vacheRepository;
         this.utilisateurRepository = utilisateurRepository;
         this.rationRepository = rationRepository;
         this.mouvementAlimentRepository = mouvementAlimentRepository;
         this.productionRepository = productionRepository;
         this.venteRepository = venteRepository;
+        this.alerteService = alerteService;
     }
 
     @GetMapping
@@ -65,12 +69,14 @@ public class AdminController {
         long nbRations = rationRepository.count();
         BigDecimal quantiteLait = productionRepository.getTotalProductionBetweenDates(dateDe, dateA);
         BigDecimal totalVentes = venteRepository.getTotalRevenusBetweenDates(dateDe, dateA);
+        long alertesNonAcquittees = alerteService.compterNonAcquittees();
 
         model.addAttribute("nbVaches", nbVaches);
         model.addAttribute("nbEleveurs", nbEleveurs);
         model.addAttribute("nbRations", nbRations);
         model.addAttribute("quantiteLait", quantiteLait != null ? quantiteLait : BigDecimal.ZERO);
         model.addAttribute("totalVentes", totalVentes != null ? totalVentes : BigDecimal.ZERO);
+        model.addAttribute("alertesNonAcquittees", alertesNonAcquittees);
         model.addAttribute("dateDe", dateDe);
         model.addAttribute("dateA", dateA);
 

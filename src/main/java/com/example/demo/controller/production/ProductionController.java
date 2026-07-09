@@ -38,14 +38,19 @@ public class ProductionController {
         return vacheRepository.findAllById(statutLactationService.findVacheIdsByStatut(statutId));
     }
 
-    @GetMapping
-    public String listeProductions(Model model) {
-        model.addAttribute("productions", productionService.getAllProductions());
-        model.addAttribute("totalProductionJour", productionService.getTotalProductionDuJour());
-        model.addAttribute("totalSortieJour", venteRepository.getTotalVenduByDate(LocalDate.now()));
-        model.addAttribute("stockRestant", productionService.getStockRestant());
-        return "production/liste";
+@GetMapping
+public String listeProductions(Model model) {
+    List<Production> productions = productionService.getAllProductions(); 
+    
+    for (Production p : productions) {
+        p.setEnAlerte(productionService.checkBaisseCritique(p));
     }
+    model.addAttribute("productions", productions);
+    model.addAttribute("totalProductionJour", productionService.getTotalProductionDuJour());
+    model.addAttribute("totalSortieJour", venteRepository.getTotalVenduByDate(LocalDate.now()));
+    model.addAttribute("stockRestant", productionService.getStockRestant());
+    return "production/liste";
+}
 
     @GetMapping("/nouvelle")
     public String formulaireProduction(Model model) {

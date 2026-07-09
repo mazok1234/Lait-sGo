@@ -1,8 +1,22 @@
+-- ============================================================
+-- base.sql — Schéma complet et final de la base laitgo
+--
+-- Fusionne le schéma (tables, index, vues) de db.sql, alimentation.sql
+-- et Ajout_base_finance_sante.sql en un seul fichier, colonnes finales
+-- directement dans les CREATE TABLE (plus besoin des ALTER TABLE
+-- historiques). Les fichiers d'origine ne sont pas modifiés/supprimés.
+--
+-- Utilisation : base.sql + donnee.sql suffisent pour lancer le projet.
+--   psql -U postgres -f base.sql
+--   psql -U postgres -d laitgo -f donnee.sql
+-- ============================================================
+
 CREATE DATABASE laitgo;
 \c laitgo;
 
--- Schéma uniquement (tables, index, vues). Toutes les données de
--- référence et de test sont dans donnee.sql, à exécuter après ce fichier.
+-- ============================================================
+-- 1. TABLES DE RÉFÉRENCE
+-- ============================================================
 
 CREATE TABLE ref_statut_vie (
     id      SERIAL PRIMARY KEY,
@@ -24,7 +38,6 @@ CREATE TABLE ref_statut_sante (
     libelle VARCHAR(50) NOT NULL UNIQUE
 );
 
-
 CREATE TABLE ref_role_utilisateur (
     id      SERIAL PRIMARY KEY,
     code    VARCHAR(30)  NOT NULL UNIQUE,
@@ -38,6 +51,11 @@ CREATE TABLE ref_niveau_alerte (
     ordre   SMALLINT     NOT NULL
 );
 
+CREATE TABLE ref_type_alerte (
+    id      SERIAL PRIMARY KEY,
+    code    VARCHAR(40)  NOT NULL UNIQUE,
+    libelle VARCHAR(150) NOT NULL
+);
 
 CREATE TABLE ref_type_aliment (
     id      SERIAL PRIMARY KEY,
@@ -63,6 +81,15 @@ CREATE TABLE ref_type_ia (
     libelle VARCHAR(100) NOT NULL
 );
 
+CREATE TABLE ref_statut_lactation (
+    id      SERIAL PRIMARY KEY,
+    code    VARCHAR(30)  NOT NULL UNIQUE,
+    libelle VARCHAR(100) NOT NULL
+);
+
+-- ============================================================
+-- 2. UTILISATEURS
+-- ============================================================
 
 CREATE TABLE utilisateur (
     id                BIGSERIAL    PRIMARY KEY,
@@ -74,6 +101,9 @@ CREATE TABLE utilisateur (
     created_at        TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
 
+-- ============================================================
+-- 3. CHEPTEL
+-- ============================================================
 
 CREATE TABLE vache (
     id               BIGSERIAL    PRIMARY KEY,
@@ -124,6 +154,9 @@ CREATE INDEX idx_hist_repro_actuel     ON vache_historique_repro     (vache_id, 
 CREATE INDEX idx_hist_lactation_actuel ON vache_historique_lactation (vache_id, date_fin);
 CREATE INDEX idx_hist_sante_actuel     ON vache_historique_sante     (vache_id, date_fin);
 
+-- ============================================================
+-- 4. REPRODUCTION
+-- ============================================================
 
 CREATE TABLE reproduction (
     id                     BIGSERIAL PRIMARY KEY,
@@ -139,11 +172,9 @@ CREATE TABLE reproduction (
     type_injection         VARCHAR(50)
 );
 
-CREATE TABLE ref_statut_lactation (
-    id      SERIAL PRIMARY KEY,
-    code    VARCHAR(30)  NOT NULL UNIQUE,
-    libelle VARCHAR(100) NOT NULL
-);
+-- ============================================================
+-- 5. LACTATION / PRODUCTION
+-- ============================================================
 
 CREATE TABLE lactation (
     id               BIGSERIAL   PRIMARY KEY,
@@ -168,6 +199,10 @@ CREATE TABLE production (
     created_by      BIGINT       REFERENCES utilisateur(id)
 );
 
+-- ============================================================
+-- 6. SANTÉ
+-- ============================================================
+
 CREATE TABLE maladie (
     id          BIGSERIAL    PRIMARY KEY,
     nom         VARCHAR(150) NOT NULL,
@@ -175,10 +210,11 @@ CREATE TABLE maladie (
 );
 
 CREATE TABLE medicament (
-    id                         BIGSERIAL    PRIMARY KEY,
-    nom                        VARCHAR(150) NOT NULL,
-    delai_attente_lait_defaut  INT DEFAULT 0,
-    delai_attente_viande_defaut INT DEFAULT 0
+    id                          BIGSERIAL     PRIMARY KEY,
+    nom                         VARCHAR(150)  NOT NULL,
+    delai_attente_lait_defaut   INT           DEFAULT 0,
+    delai_attente_viande_defaut INT           DEFAULT 0,
+    prix_unitaire               DECIMAL(10,2) DEFAULT 0
 );
 
 CREATE TABLE maladie_medicament (
@@ -197,15 +233,16 @@ CREATE TABLE evenement_sante (
 );
 
 CREATE TABLE traitement_sante (
-    id                 BIGSERIAL  PRIMARY KEY,
-    evenement_sante_id BIGINT     NOT NULL REFERENCES evenement_sante(id) ON DELETE CASCADE,
-    medicament_id      BIGINT     NOT NULL REFERENCES medicament(id),
+    id                 BIGSERIAL     PRIMARY KEY,
+    evenement_sante_id BIGINT        NOT NULL REFERENCES evenement_sante(id) ON DELETE CASCADE,
+    medicament_id      BIGINT        NOT NULL REFERENCES medicament(id),
     dose               DECIMAL(10,2) NOT NULL,
     unite              VARCHAR(50)   NOT NULL,
     duree_traitement   INT           NOT NULL,
     delai_attente_j    INT           NOT NULL DEFAULT 0,
-    date_debut         DATE       NOT NULL,
-    date_fin           DATE       NOT NULL
+    date_debut         DATE          NOT NULL,
+    date_fin           DATE          NOT NULL,
+    nbr_medicament     INT           NOT NULL DEFAULT 1
 );
 
 CREATE TABLE protocole_vaccin (
@@ -225,6 +262,10 @@ CREATE TABLE historique_vaccin (
     FOREIGN KEY (vache_id) REFERENCES vache(id),
     FOREIGN KEY (id_protocole_vaccin) REFERENCES protocole_vaccin(id_protocole_vaccin)
 );
+
+-- ============================================================
+-- 7. ALIMENTATION
+-- ============================================================
 
 CREATE TABLE aliment (
     id              BIGSERIAL    PRIMARY KEY,
@@ -246,10 +287,18 @@ CREATE TABLE mouvement_aliment (
     created_at     TIMESTAMPTZ   NOT NULL DEFAULT NOW()
 );
 
+-- id_phase_lactation nullable : une ration standard est liée à une phase,
+-- une ration spécialisée (production/BCS/santé, priorite > 0) n'en a pas.
 CREATE TABLE ration (
-    id                     BIGSERIAL    PRIMARY KEY,
-    nom                    VARCHAR(100) NOT NULL,
-    id_phase_lactation     INT          NOT NULL UNIQUE REFERENCES ref_phase_lactation(id)
+    id                  BIGSERIAL    PRIMARY KEY,
+    nom                 VARCHAR(100) NOT NULL,
+    id_phase_lactation  INT          UNIQUE REFERENCES ref_phase_lactation(id),
+    production_min_l    DECIMAL(5,1),
+    production_max_l    DECIMAL(5,1),
+    bcs_min             DECIMAL(3,2),
+    bcs_max             DECIMAL(3,2),
+    id_statut_sante     INT          REFERENCES ref_statut_sante(id),
+    priorite            INT          NOT NULL DEFAULT 0
 );
 
 CREATE TABLE ration_aliment (
@@ -268,15 +317,12 @@ CREATE TABLE affectation_ration_vache (
     actif      BOOLEAN   NOT NULL DEFAULT TRUE
 );
 
-CREATE INDEX idx_affectation_vache_actif ON affectation_ration_vache(vache_id, actif);
+CREATE INDEX idx_affectation_vache_actif  ON affectation_ration_vache(vache_id, actif);
 CREATE INDEX idx_affectation_ration_actif ON affectation_ration_vache(ration_id, actif);
 
-
-CREATE TABLE ref_type_alerte (
-    id      SERIAL PRIMARY KEY,
-    code    VARCHAR(40)  NOT NULL UNIQUE,
-    libelle VARCHAR(150) NOT NULL
-);
+-- ============================================================
+-- 8. ALERTES
+-- ============================================================
 
 CREATE TABLE alerte (
     id          BIGSERIAL    PRIMARY KEY,
@@ -291,6 +337,10 @@ CREATE TABLE alerte (
 
 CREATE INDEX idx_alerte_acquittee_date ON alerte(acquittee, created_at DESC);
 
+-- ============================================================
+-- 9. VENTES
+-- ============================================================
+
 CREATE TABLE vente (
     id              BIGSERIAL    PRIMARY KEY,
     date_vente      DATE         NOT NULL,
@@ -300,6 +350,9 @@ CREATE TABLE vente (
     created_at      TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
 
+-- ============================================================
+-- 10. VUES
+-- ============================================================
 
 CREATE VIEW v_lactation_total AS
 SELECT
@@ -327,8 +380,8 @@ CREATE VIEW v_ration_nutrition AS
 SELECT
     r.id AS ration_id,
     r.nom,
-    COALESCE(SUM(ra.quantite_kg * a.ufl), 0)                     AS ufl_total,
-    COALESCE(SUM(ra.quantite_kg * a.pdi_g), 0)                   AS pdi_total_g,
+    COALESCE(SUM(ra.quantite_kg * a.ufl), 0)           AS ufl_total,
+    COALESCE(SUM(ra.quantite_kg * a.pdi_g), 0)         AS pdi_total_g,
     COALESCE(SUM(ra.quantite_kg * a.prix_par_kilo), 0) AS cout_j_eur
 FROM ration r
 LEFT JOIN ration_aliment ra ON ra.ration_id = r.id
@@ -415,3 +468,107 @@ prochaines_chaleurs_theoriques AS (
 SELECT vache_id, numero_boucle, date_evenement, type_evenement FROM dates_ia
 UNION ALL
 SELECT vache_id, numero_boucle, date_evenement, type_evenement FROM prochaines_chaleurs_theoriques;
+
+-- Vue de suggestion automatique de ration (production / BCS / santé / phase)
+CREATE OR REPLACE VIEW v_suggestion_ration AS
+WITH production_moyenne_7j AS (
+    SELECT
+        p.vache_id,
+        AVG(p.quantite_litres) AS moyenne_l
+    FROM production p
+    WHERE p.date_production >= CURRENT_DATE - 7
+    GROUP BY p.vache_id
+),
+statut_sante_actuel AS (
+    SELECT
+        vhs.vache_id,
+        vhs.statut_id,
+        rs.libelle AS statut_libelle
+    FROM vache_historique_sante vhs
+    JOIN ref_statut_sante rs ON rs.id = vhs.statut_id
+    WHERE vhs.date_fin IS NULL
+),
+bcs_actuel AS (
+    SELECT
+        v.id AS vache_id,
+        v.score_bcs,
+        v.score_locomotion
+    FROM vache v
+    WHERE v.score_bcs IS NOT NULL
+)
+SELECT
+    v.id AS vache_id,
+    v.numero_boucle,
+    v.score_bcs,
+    v.score_locomotion,
+    l.date_debut AS debut_lactation,
+    (CURRENT_DATE - l.date_debut) AS jours_en_lait,
+    sp.libelle AS phase_actuelle,
+    sp.id AS phase_id,
+    pm.moyenne_l AS production_moyenne_7j,
+    ss.statut_id AS statut_sante_id,
+    ss.statut_libelle AS statut_sante_libelle,
+    -- Ration actuelle (via affectation active)
+    ar_actuelle.ration_id AS ration_actuelle_id,
+    ra_actuelle_nom.nom AS ration_actuelle_nom,
+    -- Ration suggérée
+    r_sugg.id AS ration_suggeree_id,
+    r_sugg.nom AS ration_suggeree_nom,
+    r_sugg.priorite AS priorite_suggestion,
+    -- Explication de la suggestion
+    CASE
+        WHEN ss.statut_id IS NOT NULL AND r_sugg.id_statut_sante IS NOT NULL
+            THEN 'Vache ' || ss.statut_libelle || ' - Ration de convalescence recommandée'
+        WHEN bcs.score_bcs IS NOT NULL AND (
+            (bcs.score_bcs < 2.5 AND r_sugg.bcs_max IS NOT NULL)
+            OR (bcs.score_bcs > 4.0 AND r_sugg.bcs_min IS NOT NULL)
+        )
+            THEN 'BCS ' || bcs.score_bcs || ' anormal - Ration adaptée recommandée'
+        WHEN pm.moyenne_l IS NOT NULL AND (
+            (pm.moyenne_l > 25.0 AND r_sugg.production_min_l IS NOT NULL)
+            OR (pm.moyenne_l < 15.0 AND r_sugg.production_max_l IS NOT NULL)
+        )
+            THEN 'Production moyenne ' || ROUND(pm.moyenne_l::numeric, 1) || 'L/j - Ration adaptée recommandée'
+        ELSE 'Ration standard par phase de lactation'
+    END AS raison_suggestion
+FROM vache v
+JOIN lactation l ON l.vache_id = v.id
+    AND l.id_statut = (SELECT id FROM ref_statut_lactation WHERE code = 'active')
+JOIN ref_phase_lactation sp
+    ON (CURRENT_DATE - l.date_debut) BETWEEN sp.jour_min AND sp.jour_max
+LEFT JOIN production_moyenne_7j pm ON pm.vache_id = v.id
+LEFT JOIN bcs_actuel bcs ON bcs.vache_id = v.id
+LEFT JOIN statut_sante_actuel ss ON ss.vache_id = v.id
+-- Ration actuelle via affectation active
+LEFT JOIN affectation_ration_vache ar_actuelle
+    ON ar_actuelle.vache_id = v.id AND ar_actuelle.actif = TRUE
+LEFT JOIN ration ra_actuelle_nom ON ra_actuelle_nom.id = ar_actuelle.ration_id
+-- Ration suggérée : on prend la meilleure correspondance par priorité
+LEFT JOIN LATERAL (
+    SELECT r.id, r.nom, r.priorite, r.id_statut_sante,
+           r.production_min_l, r.production_max_l,
+           r.bcs_min, r.bcs_max
+    FROM ration r
+    WHERE (
+        -- Ration standard par phase (priorite = 0)
+        (r.priorite = 0 AND r.id_phase_lactation = sp.id)
+        -- OU ration spécialisée par production
+        OR (r.priorite = 1 AND r.id_phase_lactation IS NULL
+            AND pm.moyenne_l IS NOT NULL
+            AND (r.production_min_l IS NULL OR pm.moyenne_l >= r.production_min_l)
+            AND (r.production_max_l IS NULL OR pm.moyenne_l <= r.production_max_l))
+        -- OU ration spécialisée par BCS
+        OR (r.priorite = 2 AND r.id_phase_lactation IS NULL
+            AND bcs.score_bcs IS NOT NULL
+            AND (r.bcs_min IS NULL OR bcs.score_bcs >= r.bcs_min)
+            AND (r.bcs_max IS NULL OR bcs.score_bcs <= r.bcs_max))
+        -- OU ration spécialisée par santé
+        OR (r.priorite = 3 AND r.id_phase_lactation IS NULL
+            AND ss.statut_id IS NOT NULL
+            AND r.id_statut_sante = ss.statut_id)
+    )
+    ORDER BY r.priorite DESC
+    LIMIT 1
+) r_sugg ON TRUE
+WHERE v.id IS NOT NULL
+ORDER BY r_sugg.priorite DESC NULLS LAST, v.numero_boucle;

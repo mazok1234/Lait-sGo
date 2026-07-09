@@ -11,6 +11,9 @@ import org.springframework.data.repository.query.Param;
 import com.example.demo.entity.production.Production;
 
 public interface ProductionRepository extends JpaRepository<Production, Long> {
+    // Methode alerte
+    List<Production> findByVacheOrderByDateProductionDesc(com.example.demo.entity.cheptel.Vache vache);
+
     @Query("SELECT COALESCE(SUM(p.quantiteRestante), 0) FROM Production p")
     BigDecimal getRemainingStock();
 
@@ -22,14 +25,14 @@ public interface ProductionRepository extends JpaRepository<Production, Long> {
     @Query("SELECT COALESCE(SUM(p.quantiteLitres), 0) FROM Production p")
     BigDecimal getTotalProduction();
 
-        @Query("""
-                        SELECT COALESCE(SUM(p.quantiteLitres), 0)
-                        FROM Production p
-                        WHERE (:dateDe IS NULL OR p.dateProduction >= :dateDe)
-                            AND (:dateA IS NULL OR p.dateProduction <= :dateA)
-                        """)
-        BigDecimal getTotalProductionBetweenDates(@Param("dateDe") LocalDate dateDe,
-                                                                                            @Param("dateA") LocalDate dateA);
+    @Query("""
+            SELECT COALESCE(SUM(p.quantiteLitres), 0)
+            FROM Production p
+            WHERE (:dateDe IS NULL OR p.dateProduction >= :dateDe)
+                AND (:dateA IS NULL OR p.dateProduction <= :dateA)
+            """)
+    BigDecimal getTotalProductionBetweenDates(@Param("dateDe") LocalDate dateDe,
+                                              @Param("dateA") LocalDate dateA);
 
     @Query("SELECT new map(MONTH(p.dateProduction) as month, YEAR(p.dateProduction) as year, SUM(p.quantiteLitres) as total) FROM Production p GROUP BY YEAR(p.dateProduction), MONTH(p.dateProduction) ORDER BY year, month")
     List<java.util.Map<String, Object>> getProductionMensuelle();

@@ -1,9 +1,11 @@
 package com.example.demo.repository.sante;
 
-import com.example.demo.entity.sante.EvenementSante;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import java.util.List;
 
-@Repository
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.example.demo.entity.sante.EvenementSante;
+
 public interface EvenementSanteRepository extends JpaRepository<EvenementSante, Long> {
+    List<EvenementSante> findAllByOrderByDateEvenementDesc();
 }

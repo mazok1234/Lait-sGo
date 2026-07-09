@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Transient;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -148,4 +149,10 @@ public class Production {
             createdAt = LocalDateTime.now();
         }
     }
+
+    @Transient
+    private boolean enAlerte;
+
+    public boolean isEnAlerte() { return enAlerte;}
+    public void setEnAlerte(boolean enAlerte) { this.enAlerte = enAlerte;}
 }

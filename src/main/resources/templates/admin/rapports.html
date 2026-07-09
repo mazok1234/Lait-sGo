@@ -92,7 +92,7 @@
                     <tbody>
                         <tr th:each="prod : ${productions}">
                             <td th:text="${#temporals.format(prod.dateProduction, 'dd/MM/yyyy')}">-</td>
-                            <td th:text="${prod.vache != null ? prod.vache.nom : '-'}">-</td>
+                            <td th:text="${prod.vache != null ? prod.vache.numeroBoucle : '-'}">-</td>
                             <td th:text="${prod.lactation != null ? prod.lactation.id : '-'}">-</td>
                             <td th:text="${#numbers.formatDecimal(prod.quantiteLitres, 1, 2) + ' L'}">0 L</td>
                         </tr>

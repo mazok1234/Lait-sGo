@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+<head>
+    <title>Détail du traitement</title>
+</head>
+<body>
+<div th:fragment="mainContent" class="page-content">
+
+    <div class="page-header">
+        <h1 class="page-title">Détail du traitement</h1>
+        <p class="page-subtitle">Historique complet de l'événement de santé</p>
+    </div>
+
+    <div class="card" style="max-width:1000px;margin:0 auto;">
+        <div class="card-header">
+            <h2 class="card-title">Informations générales</h2>
+        </div>
+        <div class="card-body" style="padding:28px;display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div>
+                <div style="font-size:0.8rem;color:#6B7280;font-weight:600;">Vache</div>
+                <div th:text="${evenement.vache != null ? evenement.vache.numeroBoucle : '-'}" style="font-size:1.05rem;">-</div>
+            </div>
+            <div>
+                <div style="font-size:0.8rem;color:#6B7280;font-weight:600;">Maladie</div>
+                <div th:text="${evenement.maladie != null ? evenement.maladie.nom : '-'}" style="font-size:1.05rem;">-</div>
+            </div>
+            <div>
+                <div style="font-size:0.8rem;color:#6B7280;font-weight:600;">Date de l'événement</div>
+                <div th:text="${evenement.dateEvenement != null ? #temporals.format(evenement.dateEvenement,'dd/MM/yyyy') : '-'}" style="font-size:1.05rem;">-</div>
+            </div>
+            <div>
+                <div style="font-size:0.8rem;color:#6B7280;font-weight:600;">Statut</div>
+                <div style="font-size:1.05rem;">
+                    <span th:if="${evenement.enCours}" style="color:#F59E0B;font-weight:600;">En cours</span>
+                    <span th:unless="${evenement.enCours}" style="color:#16A34A;font-weight:600;">Terminé</span>
+                </div>
+            </div>
+            <div style="grid-column:1 / -1;" th:if="${evenement.description != null and !evenement.description.isBlank()}">
+                <div style="font-size:0.8rem;color:#6B7280;font-weight:600;">Description</div>
+                <div th:text="${evenement.description}" style="font-size:1rem;">-</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card card-table" style="max-width:1000px;margin:24px auto 0;">
+        <div class="card-header">
+            <h2 class="card-title">Médicaments administrés</h2>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Médicament</th>
+                    <th>Nombre</th>
+                    <th>Prix unitaire</th>
+                    <th>Prix total</th>
+                    <th>Dose</th>
+                    <th>Durée</th>
+                    <th>Délai attente</th>
+                    <th>Date début</th>
+                    <th>Date fin</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="t : ${evenement.traitements}">
+                    <td th:text="${t.medicament != null ? t.medicament.nom : '-'}">-</td>
+                    <td th:text="${t.nbrMedicament}">-</td>
+                    <td th:text="${#numbers.formatDecimal(t.prixUnitaireMedicament,1,2) + ' Ar'}">-</td>
+                    <td th:text="${#numbers.formatDecimal(t.prixTotalMedicament,1,2) + ' Ar'}">-</td>
+                    <td th:text="${#numbers.formatDecimal(t.dose,1,2) + ' ' + t.unite}">-</td>
+                    <td th:text="${t.dureeTraitement + ' j'}">-</td>
+                    <td th:text="${t.delaiAttenteJ + ' j'}">-</td>
+                    <td th:text="${t.dateDebut != null ? #temporals.format(t.dateDebut,'dd/MM/yyyy') : '-'}">-</td>
+                    <td th:text="${t.dateFin != null ? #temporals.format(t.dateFin,'dd/MM/yyyy') : '-'}">-</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(evenement.traitements)}">
+                    <td colspan="9" class="text-center" style="padding:24px;color:#9CA3AF;">
+                        Aucun médicament enregistré pour cet événement.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div style="max-width:1000px;margin:20px auto 0;display:flex;justify-content:space-between;">
+        <a th:href="@{/traitements}" class="btn" style="border:1px solid #D1D5DB;background:white;color:#1A1A2E;">
+            <i class="fas fa-arrow-left"></i> Retour à la liste
+        </a>
+        <a th:href="@{/traitements/edit/{id}(id=${evenement.id})}" class="btn btn-primary">
+            <i class="fas fa-pen"></i> Modifier
+        </a>
+    </div>
+</div>
+</body>
+</html>
