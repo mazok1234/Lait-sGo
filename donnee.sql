@@ -488,6 +488,23 @@ JOIN vache v ON v.numero_boucle = x.numero_boucle
 JOIN ref_statut_lactation s ON s.code = 'active'
 WHERE NOT EXISTS (SELECT 1 FROM lactation l WHERE l.vache_id = v.id AND l.date_fin IS NULL);
 
+-- Statut vache_historique_lactation correspondant (colonne "LACTATION" du
+-- Cheptel), pour rester coherent avec les cycles actifs ci-dessus et
+-- ceux de TEST-001/V002_TEST inseres plus haut.
+INSERT INTO vache_historique_lactation (vache_id, statut_id, date_debut)
+SELECT v.id, s.id, CURRENT_DATE - (x.jours_en_lait || ' days')::interval
+FROM (VALUES
+    ('TEST-001',     'En_lactation', 189),
+    ('FR001234567',  'Tarie',        340),
+    ('FR001234568',  'En_lactation', 45),
+    ('FR001234569',  'En_lactation', 120),
+    ('FR001234570',  'En_lactation', 220),
+    ('FR001234571',  'Tarie',        350)
+) AS x(numero_boucle, statut_libelle, jours_en_lait)
+JOIN vache v ON v.numero_boucle = x.numero_boucle
+JOIN ref_statut_lactation_vache s ON s.libelle = x.statut_libelle
+WHERE NOT EXISTS (SELECT 1 FROM vache_historique_lactation h WHERE h.vache_id = v.id);
+
 -- ============================================================
 -- 11. MOUVEMENTS ALIMENTS
 -- ============================================================

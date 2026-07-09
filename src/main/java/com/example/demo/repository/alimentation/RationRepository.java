@@ -23,9 +23,9 @@ public interface RationRepository extends JpaRepository<Ration, Long> {
                                                                                 @Param("rationId") Long rationId);
 
     @Query(value = """
-        SELECT r.id AS id, r.nom AS nom, sp.libelle AS stade
+        SELECT r.id AS id, r.nom AS nom, COALESCE(sp.libelle, 'Toutes phases') AS stade
         FROM ration r
-        JOIN ref_phase_lactation sp ON sp.id = r.id_phase_lactation
+        LEFT JOIN ref_phase_lactation sp ON sp.id = r.id_phase_lactation
         ORDER BY r.id
     """, nativeQuery = true)
     List<RationCardProjection> findAllCards();
@@ -36,6 +36,13 @@ public interface RationRepository extends JpaRepository<Ration, Long> {
         WHERE vr.ration_id = :rationId
     """, nativeQuery = true)
     long countVachesForRation(@Param("rationId") Long rationId);
+
+    @Query(value = """
+        SELECT COUNT(DISTINCT ar.vache_id)
+        FROM affectation_ration_vache ar
+        WHERE ar.ration_id = :rationId AND ar.actif = TRUE
+    """, nativeQuery = true)
+    long countAffectationsForRation(@Param("rationId") Long rationId);
 
     @Query(value = """
         SELECT sp.id AS id, sp.libelle AS libelle, sp.jour_min AS jourMin, sp.jour_max AS jourMax
@@ -71,6 +78,22 @@ public interface RationRepository extends JpaRepository<Ration, Long> {
         ORDER BY vr.numero_boucle
     """, nativeQuery = true)
     List<RationActiveVacheProjection> findRationsActivesVaches();
+
+    @Query(value = """
+        SELECT ar.vache_id AS vacheId,
+               v.numero_boucle AS numeroBoucle,
+               NULL AS joursEnLait,
+               'Affectation manuelle' AS phaseActuelle,
+               ar.ration_id AS rationId,
+               r.nom AS rationRecommandee
+        FROM affectation_ration_vache ar
+        JOIN vache v ON v.id = ar.vache_id
+        JOIN ration r ON r.id = ar.ration_id
+        WHERE ar.actif = TRUE
+          AND r.id_phase_lactation IS NULL
+        ORDER BY v.numero_boucle
+    """, nativeQuery = true)
+    List<RationActiveVacheProjection> findAffectationsManuelles();
 
     interface RationCardProjection {
         Long getId();

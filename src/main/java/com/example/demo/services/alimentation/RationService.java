@@ -30,12 +30,18 @@ public class RationService {
 
     public List<RationCardVm> getRationCards() {
         return rationRepository.findAllCards().stream()
-                .map(card -> new RationCardVm(
-                        card.getId(),
-                        card.getNom(),
-                        card.getStade(),
-                        rationRepository.countVachesForRation(card.getId())
-                ))
+                .map(card -> {
+                    Ration ration = rationRepository.findById(card.getId()).orElse(null);
+                    long nbVaches;
+                    if (ration != null && ration.getIdPhaseLactation() == null) {
+                        // Ration spécialisée (sans phase) → compter via les affectations réelles
+                        nbVaches = rationRepository.countAffectationsForRation(card.getId());
+                    } else {
+                        // Ration standard par phase → compter via la vue théorique
+                        nbVaches = rationRepository.countVachesForRation(card.getId());
+                    }
+                    return new RationCardVm(card.getId(), card.getNom(), card.getStade(), nbVaches);
+                })
                 .toList();
     }
 
@@ -119,7 +125,13 @@ public class RationService {
             throw new IllegalStateException("Cette ration n'a aucun aliment a distribuer.");
         }
 
-        long nbVaches = rationRepository.countVachesForRation(rationId);
+        Ration ration = rationRepository.findById(rationId).orElse(null);
+        long nbVaches;
+        if (ration != null && ration.getIdPhaseLactation() == null) {
+            nbVaches = rationRepository.countAffectationsForRation(rationId);
+        } else {
+            nbVaches = rationRepository.countVachesForRation(rationId);
+        }
         if (nbVaches == 0) {
             throw new IllegalStateException("Aucune vache n'est actuellement concernee par cette ration.");
         }
@@ -144,7 +156,8 @@ public class RationService {
     }
 
     public List<RationActiveVacheVm> getRationsActivesVaches() {
-        return rationRepository.findRationsActivesVaches().stream()
+        // Rations standards par phase
+        List<RationActiveVacheVm> standards = rationRepository.findRationsActivesVaches().stream()
             .map(v -> new RationActiveVacheVm(
                 v.getVacheId(),
                 v.getNumeroBoucle(),
@@ -154,6 +167,36 @@ public class RationService {
                 v.getRationRecommandee()
             ))
             .toList();
+
+        // Rations spécialisées (affectations manuelles)
+        List<RationActiveVacheVm> manuelles = rationRepository.findAffectationsManuelles().stream()
+            .map(v -> new RationActiveVacheVm(
+                v.getVacheId(),
+                v.getNumeroBoucle(),
+                v.getJoursEnLait(),
+                v.getPhaseActuelle(),
+                v.getRationId(),
+                v.getRationRecommandee()
+            ))
+            .toList();
+
+        // Fusionner les deux listes (les manuelles peuvent remplacer les standards)
+        List<RationActiveVacheVm> fusion = new ArrayList<>(standards);
+        for (RationActiveVacheVm manuelle : manuelles) {
+            // Remplacer si la vache a déjà une entrée standard
+            boolean remplace = false;
+            for (int i = 0; i < fusion.size(); i++) {
+                if (fusion.get(i).vacheId().equals(manuelle.vacheId())) {
+                    fusion.set(i, manuelle);
+                    remplace = true;
+                    break;
+                }
+            }
+            if (!remplace) {
+                fusion.add(manuelle);
+            }
+        }
+        return fusion;
     }
 
     public record RationCardVm(Long id, String nom, String stade, long nbVaches) {
