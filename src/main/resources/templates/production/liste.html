@@ -60,29 +60,35 @@
                     <th>Actions</th>
                 </tr>
                 </thead>
-                <tbody>
-                <tr th:each="p : ${productions}">
-                    <td th:text="${p.vache.numeroBoucle}">-</td>
-                    <td th:text="${p.quantiteMatin != null ? p.quantiteMatin : '-'}">-</td>
-                    <td th:text="${p.quantiteSoir != null ? p.quantiteSoir : '-'}">-</td>
-                    <td th:text="${p.quantiteLitres}">0</td>
-                    <td th:text="${p.quantiteRestante}">0</td>
-                    <td th:text="${p.dateProduction}">-</td>
-                    <td>
-                        <a th:href="@{'/productions/' + ${p.id} + '/edit'}" class="action-pill" style="background:#eef4fa;">
-                            <i class="far fa-edit"></i>
-                        </a>
-                        <a th:href="@{'/productions/' + ${p.id} + '/delete'}" class="action-pill" style="background:#fce8e6;color:#b34033;" onclick="return confirm('Supprimer cette production ?');">
-                            <i class="far fa-trash-alt"></i>
-                        </a>
-                    </td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(productions)}">
-                    <td colspan="7" class="text-center" style="padding:32px;color:#9CA3AF;">
-                        Aucune production enregistrée.
-                    </td>
-                </tr>
-                </tbody>
+               <tbody>
+    <tr th:each="p : ${productions}" th:style="${p.enAlerte} ? 'background-color: #fdf2f2;' : ''">
+    <td>
+        <span th:text="${p.vache.numeroBoucle}">-</span>
+        <span th:if="${p.enAlerte}" class="badge" 
+              style="background: #fce8e6; color: #b34033; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin-left: 8px; font-weight: bold; border: 1px solid #f6c6c0; display: inline-block;">
+            ⚠️ Baisse
+        </span>
+    </td>
+    <td th:text="${p.quantiteMatin != null ? p.quantiteMatin : '-'}">-</td>
+    <td th:text="${p.quantiteSoir != null ? p.quantiteSoir : '-'}">-</td>
+    <td th:text="${p.quantiteLitres}" th:style="${p.enAlerte} ? 'color: #b34033; font-weight: bold;' : ''">0</td>
+    <td th:text="${p.quantiteRestante}">0</td>
+    <td th:text="${p.dateProduction}">-</td>
+    <td>
+        <a th:href="@{'/productions/' + ${p.id} + '/edit'}" class="action-pill" style="background:#eef4fa;">
+            <i class="far fa-edit"></i>
+        </a>
+        <a th:href="@{'/productions/' + ${p.id} + '/delete'}" class="action-pill" style="background:#fce8e6;color:#b34033;" onclick="return confirm('Supprimer cette production ?');">
+            <i class="far fa-trash-alt"></i>
+        </a>
+    </td>
+</tr>
+<tr th:if="${#lists.isEmpty(productions)}">
+    <td colspan="7" class="text-center" style="padding:32px;color:#9CA3AF;">
+        Aucune production enregistrée.
+    </td>
+</tr>
+</tbody>
             </table>
         </div>
     </div>

@@ -14,6 +14,7 @@ import com.example.demo.entity.cheptel.Vache;
 import com.example.demo.repository.production.LactationRepository;
 import com.example.demo.repository.production.ProductionRepository;
 import com.example.demo.repository.production.RefStatutLactationRepository;
+import com.example.demo.services.alerte.AlerteService;
 
 @Service
 @Transactional
@@ -23,12 +24,14 @@ public class ProductionService {
     private final ProductionRepository productionRepository;
     private final LactationRepository lactationRepository;
     private final RefStatutLactationRepository statutLactationRepository;
+    private final AlerteService alerteService;
 
     public ProductionService(ProductionRepository productionRepository, LactationRepository lactationRepository,
-            RefStatutLactationRepository statutLactationRepository) {
+            RefStatutLactationRepository statutLactationRepository, AlerteService alerteService) {
         this.productionRepository = productionRepository;
         this.lactationRepository = lactationRepository;
         this.statutLactationRepository = statutLactationRepository;
+        this.alerteService = alerteService;
     }
 
     public List<Production> getAllProductions() {
@@ -46,7 +49,10 @@ public class ProductionService {
         production.setQuantiteLitres(matin.add(soir));
         production.setQuantiteRestante(production.getQuantiteLitres());
         production.setLactation(resolveLactationActive(production.getVache()));
-        productionRepository.save(production);
+        
+        productionRepository.saveAndFlush(production);
+        
+        this.checkBaisseCritique(production);
     }
 
     public void updateProduction(Long id, Production form) {
@@ -61,7 +67,9 @@ public class ProductionService {
         existing.setQuantiteLitres(matin.add(soir));
         existing.setLactation(resolveLactationActive(existing.getVache()));
 
-        productionRepository.save(existing);
+        productionRepository.saveAndFlush(existing);
+        
+        this.checkBaisseCritique(existing);
     }
 
     public void delete(Long id) {
@@ -95,4 +103,54 @@ public class ProductionService {
         lactation.setStatut(statutActive);
         return lactationRepository.save(lactation);
     }
+    
+public boolean checkBaisseCritique(Production p) {
+        if (p == null || p.getVache() == null || p.getQuantiteLitres() == null) return false;
+        
+        List<Production> historique = productionRepository.findByVacheOrderByDateProductionDesc(p.getVache());
+        if (historique == null || historique.isEmpty()) return false;
+
+        BigDecimal somme = BigDecimal.ZERO;
+        int count = 0;
+        
+        for (Production hist : historique) {
+            // CORRECTION 2 : Si l'ID correspond à la ligne actuelle, ou si c'est la même date, on l'exclut du calcul de la moyenne
+            if ((p.getId() != null && hist.getId().equals(p.getId())) || 
+                (hist.getDateProduction() != null && p.getDateProduction() != null && !hist.getDateProduction().isBefore(p.getDateProduction()))) {
+                continue;
+            }
+            if (hist.getQuantiteLitres() != null) {
+                somme = somme.add(hist.getQuantiteLitres());
+                count++;
+            }
+            if (count >= 7) break;
+        }
+
+        if (count > 0) {
+            BigDecimal moyenne = somme.divide(BigDecimal.valueOf(count), 2, java.math.RoundingMode.HALF_UP);
+            BigDecimal seuilCritique = moyenne.multiply(BigDecimal.valueOf(0.80)); // -20%
+            
+            boolean estEnBaisse = p.getQuantiteLitres().compareTo(seuilCritique) < 0;
+
+            if (estEnBaisse) {
+                String description = "Baisse critique de production pour la vache " + p.getVache().getNumeroBoucle() 
+                        + " : " + p.getQuantiteLitres() + "L saisis (Seuil critique à " + seuilCritique + "L).";
+                
+                alerteService.envoyerAlerte(
+                    "baisse_production", 
+                    "attention", 
+                    "Baisse prod. Lait — " + p.getVache().getNumeroBoucle(), 
+                    description, 
+                    p.getVache().getId()
+                );
+            } else {
+                alerteService.acquitterAutomatiquement("baisse_production", p.getVache().getId());
+            }
+            
+            return estEnBaisse;
+        }
+        return false;
+    }
+
+    
 }

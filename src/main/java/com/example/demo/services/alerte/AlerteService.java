@@ -36,6 +36,7 @@ public class AlerteService {
         MODULE_PAR_TYPE.put("stock_lait_bas", "Vente");
         MODULE_PAR_TYPE.put(STOCK_ALIMENT_BAS_PREFIX, "Alimentation");
         MODULE_PAR_TYPE.put("bcs_hors_plage", "Cheptel");
+        MODULE_PAR_TYPE.put("baisse_production", "Production");
     }
 
     public AlerteService(AlerteRepository alerteRepo,
