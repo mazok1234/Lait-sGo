@@ -15,14 +15,16 @@ import com.example.demo.entity.cheptel.Vache;
 import com.example.demo.entity.sante.EvenementSante;
 import com.example.demo.entity.sante.Maladie;
 import com.example.demo.entity.sante.Medicament;
+import com.example.demo.entity.sante.MedicamentFille;
 import com.example.demo.entity.sante.TraitementSante;
 import com.example.demo.repository.cheptel.VacheRepository;
 import com.example.demo.repository.sante.EvenementSanteRepository;
 import com.example.demo.repository.sante.MaladieRepository;
+import com.example.demo.repository.sante.MedicamentFilleRepository;
 import com.example.demo.repository.sante.MedicamentRepository;
 import com.example.demo.repository.sante.TraitementSanteRepository;
-import com.example.demo.services.cheptel.StatutLactationVacheService;
 import com.example.demo.services.alerte.AlerteService;
+import com.example.demo.services.cheptel.StatutLactationVacheService;
 
 @Service
 public class TraitementSanteService {
@@ -35,6 +37,7 @@ public class TraitementSanteService {
     private final VacheRepository vacheRepository;
     private final MaladieRepository maladieRepository;
     private final MedicamentRepository medicamentRepository;
+    private final MedicamentFilleRepository medicamentFilleRepository;
     private final StatutLactationVacheService statutLactationService;
     private final AlerteService alerteService;
 
@@ -43,6 +46,7 @@ public class TraitementSanteService {
             VacheRepository vacheRepository,
             MaladieRepository maladieRepository,
             MedicamentRepository medicamentRepository,
+            MedicamentFilleRepository medicamentFilleRepository,
             StatutLactationVacheService statutLactationService,
             AlerteService alerteService) {
         this.traitementRepository = traitementRepository;
@@ -50,6 +54,7 @@ public class TraitementSanteService {
         this.vacheRepository = vacheRepository;
         this.maladieRepository = maladieRepository;
         this.medicamentRepository = medicamentRepository;
+        this.medicamentFilleRepository = medicamentFilleRepository;
         this.statutLactationService = statutLactationService;
         this.alerteService = alerteService;
     }
@@ -74,6 +79,22 @@ public class TraitementSanteService {
 
     public List<Medicament> findAllMedicaments() {
         return medicamentRepository.findAll();
+    }
+
+    /** Medicaments pouvant soigner une maladie donnee (via maladie_medicament). */
+    public List<Medicament> findMedicamentsByMaladie(Long maladieId) {
+        if (maladieId == null) {
+            return List.of();
+        }
+        return medicamentRepository.findByMaladieId(maladieId);
+    }
+
+    /** Variantes (filles) disponibles pour un medicament donne. */
+    public List<MedicamentFille> findFillesByMedicament(Long medicamentId) {
+        if (medicamentId == null) {
+            return List.of();
+        }
+        return medicamentFilleRepository.findByMedicamentId(medicamentId);
     }
 
     /** Prépare un formulaire vierge avec une ligne de médicament par défaut. */
@@ -106,10 +127,14 @@ public class TraitementSanteService {
         for (TraitementSante t : lignesExistantes) {
             TraitementLigneDTO ligne = new TraitementLigneDTO();
             ligne.setId(t.getId());
-            ligne.setMedicamentId(t.getMedicament().getId());
+            if (t.getMedicamentFille() != null) {
+                ligne.setMedicamentId(t.getMedicamentFille().getMedicament().getId());
+                ligne.setMedicamentFilleId(t.getMedicamentFille().getId());
+                ligne.setDose(t.getMedicamentFille().getDose());
+                ligne.setUnite(t.getMedicamentFille().getUnite());
+                ligne.setPrixUnitaire(t.getMedicamentFille().getPrixUnitaire());
+            }
             ligne.setNbrMedicament(t.getNbrMedicament());
-            ligne.setDose(t.getDose());
-            ligne.setUnite(t.getUnite());
             ligne.setDureeTraitement(t.getDureeTraitement());
             ligne.setDelaiAttenteJ(t.getDelaiAttenteJ());
             ligne.setDateDebut(t.getDateDebut());
@@ -146,34 +171,62 @@ public class TraitementSanteService {
         boolean auMoinsUneLigneValide = false;
 
         for (TraitementLigneDTO ligne : form.getLignes()) {
-            if (ligne.getMedicamentId() == null) {
+            if (isBlankLine(ligne)) {
                 continue; // ligne vide ignorée
             }
             auMoinsUneLigneValide = true;
 
-            Medicament medicament = medicamentRepository.findById(ligne.getMedicamentId())
-                    .orElseThrow(() -> new IllegalArgumentException("Medicament introuvable"));
-
+            if (ligne.getMedicamentId() == null) {
+                throw new IllegalArgumentException("Le medicament est obligatoire");
+            }
+            if (ligne.getDose() == null) {
+                throw new IllegalArgumentException("La dose est obligatoire");
+            }
+            if (ligne.getUnite() == null || ligne.getUnite().isBlank()) {
+                throw new IllegalArgumentException("L'unite est obligatoire");
+            }
+            if (ligne.getPrixUnitaire() == null) {
+                throw new IllegalArgumentException("Le prix unitaire est obligatoire");
+            }
             if (ligne.getNbrMedicament() == null || ligne.getNbrMedicament() < 1) {
                 throw new IllegalArgumentException("Le nombre de medicaments doit etre au moins 1");
             }
             if (ligne.getDureeTraitement() == null || ligne.getDureeTraitement() < 1) {
                 throw new IllegalArgumentException("La duree de traitement doit etre au moins 1 jour");
             }
+            if (ligne.getDateDebut() == null) {
+                throw new IllegalArgumentException("La date de debut est obligatoire");
+            }
+
+            Medicament medicament = medicamentRepository.findById(ligne.getMedicamentId())
+                    .orElseThrow(() -> new IllegalArgumentException("Medicament introuvable"));
+
+            MedicamentFille medicamentFille = (ligne.getMedicamentFilleId() != null)
+                    ? medicamentFilleRepository.findById(ligne.getMedicamentFilleId()).orElse(new MedicamentFille())
+                    : new MedicamentFille();
+
+            medicamentFille.setMedicament(medicament);
+            medicamentFille.setDose(ligne.getDose());
+            medicamentFille.setUnite(ligne.getUnite().trim());
+            medicamentFille.setPrixUnitaire(ligne.getPrixUnitaire());
+            medicamentFille = medicamentFilleRepository.save(medicamentFille);
 
             TraitementSante t = (ligne.getId() != null)
                     ? traitementRepository.findById(ligne.getId()).orElse(new TraitementSante())
                     : new TraitementSante();
 
             t.setEvenementSante(evenement);
-            t.setMedicament(medicament);
+            t.setMedicamentFille(medicamentFille);
             t.setNbrMedicament(ligne.getNbrMedicament());
-            t.setDose(ligne.getDose());
-            t.setUnite(ligne.getUnite());
             t.setDureeTraitement(ligne.getDureeTraitement());
-            t.setDelaiAttenteJ(ligne.getDelaiAttenteJ() != null ? ligne.getDelaiAttenteJ() : 0);
+            Integer delaiAttente = ligne.getDelaiAttenteJ();
+            if (delaiAttente == null) {
+                Integer delaiDefaut = medicamentFille.getDelaiAttenteLaitDefaut();
+                delaiAttente = delaiDefaut != null ? delaiDefaut : 0;
+            }
+            t.setDelaiAttenteJ(delaiAttente);
             t.setDateDebut(ligne.getDateDebut());
-            t.setDateFin(calculerDateFin(ligne.getDateDebut(), ligne.getDureeTraitement()));
+            t.setDateFin(calculerDateFinTraitement(ligne.getDateDebut(), ligne.getDureeTraitement(), delaiAttente));
 
             traitementRepository.save(t);
         }
@@ -183,6 +236,13 @@ public class TraitementSanteService {
         }
 
         synchronizeVacheStatuses();
+    }
+
+    private boolean isBlankLine(TraitementLigneDTO ligne) {
+        return ligne.getMedicamentId() == null
+                && ligne.getDose() == null
+                && (ligne.getUnite() == null || ligne.getUnite().isBlank())
+                && ligne.getPrixUnitaire() == null;
     }
 
     @Transactional
@@ -229,23 +289,27 @@ public class TraitementSanteService {
         }
     }
 
-    private LocalDate calculerDateFin(LocalDate dateDebut, Integer dureeTraitement) {
+    private LocalDate calculerDateFinTraitement(LocalDate dateDebut, Integer dureeTraitement, Integer delaiAttenteJ) {
         if (dateDebut == null || dureeTraitement == null || dureeTraitement < 1) {
             return null;
         }
-        return dateDebut.plusDays(dureeTraitement.longValue() - 1L);
+        int delai = delaiAttenteJ != null && delaiAttenteJ > 0 ? delaiAttenteJ : 0;
+        return dateDebut.plusDays(dureeTraitement.longValue() - 1L + delai);
     }
 
     private boolean isTreatmentActif(TraitementSante traitement, LocalDate today) {
         if (traitement == null || traitement.getDateDebut() == null) {
             return false;
         }
-        LocalDate dateFinTraitement = calculerDateFin(traitement.getDateDebut(), traitement.getDureeTraitement());
-        if (dateFinTraitement == null || traitement.getDelaiAttenteJ() == null) {
+        LocalDate dateFinTraitement = traitement.getDateFin();
+        if (dateFinTraitement == null) {
+            dateFinTraitement = calculerDateFinTraitement(traitement.getDateDebut(), traitement.getDureeTraitement(),
+                    traitement.getDelaiAttenteJ());
+        }
+        if (dateFinTraitement == null) {
             return false;
         }
-        LocalDate dateFinAttente = dateFinTraitement.plusDays(traitement.getDelaiAttenteJ().longValue());
-        return !today.isBefore(traitement.getDateDebut()) && !today.isAfter(dateFinAttente);
+        return !today.isBefore(traitement.getDateDebut()) && !today.isAfter(dateFinTraitement);
     }
 
     public List<EvenementSante> findAllEvenements() {

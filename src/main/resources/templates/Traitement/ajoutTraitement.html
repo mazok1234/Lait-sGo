@@ -6,12 +6,86 @@
 <body>
 <div th:fragment="mainContent" class="page-content">
 
+    <style>
+        .traitement-card { max-width: 1150px; margin: 0 auto; }
+
+        .form-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .field-group { display: flex; flex-direction: column; gap: 6px; }
+        .field-group label { font-size: 0.875rem; font-weight: 600; }
+        .field-group input,
+        .field-group select,
+        .field-group textarea {
+            padding: 10px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            background: white;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .ligne-traitement {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 12px;
+            align-items: flex-end;
+            border: 1px solid #E5E7EB;
+            padding: 14px;
+            border-radius: 8px;
+        }
+
+        .ligne-field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1 1 130px;
+            min-width: 110px;
+        }
+
+        .ligne-field.medicament { flex: 2 1 200px; min-width: 180px; }
+        .ligne-field.unite { flex: 1 1 90px; min-width: 80px; }
+        .ligne-field.nbr { flex: 1 1 80px; min-width: 70px; }
+
+        .ligne-field label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .ligne-field input,
+        .ligne-field select {
+            padding: 8px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .btn-remove-ligne {
+            flex: 0 0 auto;
+            border: 1px solid #DC2626;
+            color: #DC2626;
+            background: transparent;
+            border-radius: 6px;
+            padding: 8px 10px;
+            height: 38px;
+        }
+
+        @media (max-width: 700px) {
+            .form-row-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+
     <div class="page-header">
         <h1 class="page-title" th:text="${evenementForm.id != null ? 'Modifier un traitement' : 'Nouveau traitement'}">Nouveau traitement</h1>
         <p class="page-subtitle">Enregistrer un traitement de santé pour une vache</p>
     </div>
 
-    <div class="card" style="max-width:900px;margin:0 auto;">
+    <div class="card traitement-card">
         <div class="card-header">
             <h2 class="card-title" th:text="${evenementForm.id != null ? 'Edition du traitement' : 'Saisie du traitement'}">Saisie du traitement</h2>
         </div>
@@ -25,96 +99,91 @@
 
                 <input type="hidden" th:field="*{id}">
 
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-                    <div style="display:flex;flex-direction:column;gap:6px;">
-                        <label style="font-size:0.875rem;font-weight:600;">Vache</label>
-                        <select th:field="*{vacheId}"
-                                style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;background:white;width:100%;">
+                <div class="form-row-2">
+                    <div class="field-group">
+                        <label>Vache</label>
+                        <select th:field="*{vacheId}">
                             <option value="">-- Sélectionner une vache --</option>
                             <option th:each="v : ${vaches}" th:value="${v.id}" th:text="${v.numeroBoucle}"></option>
                         </select>
                     </div>
 
-                    <div style="display:flex;flex-direction:column;gap:6px;">
-                        <label style="font-size:0.875rem;font-weight:600;">Maladie</label>
-                        <select th:field="*{maladieId}"
-                                style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;background:white;width:100%;">
+                    <div class="field-group">
+                        <label>Maladie</label>
+                        <select id="maladieSelect" th:field="*{maladieId}">
                             <option value="">-- Sélectionner une maladie --</option>
                             <option th:each="m : ${maladies}" th:value="${m.id}" th:text="${m.nom}"></option>
                         </select>
                     </div>
                 </div>
 
-                <div style="display:grid;grid-template-columns:1fr 220px;gap:16px;">
-                    <div style="display:flex;flex-direction:column;gap:6px;">
-                        <label style="font-size:0.875rem;font-weight:600;">Description</label>
-                        <textarea th:field="*{description}"
-                                  style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;"></textarea>
+                <div class="form-row-2">
+                    <div class="field-group">
+                        <label>Description</label>
+                        <textarea th:field="*{description}"></textarea>
                     </div>
-                    <div style="display:flex;flex-direction:column;gap:6px;">
-                        <label style="font-size:0.875rem;font-weight:600;">Date de l'événement</label>
-                        <input type="date" th:field="*{dateEvenement}"
-                               style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
+                    <div class="field-group">
+                        <label>Date de l'événement</label>
+                        <input type="date" th:field="*{dateEvenement}">
                     </div>
                 </div>
 
                 <hr>
                 <h3 style="margin:0;">Médicaments utilisés</h3>
+                <p style="margin:-10px 0 0;font-size:0.8rem;color:#6B7280;" id="hintMaladie">
+                    Sélectionnez d'abord une maladie pour filtrer les médicaments disponibles.
+                </p>
 
                 <div id="lignes-container" style="display:flex;flex-direction:column;gap:14px;">
-                    <div class="ligne-traitement" th:each="ligne, stat : *{lignes}"
-                         style="display:grid;grid-template-columns:1.5fr 0.7fr 0.8fr 0.6fr 0.8fr 0.8fr 1fr auto;gap:8px;align-items:end;border:1px solid #E5E7EB;padding:12px;border-radius:8px;">
+                    <div class="ligne-traitement" th:each="ligne, stat : *{lignes}">
 
                         <input type="hidden" th:field="*{lignes[__${stat.index}__].id}">
+                        <input type="hidden" th:field="*{lignes[__${stat.index}__].medicamentFilleId}">
 
-                        <div style="display:flex;flex-direction:column;gap:4px;">
-                            <label style="font-size:0.75rem;font-weight:600;">Médicament</label>
-                            <select th:field="*{lignes[__${stat.index}__].medicamentId}"
-                                    style="padding:8px;border:1px solid #D1D5DB;border-radius:6px;">
+                        <div class="ligne-field medicament">
+                            <label>Médicament</label>
+                            <select class="select-medicament" th:field="*{lignes[__${stat.index}__].medicamentId}">
                                 <option value="">-- Médicament --</option>
-                                <option th:each="med : ${medicaments}" th:value="${med.id}"
-                                        th:text="${med.nom + ' - ' + med.prixUnitaire + ' Ar'}"></option>
+                                <option th:each="m : ${medicaments}" th:value="${m.id}" th:text="${m.nom}"></option>
                             </select>
                         </div>
 
-                        <div style="display:flex;flex-direction:column;gap:4px;">
-                            <label style="font-size:0.75rem;font-weight:600;">Nbr</label>
-                            <input type="number" min="1" th:field="*{lignes[__${stat.index}__].nbrMedicament}"
-                                   style="padding:8px;border:1px solid #D1D5DB;border-radius:6px;">
+                        <div class="ligne-field">
+                            <label>Dose</label>
+                            <input type="number" step="0.01" min="0" th:field="*{lignes[__${stat.index}__].dose}">
                         </div>
 
-                        <div style="display:flex;flex-direction:column;gap:4px;">
-                            <label style="font-size:0.75rem;font-weight:600;">Dose</label>
-                            <input type="number" step="0.01" min="0.01" th:field="*{lignes[__${stat.index}__].dose}"
-                                   style="padding:8px;border:1px solid #D1D5DB;border-radius:6px;">
+                        <div class="ligne-field unite">
+                            <label>Unité</label>
+                            <input type="text" th:field="*{lignes[__${stat.index}__].unite}" placeholder="ml, mg, g...">
                         </div>
 
-                        <div style="display:flex;flex-direction:column;gap:4px;">
-                            <label style="font-size:0.75rem;font-weight:600;">Unité</label>
-                            <input type="text" th:field="*{lignes[__${stat.index}__].unite}" placeholder="ml, g..."
-                                   style="padding:8px;border:1px solid #D1D5DB;border-radius:6px;">
+                        <div class="ligne-field">
+                            <label>Prix unitaire</label>
+                            <input type="number" step="0.01" min="0" th:field="*{lignes[__${stat.index}__].prixUnitaire}">
                         </div>
 
-                        <div style="display:flex;flex-direction:column;gap:4px;">
-                            <label style="font-size:0.75rem;font-weight:600;">Durée (j)</label>
-                            <input type="number" min="1" th:field="*{lignes[__${stat.index}__].dureeTraitement}"
-                                   style="padding:8px;border:1px solid #D1D5DB;border-radius:6px;">
+                        <div class="ligne-field nbr">
+                            <label>Nbr</label>
+                            <input type="number" min="1" th:field="*{lignes[__${stat.index}__].nbrMedicament}">
                         </div>
 
-                        <div style="display:flex;flex-direction:column;gap:4px;">
-                            <label style="font-size:0.75rem;font-weight:600;">Délai attente (j)</label>
-                            <input type="number" min="0" th:field="*{lignes[__${stat.index}__].delaiAttenteJ}"
-                                   style="padding:8px;border:1px solid #D1D5DB;border-radius:6px;">
+                        <div class="ligne-field">
+                            <label>Durée (j)</label>
+                            <input type="number" min="1" th:field="*{lignes[__${stat.index}__].dureeTraitement}">
                         </div>
 
-                        <div style="display:flex;flex-direction:column;gap:4px;">
-                            <label style="font-size:0.75rem;font-weight:600;">Date début</label>
-                            <input type="date" th:field="*{lignes[__${stat.index}__].dateDebut}"
-                                   style="padding:8px;border:1px solid #D1D5DB;border-radius:6px;">
+                        <div class="ligne-field">
+                            <label>Délai attente (j)</label>
+                            <input type="number" min="0" class="input-delai" th:field="*{lignes[__${stat.index}__].delaiAttenteJ}">
                         </div>
 
-                        <button type="button" class="btn-remove-ligne"
-                                style="border:1px solid #DC2626;color:#DC2626;background:transparent;border-radius:6px;padding:8px;">
+                        <div class="ligne-field">
+                            <label>Date début</label>
+                            <input type="date" th:field="*{lignes[__${stat.index}__].dateDebut}">
+                        </div>
+
+                        <button type="button" class="btn-remove-ligne">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -136,63 +205,143 @@
 
     <!-- template caché pour cloner une nouvelle ligne -->
     <template id="ligne-template">
-        <div class="ligne-traitement" style="display:grid;grid-template-columns:1.5fr 0.7fr 0.8fr 0.6fr 0.8fr 0.8fr 1fr auto;gap:8px;align-items:end;border:1px solid #E5E7EB;padding:12px;border-radius:8px;">
+        <div class="ligne-traitement">
             <input type="hidden" name="lignes[INDEX].id">
+            <input type="hidden" name="lignes[INDEX].medicamentFilleId">
 
-            <div style="display:flex;flex-direction:column;gap:4px;">
-                <label style="font-size:0.75rem;font-weight:600;">Médicament</label>
-                <select name="lignes[INDEX].medicamentId" style="padding:8px;border:1px solid #D1D5DB;border-radius:6px;">
+            <div class="ligne-field medicament">
+                <label>Médicament</label>
+                <select class="select-medicament" name="lignes[INDEX].medicamentId">
                     <option value="">-- Médicament --</option>
-                    <option th:each="med : ${medicaments}" th:value="${med.id}"
-                            th:text="${med.nom + ' - ' + med.prixUnitaire + ' Ar'}"></option>
+                    <option th:each="m : ${medicaments}" th:value="${m.id}" th:text="${m.nom}"></option>
                 </select>
             </div>
-            <div style="display:flex;flex-direction:column;gap:4px;">
-                <label style="font-size:0.75rem;font-weight:600;">Nbr</label>
-                <input type="number" min="1" name="lignes[INDEX].nbrMedicament" style="padding:8px;border:1px solid #D1D5DB;border-radius:6px;">
+            <div class="ligne-field">
+                <label>Dose</label>
+                <input type="number" step="0.01" min="0" name="lignes[INDEX].dose">
             </div>
-            <div style="display:flex;flex-direction:column;gap:4px;">
-                <label style="font-size:0.75rem;font-weight:600;">Dose</label>
-                <input type="number" step="0.01" min="0.01" name="lignes[INDEX].dose" style="padding:8px;border:1px solid #D1D5DB;border-radius:6px;">
+            <div class="ligne-field unite">
+                <label>Unité</label>
+                <input type="text" name="lignes[INDEX].unite" placeholder="ml, mg, g...">
             </div>
-            <div style="display:flex;flex-direction:column;gap:4px;">
-                <label style="font-size:0.75rem;font-weight:600;">Unité</label>
-                <input type="text" name="lignes[INDEX].unite" placeholder="ml, g..." style="padding:8px;border:1px solid #D1D5DB;border-radius:6px;">
+            <div class="ligne-field">
+                <label>Prix unitaire</label>
+                <input type="number" step="0.01" min="0" name="lignes[INDEX].prixUnitaire">
             </div>
-            <div style="display:flex;flex-direction:column;gap:4px;">
-                <label style="font-size:0.75rem;font-weight:600;">Durée (j)</label>
-                <input type="number" min="1" name="lignes[INDEX].dureeTraitement" style="padding:8px;border:1px solid #D1D5DB;border-radius:6px;">
+            <div class="ligne-field nbr">
+                <label>Nbr</label>
+                <input type="number" min="1" name="lignes[INDEX].nbrMedicament" value="1">
             </div>
-            <div style="display:flex;flex-direction:column;gap:4px;">
-                <label style="font-size:0.75rem;font-weight:600;">Délai attente (j)</label>
-                <input type="number" min="0" name="lignes[INDEX].delaiAttenteJ" style="padding:8px;border:1px solid #D1D5DB;border-radius:6px;">
+            <div class="ligne-field">
+                <label>Durée (j)</label>
+                <input type="number" min="1" name="lignes[INDEX].dureeTraitement">
             </div>
-            <div style="display:flex;flex-direction:column;gap:4px;">
-                <label style="font-size:0.75rem;font-weight:600;">Date début</label>
-                <input type="date" name="lignes[INDEX].dateDebut" style="padding:8px;border:1px solid #D1D5DB;border-radius:6px;">
+            <div class="ligne-field">
+                <label>Délai attente (j)</label>
+                <input type="number" min="0" class="input-delai" name="lignes[INDEX].delaiAttenteJ" value="0">
             </div>
-            <button type="button" class="btn-remove-ligne" style="border:1px solid #DC2626;color:#DC2626;background:transparent;border-radius:6px;padding:8px;">
+            <div class="ligne-field">
+                <label>Date début</label>
+                <input type="date" name="lignes[INDEX].dateDebut">
+            </div>
+            <button type="button" class="btn-remove-ligne">
                 <i class="fas fa-trash"></i>
             </button>
         </div>
     </template>
 
     <script th:inline="javascript">
-        let index = /*[[${evenementForm.lignes.size()}]]*/ 1;
+        (function () {
+            let index = /*[[${evenementForm.lignes.size()}]]*/ 1;
+            const URL_MEDICAMENTS = /*[[@{/traitements/api/medicaments}]]*/ '/traitements/api/medicaments';
 
-        document.getElementById('btn-add-ligne').addEventListener('click', function () {
-            const template = document.getElementById('ligne-template').innerHTML;
-            const html = template.replaceAll('INDEX', index);
-            document.getElementById('lignes-container').insertAdjacentHTML('beforeend', html);
-            index++;
-        });
-
-        document.getElementById('lignes-container').addEventListener('click', function (e) {
-            const btn = e.target.closest('.btn-remove-ligne');
-            if (btn) {
-                btn.closest('.ligne-traitement').remove();
+            function chargerMedicaments(select, maladieId, selectedId, callback) {
+                const valeurCourante = selectedId || select.value || null;
+                select.innerHTML = '<option value="">-- Médicament --</option>';
+                const url = maladieId
+                    ? URL_MEDICAMENTS + '?maladieId=' + encodeURIComponent(maladieId)
+                    : URL_MEDICAMENTS;
+                fetch(url)
+                    .then(function (r) { return r.ok ? r.json() : []; })
+                    .then(function (data) {
+                        (data || []).forEach(function (m) {
+                            const opt = document.createElement('option');
+                            opt.value = m.id;
+                            opt.textContent = m.nom;
+                            if (valeurCourante && String(m.id) === String(valeurCourante)) {
+                                opt.selected = true;
+                            }
+                            select.appendChild(opt);
+                        });
+                        if (callback) callback();
+                    })
+                    .catch(function () { if (callback) callback(); });
             }
-        });
+
+            function initLigne(ligneDiv, estNouvelleLigne) {
+                const medicamentSelect = ligneDiv.querySelector('.select-medicament');
+                const maladieSelect = document.getElementById('maladieSelect');
+                const maladieId = maladieSelect ? maladieSelect.value : null;
+                const medicamentInitial = estNouvelleLigne ? null : (medicamentSelect.value || null);
+
+                chargerMedicaments(medicamentSelect, maladieId, medicamentInitial, null);
+
+                medicamentSelect.addEventListener('change', function () {
+                    const inputDose = ligneDiv.querySelector('[name$=".dose"]');
+                    const inputUnite = ligneDiv.querySelector('[name$=".unite"]');
+                    const inputPrix = ligneDiv.querySelector('[name$=".prixUnitaire"]');
+                    if (inputDose) { inputDose.value = ''; }
+                    if (inputUnite) { inputUnite.value = ''; }
+                    if (inputPrix) { inputPrix.value = ''; }
+                });
+            }
+
+            const maladieSelectEl = document.getElementById('maladieSelect');
+            if (maladieSelectEl) {
+                maladieSelectEl.addEventListener('change', function () {
+                    const maladieId = this.value;
+                    document.querySelectorAll('.ligne-traitement').forEach(function (ligneDiv) {
+                        const medicamentSelect = ligneDiv.querySelector('.select-medicament');
+                        chargerMedicaments(medicamentSelect, maladieId, null, function () {
+                            const inputDose = ligneDiv.querySelector('[name$=".dose"]');
+                            const inputUnite = ligneDiv.querySelector('[name$=".unite"]');
+                            const inputPrix = ligneDiv.querySelector('[name$=".prixUnitaire"]');
+                            if (inputDose) { inputDose.value = ''; }
+                            if (inputUnite) { inputUnite.value = ''; }
+                            if (inputPrix) { inputPrix.value = ''; }
+                        });
+                    });
+                });
+            }
+
+            const btnAdd = document.getElementById('btn-add-ligne');
+            if (btnAdd) {
+                btnAdd.addEventListener('click', function () {
+                    const template = document.getElementById('ligne-template').innerHTML;
+                    const html = template.replaceAll('INDEX', index);
+                    document.getElementById('lignes-container').insertAdjacentHTML('beforeend', html);
+                    const nouvelle = document.getElementById('lignes-container').lastElementChild;
+                    initLigne(nouvelle, true);
+                    index++;
+                });
+            }
+
+            const container = document.getElementById('lignes-container');
+            if (container) {
+                container.addEventListener('click', function (e) {
+                    const btn = e.target.closest('.btn-remove-ligne');
+                    if (btn) {
+                        btn.closest('.ligne-traitement').remove();
+                    }
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                document.querySelectorAll('.ligne-traitement').forEach(function (ligneDiv) {
+                    initLigne(ligneDiv, false);
+                });
+            });
+        })();
     </script>
 </div>
 </body>
