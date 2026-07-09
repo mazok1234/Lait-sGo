@@ -78,7 +78,7 @@
           </form>
 
           <div th:if="${!alerte.acquittee and (alerte.moduleSource == 'Production' or alerte.moduleSource == 'Alimentation' or alerte.moduleSource == 'Vente' or alerte.moduleSource == 'Reproduction')}" class="acquit-badge">
-            <i class="fas fa-robot"></i> Acquittement automatique à la prochaine production conforme
+            <i class="fas fa-robot"></i> Acquittement automatique 
           </div>
 
           <div th:if="${alerte.acquittee}" class="acquit-badge">

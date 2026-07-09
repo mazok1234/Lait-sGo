@@ -1,7 +1,7 @@
 BEGIN;
 
 -- ============================================================
--- 1. REFERENCES SYSTEME
+-- 1. RÉFÉRENCES SYSTÈME
 -- ============================================================
 
 INSERT INTO ref_statut_vie (libelle)
@@ -22,7 +22,7 @@ WHERE NOT EXISTS (SELECT 1 FROM ref_statut_sante s WHERE s.libelle = v.libelle);
 
 INSERT INTO ref_role_utilisateur (code, libelle) VALUES
     ('admin', 'Administrateur'),
-    ('employe', 'Employe')
+    ('employe', 'Employé')
 ON CONFLICT (code) DO NOTHING;
 
 INSERT INTO ref_niveau_alerte (code, libelle, ordre) VALUES
@@ -31,9 +31,24 @@ INSERT INTO ref_niveau_alerte (code, libelle, ordre) VALUES
     ('info',      'Info',      3)
 ON CONFLICT (code) DO NOTHING;
 
+-- Catalogue des types d'alerte : ne provient d'aucun fichier .sql existant
+-- (table nouvelle, requise par le passage type_alerte texte -> id_type FK).
+-- Codes repris tels quels de dataTest.sql / AlerteService.MODULE_PAR_TYPE ;
+-- seul le libelle (colonne NOT NULL) est un texte écrit pour l'occasion.
+INSERT INTO ref_type_alerte (code, libelle) VALUES
+    ('vaccin_en_retard',   'Vaccin en retard'),
+    ('rappel_vaccin',      'Rappel vaccin'),
+    ('vaccin_prioritaire', 'Vaccin prioritaire'),
+    ('traitement_en_cours','Traitement en cours'),
+    ('rappel_velage',      'Rappel vêlage'),
+    ('stock_lait_bas',     'Stock de lait insuffisant'),
+    ('stock_aliment_bas',  'Stock aliment insuffisant'),
+    ('bcs_hors_plage',     'Score BCS hors plage')
+ON CONFLICT (code) DO NOTHING;
+
 INSERT INTO ref_statut_lactation (code, libelle) VALUES
     ('active', 'Active'),
-    ('terminee', 'Terminee')
+    ('terminee', 'Terminée')
 ON CONFLICT (code) DO NOTHING;
 
 INSERT INTO ref_phase_lactation (libelle, jour_min, jour_max)
@@ -48,34 +63,34 @@ WHERE NOT EXISTS (SELECT 1 FROM ref_phase_lactation p WHERE p.libelle = v.libell
 INSERT INTO ref_type_aliment (code, libelle) VALUES
     ('foin', 'Foin'),
     ('ensilage', 'Ensilage'),
-    ('concentre', 'Concentre'),
-    ('mineral', 'Mineral')
+    ('concentre', 'Concentré'),
+    ('mineral', 'Minéral')
 ON CONFLICT (code) DO NOTHING;
 
 INSERT INTO ref_race (code, libelle) VALUES
     ('prim_holstein', 'Prim''Holstein'),
     ('normande',      'Normande'),
-    ('montbeliarde',  'Montbeliarde'),
+    ('montbeliarde',  'Montbéliarde'),
     ('charolaise',    'Charolaise'),
     ('TEST_HOL',      'Test Holstein')
 ON CONFLICT (code) DO NOTHING;
 
 INSERT INTO ref_type_ia (libelle)
 SELECT * FROM (VALUES
-    ('IA fraiche'),
-    ('IA congelee'),
-    ('IA sexee'),
-    ('IA a heure fixe'),
-    ('IA apres detection de chaleur'),
+    ('IA fraîche'),
+    ('IA congelée'),
+    ('IA sexée'),
+    ('IA à heure fixe'),
+    ('IA après détection de chaleur'),
     ('IA avec synchronisation (Ovsynch)')
 ) AS v(libelle)
 WHERE NOT EXISTS (SELECT 1 FROM ref_type_ia t WHERE t.libelle = v.libelle);
 
 INSERT INTO protocole_vaccin (nom_vaccin, age_min_jours, age_max_jours, duree_rappel_jours)
 SELECT * FROM (VALUES
-    ('Vaccin Fievre Aphteuse (Primo)', 60, 120, 180),
+    ('Vaccin Fièvre Aphteuse (Primo)', 60, 120, 180),
     ('Vaccin Charbon Symptomatique', 90, 180, 365),
-    ('Rhinotracheite Infectieuse Bovine (IBR)', 150, 360, 365)
+    ('Rhinotrachéite Infectieuse Bovine (IBR)', 150, 360, 365)
 ) AS v(nom_vaccin, age_min_jours, age_max_jours, duree_rappel_jours)
 WHERE NOT EXISTS (SELECT 1 FROM protocole_vaccin p WHERE p.nom_vaccin = v.nom_vaccin);
 
@@ -99,11 +114,11 @@ ON CONFLICT (email) DO NOTHING;
 -- 3. ALIMENTS + RATIONS STANDARD (par phase de lactation)
 -- ============================================================
 
--- DOUBLON RESOLU : "Foin"/"Ensilage" sont redefinis avec des valeurs
--- differentes dans db.sql (ufl 0.500/50kg/0.15) et test.sql
+-- DOUBLON RÉSOLU : "Foin"/"Ensilage" sont redéfinis avec des valeurs
+-- différentes dans db.sql (ufl 0.500/50kg/0.15) et test.sql
 -- (ufl 0.650/120kg/320.00). Les deux ne peuvent pas coexister (nom
--- UNIQUE). Version de db.sql conservee (fichier de reference du
--- schema) ; celle de test.sql est ignoree (contrainte NOT EXISTS).
+-- UNIQUE). Version de db.sql conservée (fichier de référence du
+-- schéma) ; celle de test.sql est ignorée (contrainte NOT EXISTS).
 INSERT INTO aliment (nom, id_type_aliment, ufl, pdi_g, seuil_alerte_kg, prix_par_kilo)
 SELECT 'Foin', (SELECT id FROM ref_type_aliment WHERE code = 'foin'), 0.500, 45.00, 50, 0.15
 WHERE NOT EXISTS (SELECT 1 FROM aliment WHERE nom = 'Foin');
@@ -113,8 +128,8 @@ SELECT 'Ensilage', (SELECT id FROM ref_type_aliment WHERE code = 'ensilage'), 0.
 WHERE NOT EXISTS (SELECT 1 FROM aliment WHERE nom = 'Ensilage');
 
 INSERT INTO aliment (nom, id_type_aliment, ufl, pdi_g, seuil_alerte_kg, prix_par_kilo)
-SELECT 'Concentre', (SELECT id FROM ref_type_aliment WHERE code = 'concentre'), 1.050, 110.00, 30, 0.35
-WHERE NOT EXISTS (SELECT 1 FROM aliment WHERE nom = 'Concentre');
+SELECT 'Concentré', (SELECT id FROM ref_type_aliment WHERE code = 'concentre'), 1.050, 110.00, 30, 0.35
+WHERE NOT EXISTS (SELECT 1 FROM aliment WHERE nom = 'Concentré');
 
 INSERT INTO ration (nom, id_phase_lactation)
 SELECT 'Ration lactation haute', p.id FROM ref_phase_lactation p WHERE p.libelle = 'Lactation haute'
@@ -134,13 +149,13 @@ SELECT r.id, a.id, x.quantite_kg
 FROM (VALUES
     ('Ration lactation haute',   'Foin', 5.0),
     ('Ration lactation haute',   'Ensilage', 3.0),
-    ('Ration lactation haute',   'Concentre', 2.0),
+    ('Ration lactation haute',   'Concentré', 2.0),
     ('Ration lactation moyenne', 'Foin', 4.0),
     ('Ration lactation moyenne', 'Ensilage', 3.0),
-    ('Ration lactation moyenne', 'Concentre', 1.5),
+    ('Ration lactation moyenne', 'Concentré', 1.5),
     ('Ration lactation basse',   'Foin', 3.0),
     ('Ration lactation basse',   'Ensilage', 2.0),
-    ('Ration lactation basse',   'Concentre', 1.0),
+    ('Ration lactation basse',   'Concentré', 1.0),
     ('Ration tarie',             'Foin', 4.0),
     ('Ration tarie',             'Ensilage', 2.0)
 ) AS x(ration_nom, aliment_nom, quantite_kg)
@@ -151,7 +166,7 @@ WHERE NOT EXISTS (
 );
 
 -- ============================================================
--- 4. RATIONS SPECIALISEES (production / BCS / sante)
+-- 4. RATIONS SPÉCIALISÉES (production / BCS / santé)
 -- ============================================================
 
 INSERT INTO ration (nom, id_phase_lactation, production_min_l, production_max_l, priorite)
@@ -167,8 +182,8 @@ SELECT 'Ration BCS faible (maigre)', NULL, NULL, 2.49, 2
 WHERE NOT EXISTS (SELECT 1 FROM ration WHERE nom = 'Ration BCS faible (maigre)');
 
 INSERT INTO ration (nom, id_phase_lactation, bcs_min, bcs_max, priorite)
-SELECT 'Ration BCS eleve (obese)', NULL, 4.01, NULL, 2
-WHERE NOT EXISTS (SELECT 1 FROM ration WHERE nom = 'Ration BCS eleve (obese)');
+SELECT 'Ration BCS élevé (obèse)', NULL, 4.01, NULL, 2
+WHERE NOT EXISTS (SELECT 1 FROM ration WHERE nom = 'Ration BCS élevé (obèse)');
 
 INSERT INTO ration (nom, id_phase_lactation, id_statut_sante, priorite)
 SELECT 'Ration convalescence (malade)', NULL, s.id, 3
@@ -181,7 +196,7 @@ FROM ref_statut_sante s WHERE s.libelle = 'En_traitement'
     AND NOT EXISTS (SELECT 1 FROM ration WHERE nom = 'Ration convalescence (traitement)');
 
 -- ============================================================
--- 5. MEDICAMENTS / MALADIES
+-- 5. MÉDICAMENTS / MALADIES
 -- ============================================================
 
 INSERT INTO medicament (id, nom, delai_attente_lait_defaut, delai_attente_viande_defaut, prix_unitaire) VALUES
@@ -194,11 +209,11 @@ ON CONFLICT (id) DO NOTHING;
 SELECT setval('medicament_id_seq', GREATEST((SELECT MAX(id) FROM medicament), 1));
 
 INSERT INTO maladie (id, nom, description) VALUES
-    (1, 'Mammite', 'Inflammation de la mamelle, souvent d''origine bacterienne'),
-    (2, 'Fievre aphteuse', 'Maladie virale tres contagieuse'),
+    (1, 'Mammite', 'Inflammation de la mamelle, souvent d''origine bactérienne'),
+    (2, 'Fièvre aphteuse', 'Maladie virale très contagieuse'),
     (3, 'Parasitisme intestinal', 'Infestation par des vers gastro-intestinaux'),
-    (4, 'Boiterie', 'Probleme locomoteur, souvent lie aux onglons'),
-    (5, 'Fievre de lait (hypocalcemie)', 'Trouble metabolique post-velage')
+    (4, 'Boiterie', 'Problème locomoteur, souvent lié aux onglons'),
+    (5, 'Fièvre de lait (hypocalcémie)', 'Trouble métabolique post-vêlage')
 ON CONFLICT (id) DO NOTHING;
 SELECT setval('maladie_id_seq', GREATEST((SELECT MAX(id) FROM maladie), 1));
 
@@ -229,12 +244,12 @@ SELECT 'TEST-001', r.id, DATE '2022-01-10', 545.0, 3.25
 FROM ref_race r WHERE r.code = 'TEST_HOL'
 ON CONFLICT (numero_boucle) DO NOTHING;
 
--- Jeu "finance/sante" (Ajout_base_finance_sante.sql)
--- Corrige : vache n'a pas de colonnes "nom"/"race" (texte) - la race
+-- Jeu "finance/santé" (Ajout_base_finance_sante.sql)
+-- Corrigé : vache n'a pas de colonnes "nom"/"race" (texte) — la race
 -- est une FK id_race vers ref_race. Le fichier source ne fournissait ni
--- poids_kg ni score_bcs pour ces vaches : laisses a NULL (colonnes
--- nullables), aucune valeur inventee. Le "nom" (Marguerite, etc.)
--- n'a pas d'equivalent dans le schema actuel et n'est donc pas repris.
+-- poids_kg ni score_bcs pour ces vaches : laissés à NULL (colonnes
+-- nullables), aucune valeur inventée. Le "nom" (Marguerite, etc.)
+-- n'a pas d'équivalent dans le schéma actuel et n'est donc pas repris.
 INSERT INTO vache (numero_boucle, id_race, date_naissance)
 SELECT * FROM (VALUES
     ('FR001234567', (SELECT id FROM ref_race WHERE code = 'prim_holstein'), DATE '2021-04-12'),
@@ -245,7 +260,7 @@ SELECT * FROM (VALUES
 ) AS v(numero_boucle, id_race, date_naissance)
 ON CONFLICT (numero_boucle) DO NOTHING;
 
--- Statuts vie / repro / lactation / sante - jeu "alertes"
+-- Statuts vie / repro / lactation / santé — jeu "alertes"
 INSERT INTO vache_historique_vie (vache_id, statut_id, date_debut)
 SELECT v.id, s.id, '2023-01-01'
 FROM vache v, ref_statut_vie s
@@ -274,7 +289,7 @@ WHERE v.numero_boucle IN ('V001_TEST','V002_TEST','V003_TEST','V004_TEST')
   AND s.libelle = 'Saine'
   AND NOT EXISTS (SELECT 1 FROM vache_historique_sante h WHERE h.vache_id = v.id);
 
--- Historique sante detaille - jeu "finance/sante" (statuts Saine/En_traitement alternes)
+-- Historique santé détaillé — jeu "finance/santé" (statuts Saine/En_traitement alternés)
 INSERT INTO vache_historique_sante (vache_id, statut_id, date_debut, date_fin)
 SELECT v.id, s.id, x.date_debut, x.date_fin
 FROM (VALUES
@@ -296,23 +311,23 @@ WHERE NOT EXISTS (
 );
 
 -- ============================================================
--- 7. EVENEMENTS SANTE + TRAITEMENTS
--- (nbr_medicament corrige : la colonne existe sur traitement_sante,
+-- 7. ÉVÉNEMENTS SANTÉ + TRAITEMENTS
+-- (nbr_medicament corrigé : la colonne existe sur traitement_sante,
 -- pas sur evenement_sante)
 -- ============================================================
 
 INSERT INTO evenement_sante (id, vache_id, maladie_id, date_evenement, description)
-SELECT 1, v.id, 1, DATE '2026-03-15', 'Mammite clinique detectee sur quartier arriere gauche'
+SELECT 1, v.id, 1, DATE '2026-03-15', 'Mammite clinique détectée sur quartier arrière gauche'
 FROM vache v WHERE v.numero_boucle = 'FR001234567'
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO evenement_sante (id, vache_id, maladie_id, date_evenement, description)
-SELECT 2, v.id, 3, DATE '2026-05-02', 'Vers detectes lors du controle de routine'
+SELECT 2, v.id, 3, DATE '2026-05-02', 'Vers détectés lors du contrôle de routine'
 FROM vache v WHERE v.numero_boucle = 'FR001234569'
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO evenement_sante (id, vache_id, maladie_id, date_evenement, description)
-SELECT 3, v.id, 1, DATE '2026-06-11', 'Mammite subclinique confirmee par CMT'
+SELECT 3, v.id, 1, DATE '2026-06-11', 'Mammite subclinique confirmée par CMT'
 FROM vache v WHERE v.numero_boucle = 'FR001234571'
 ON CONFLICT (id) DO NOTHING;
 
@@ -338,25 +353,25 @@ WHERE NOT EXISTS (
 -- ============================================================
 
 INSERT INTO historique_vaccin (vache_id, id_protocole_vaccin, date_vaccination, type_injection)
-SELECT v.id, p.id_protocole_vaccin, CURRENT_DATE - INTERVAL '200 days', 'IA fraiche'
+SELECT v.id, p.id_protocole_vaccin, CURRENT_DATE - INTERVAL '200 days', 'IA fraîche'
 FROM vache v, protocole_vaccin p
 WHERE v.numero_boucle = 'V001_TEST'
-  AND p.nom_vaccin = 'Vaccin Fievre Aphteuse (Primo)'
+  AND p.nom_vaccin = 'Vaccin Fièvre Aphteuse (Primo)'
   AND NOT EXISTS (
       SELECT 1 FROM historique_vaccin h WHERE h.vache_id = v.id AND h.id_protocole_vaccin = p.id_protocole_vaccin
   );
 
 INSERT INTO historique_vaccin (vache_id, id_protocole_vaccin, date_vaccination, type_injection)
-SELECT v.id, p.id_protocole_vaccin, CURRENT_DATE - INTERVAL '360 days', 'IA congelee'
+SELECT v.id, p.id_protocole_vaccin, CURRENT_DATE - INTERVAL '360 days', 'IA congelée'
 FROM vache v, protocole_vaccin p
 WHERE v.numero_boucle = 'V002_TEST'
-  AND p.nom_vaccin = 'Rhinotracheite Infectieuse Bovine (IBR)'
+  AND p.nom_vaccin = 'Rhinotrachéite Infectieuse Bovine (IBR)'
   AND NOT EXISTS (
       SELECT 1 FROM historique_vaccin h WHERE h.vache_id = v.id AND h.id_protocole_vaccin = p.id_protocole_vaccin
   );
 
 INSERT INTO historique_vaccin (vache_id, id_protocole_vaccin, date_vaccination, type_injection)
-SELECT v.id, p.id_protocole_vaccin, CURRENT_DATE - INTERVAL '300 days', 'IA fraiche'
+SELECT v.id, p.id_protocole_vaccin, CURRENT_DATE - INTERVAL '300 days', 'IA fraîche'
 FROM vache v, protocole_vaccin p
 WHERE v.numero_boucle = 'V003_TEST'
   AND p.nom_vaccin = 'Vaccin Charbon Symptomatique'
@@ -368,7 +383,7 @@ WHERE v.numero_boucle = 'V003_TEST'
 -- 9. REPRODUCTION
 -- ============================================================
 
--- V004 : gestante depuis 250 jours  velage prevu dans ~30 jours
+-- V004 : gestante depuis 250 jours → vêlage prévu dans ~30 jours
 UPDATE vache_historique_repro
 SET date_fin = CURRENT_DATE - INTERVAL '1 day'
 WHERE vache_id = (SELECT id FROM vache WHERE numero_boucle = 'V004_TEST')
@@ -388,7 +403,7 @@ FROM vache v
 WHERE v.numero_boucle = 'V004_TEST'
   AND NOT EXISTS (SELECT 1 FROM reproduction r WHERE r.vache_id = v.id);
 
--- V001 : gestante depuis 220 jours  velage prevu dans ~60 jours
+-- V001 : gestante depuis 220 jours → vêlage prévu dans ~60 jours
 UPDATE vache_historique_repro
 SET date_fin = CURRENT_DATE - INTERVAL '1 day'
 WHERE vache_id = (SELECT id FROM vache WHERE numero_boucle = 'V001_TEST')
@@ -453,42 +468,6 @@ JOIN lactation l ON l.vache_id = (SELECT id FROM vache WHERE numero_boucle = 'TE
 WHERE NOT EXISTS (
     SELECT 1 FROM production pr WHERE pr.vache_id = l.vache_id AND pr.date_production = p.date_production
 );
-
--- Lactations actives pour les 8 autres vaches, reparties sur les 4 phases
--- (0-60j, 61-180j, 181-300j, 301-365j) afin que la page Rations montre
--- des vaches concernees sur chaque phase, pas seulement V002_TEST/TEST-001.
-INSERT INTO lactation (vache_id, numero_lactation, date_debut, id_statut)
-SELECT v.id, 1, CURRENT_DATE - (x.jours_en_lait || ' days')::interval, s.id
-FROM (VALUES
-    ('V001_TEST',   30),   -- Lactation haute
-    ('FR001234568', 45),   -- Lactation haute
-    ('V003_TEST',   100),  -- Lactation moyenne
-    ('FR001234569', 120),  -- Lactation moyenne
-    ('V004_TEST',   250),  -- Lactation basse
-    ('FR001234570', 220),  -- Lactation basse
-    ('FR001234567', 340),  -- Tarie
-    ('FR001234571', 350)   -- Tarie
-) AS x(numero_boucle, jours_en_lait)
-JOIN vache v ON v.numero_boucle = x.numero_boucle
-JOIN ref_statut_lactation s ON s.code = 'active'
-WHERE NOT EXISTS (SELECT 1 FROM lactation l WHERE l.vache_id = v.id AND l.date_fin IS NULL);
-
--- Statut vache_historique_lactation correspondant (colonne "LACTATION" du
--- Cheptel), pour rester coherent avec les cycles actifs ci-dessus et
--- ceux de TEST-001/V002_TEST inseres plus haut.
-INSERT INTO vache_historique_lactation (vache_id, statut_id, date_debut)
-SELECT v.id, s.id, CURRENT_DATE - (x.jours_en_lait || ' days')::interval
-FROM (VALUES
-    ('TEST-001',     'En_lactation', 189),
-    ('FR001234567',  'Tarie',        340),
-    ('FR001234568',  'En_lactation', 45),
-    ('FR001234569',  'En_lactation', 120),
-    ('FR001234570',  'En_lactation', 220),
-    ('FR001234571',  'Tarie',        350)
-) AS x(numero_boucle, statut_libelle, jours_en_lait)
-JOIN vache v ON v.numero_boucle = x.numero_boucle
-JOIN ref_statut_lactation_vache s ON s.libelle = x.statut_libelle
-WHERE NOT EXISTS (SELECT 1 FROM vache_historique_lactation h WHERE h.vache_id = v.id);
 
 -- ============================================================
 -- 11. MOUVEMENTS ALIMENTS
@@ -582,41 +561,41 @@ WHERE NOT EXISTS (
 
 -- ============================================================
 -- 13. ALERTES DE TEST
--- (adapte : id_type via ref_type_alerte au lieu de la colonne
+-- (adapté : id_type via ref_type_alerte au lieu de la colonne
 -- type_alerte qui n'existe plus)
 -- ============================================================
 
--- INSERT INTO alerte (id_niveau, id_type, titre, description, vache_id, acquittee)
--- SELECT n.id, t.id, x.titre, x.description, vv.id, x.acquittee
--- FROM (VALUES
---     ('urgent', 'vaccin_en_retard', 'Vaccin en retard - V001_TEST',
---         'Vaccin Fievre Aphteuse (Primo) en retard de 20 jour(s).', 'V001_TEST', false),
---     ('urgent', 'stock_aliment_bas', 'Stock insuffisant - Foin',
---         'Stock actuel : 30 kg, seuil configure : 50 kg.', NULL, false),
---     ('urgent', 'stock_aliment_bas', 'Stock insuffisant - Ensilage',
---         'Stock actuel : 80 kg, seuil configure : 100 kg.', NULL, false),
---     ('attention', 'vaccin_prioritaire', 'Vaccin prioritaire dans 5j - V002_TEST',
---         'Vaccin Rhinotracheite Infectieuse Bovine (IBR) - rappel proche.', 'V002_TEST', false),
---     ('attention', 'stock_lait_bas', 'Stock de lait insuffisant',
---         'Stock restant apres vente : 5 L (seuil critique : 50 L).', NULL, false),
---     ('attention', 'rappel_velage', 'Rappel velage - V001_TEST',
---         'Velage prevu dans 60 jour(s).', 'V001_TEST', false),
---     ('info', 'rappel_vaccin', 'Rappel vaccin - V003_TEST',
---         'Vaccin Charbon Symptomatique - prochain rappel dans 65 jours.', 'V003_TEST', false),
---     ('urgent', 'rappel_velage', 'Rappel velage - V004_TEST',
---         'Velage prevu dans 30 jour(s).', 'V004_TEST', false),
---     ('attention', 'traitement_en_cours', 'Vache en traitement - V003_TEST [ACQUITTEE]',
---         'Test alerte acquittee - affichee en bas de liste.', 'V003_TEST', true)
--- ) AS x(niveau_code, type_code, titre, description, numero_boucle, acquittee)
--- JOIN ref_niveau_alerte n ON n.code = x.niveau_code
--- JOIN ref_type_alerte t ON t.code = x.type_code
--- LEFT JOIN vache vv ON vv.numero_boucle = x.numero_boucle
--- WHERE NOT EXISTS (SELECT 1 FROM alerte al WHERE al.titre = x.titre);
+INSERT INTO alerte (id_niveau, id_type, titre, description, vache_id, acquittee)
+SELECT n.id, t.id, x.titre, x.description, vv.id, x.acquittee
+FROM (VALUES
+    ('urgent', 'vaccin_en_retard', 'Vaccin en retard — V001_TEST',
+        'Vaccin Fièvre Aphteuse (Primo) en retard de 20 jour(s).', 'V001_TEST', false),
+    ('urgent', 'stock_aliment_bas', 'Stock insuffisant — Foin',
+        'Stock actuel : 30 kg, seuil configuré : 50 kg.', NULL, false),
+    ('urgent', 'stock_aliment_bas', 'Stock insuffisant — Ensilage',
+        'Stock actuel : 80 kg, seuil configuré : 100 kg.', NULL, false),
+    ('attention', 'vaccin_prioritaire', 'Vaccin prioritaire dans 5j — V002_TEST',
+        'Vaccin Rhinotrachéite Infectieuse Bovine (IBR) — rappel proche.', 'V002_TEST', false),
+    ('attention', 'stock_lait_bas', 'Stock de lait insuffisant',
+        'Stock restant après vente : 5 L (seuil critique : 50 L).', NULL, false),
+    ('attention', 'rappel_velage', 'Rappel vêlage — V001_TEST',
+        'Vêlage prévu dans 60 jour(s).', 'V001_TEST', false),
+    ('info', 'rappel_vaccin', 'Rappel vaccin — V003_TEST',
+        'Vaccin Charbon Symptomatique — prochain rappel dans 65 jours.', 'V003_TEST', false),
+    ('urgent', 'rappel_velage', 'Rappel vêlage — V004_TEST',
+        'Vêlage prévu dans 30 jour(s).', 'V004_TEST', false),
+    ('attention', 'traitement_en_cours', 'Vache en traitement — V003_TEST [ACQUITTÉE]',
+        'Test alerte acquittée — affichée en bas de liste.', 'V003_TEST', true)
+) AS x(niveau_code, type_code, titre, description, numero_boucle, acquittee)
+JOIN ref_niveau_alerte n ON n.code = x.niveau_code
+JOIN ref_type_alerte t ON t.code = x.type_code
+LEFT JOIN vache vv ON vv.numero_boucle = x.numero_boucle
+WHERE NOT EXISTS (SELECT 1 FROM alerte al WHERE al.titre = x.titre);
 
 COMMIT;
 
 -- ============================================================
--- VERIFICATION
+-- VÉRIFICATION
 -- ============================================================
 SELECT n.code AS niveau, t.code AS type, a.titre, a.acquittee, a.created_at::date AS date
 FROM alerte a
