@@ -113,13 +113,20 @@ public ResponseEntity<InputStreamResource> exportExcel(
 }
 
 @PostMapping("/vente/import")
-public String importVentes( @RequestParam("file") MultipartFile file
-) throws IOException {
+public String importVentes(@RequestParam("file") MultipartFile file,
+        RedirectAttributes redirectAttributes) {
 
-    List<Vente> ventes = ventePdfService.importExcel(file.getInputStream());
-    venteService.importerVentes(ventes);
-    System.out.println("Ventes importées : " + ventes.size());
-    // venteRepository.saveAll(ventes);
+    try {
+        List<Vente> ventes = ventePdfService.importExcel(file.getInputStream());
+        venteService.importerVentes(ventes);
+        redirectAttributes.addFlashAttribute(
+                "success",
+                "Ventes importées avec succès : " + ventes.size());
+    } catch (IOException | RuntimeException e) {
+        redirectAttributes.addFlashAttribute(
+                "error",
+                e.getMessage() != null ? e.getMessage() : "Erreur lors de l'import Excel.");
+    }
 
     return "redirect:/vente/nouveau";
 }
