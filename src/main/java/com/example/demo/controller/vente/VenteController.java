@@ -3,6 +3,7 @@ package com.example.demo.controller.vente;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.entity.vente.Vente;
@@ -108,6 +110,18 @@ public ResponseEntity<InputStreamResource> exportExcel(
                 )
             )
             .body(new InputStreamResource(excelFile));
+}
+
+@PostMapping("/vente/import")
+public String importVentes( @RequestParam("file") MultipartFile file
+) throws IOException {
+
+    List<Vente> ventes = ventePdfService.importExcel(file.getInputStream());
+    venteService.importerVentes(ventes);
+    System.out.println("Ventes importées : " + ventes.size());
+    // venteRepository.saveAll(ventes);
+
+    return "redirect:/vente/nouveau";
 }
 
 }

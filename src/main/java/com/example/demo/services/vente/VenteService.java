@@ -8,16 +8,15 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.entity.production.Production;
 import com.example.demo.entity.vente.Vente;
-import com.example.demo.repository.production.ProductionRepository;
 import com.example.demo.repository.auth.UtilisateurRepository;
+import com.example.demo.repository.production.ProductionRepository;
 import com.example.demo.repository.vente.VenteRepository;
-import com.example.demo.services.alerte.AlerteService; // ← ajouté
+import com.example.demo.services.alerte.AlerteService;
 
 @Service
 @Transactional
@@ -145,4 +144,63 @@ public class VenteService {
             alerteService.acquitterAutomatiquement("stock_lait_bas", null);
         }
     }
+
+@Transactional
+public void importerVentes(List<Vente> ventes) {
+
+    BigDecimal stockDisponible = productionRepository.getRemainingStock();
+
+    for (Vente vente : ventes) {
+
+        if (vente.getPrixUnitaire() == null ||
+                vente.getPrixUnitaire().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException(
+                    "Prix invalide pour la vente du "
+                    + vente.getDateVente()
+            );
+        }
+
+        if (vente.getQuantiteLait() == null ||
+                vente.getQuantiteLait().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException(
+                    "Quantité invalide pour la vente du "
+                    + vente.getDateVente()
+            );
+        }
+
+        if (vente.getDateVente() == null ||
+                vente.getDateVente().isAfter(LocalDate.now())) {
+            throw new RuntimeException(
+                    "Date invalide pour la vente du "
+                    + vente.getDateVente()
+            );
+        }
+
+        if (stockDisponible.compareTo(
+                vente.getQuantiteLait()) < 0) {
+
+            throw new RuntimeException(
+                    "Stock insuffisant pour la vente du "
+                    + vente.getDateVente()
+                    + ". Stock restant : "
+                    + stockDisponible
+                    + " L"
+            );
+        }
+
+        stockDisponible =
+                stockDisponible.subtract(
+                        vente.getQuantiteLait()
+                );
+    }
+
+    for (Vente vente : ventes) {
+        effectuerVente(
+                vente.getQuantiteLait(),
+                vente.getPrixUnitaire(),
+                vente.getDateVente()
+        );
+    }
+}
+
 }
