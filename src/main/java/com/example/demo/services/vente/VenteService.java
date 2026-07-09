@@ -128,4 +128,21 @@ public class VenteService {
 
         return saved;
     }
+
+    public void genererAlerteStockLait() {
+        BigDecimal stockRestant = productionRepository.getRemainingStock();
+        if (stockRestant == null) {
+            return;
+        }
+        if (stockRestant.compareTo(SEUIL_STOCK_LAIT_L) < 0) {
+            alerteService.envoyerAlerte(
+                    "stock_lait_bas",
+                    "attention",
+                    "Stock de lait insuffisant",
+                    "Stock actuel : " + stockRestant + " L",
+                    null);
+        } else {
+            alerteService.acquitterAutomatiquement("stock_lait_bas", null);
+        }
+    }
 }

@@ -40,42 +40,47 @@
                 <tr>
                     <th>Vache</th>
                     <th>Maladie</th>
-                    <th>Médicament</th>
-                    <th>Dose</th>
-                    <th>Durée</th>
-                    <th>Délai</th>
-                    <th>Date début</th>
-                    <th>Date fin</th>
+                    <th>Date événement</th>
+                    <th>Nb médicaments</th>
+                    <th>Prix total</th>
+                    <th>Statut</th>
                     <th style="text-align:center;">Action</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="traitement : ${traitements}">
-                    <td th:text="${traitement.evenementSante != null and traitement.evenementSante.vache != null ? traitement.evenementSante.vache.numeroBoucle : '-'}">-</td>
-                    <td th:text="${traitement.evenementSante != null and traitement.evenementSante.maladie != null ? traitement.evenementSante.maladie.nom : '-'}">-</td>
-                    <td th:text="${traitement.medicament != null ? traitement.medicament.nom : '-'}">-</td>
-                    <td th:text="${traitement.dose != null ? #numbers.formatDecimal(traitement.dose,1,2) + ' ' + traitement.unite : '-'}">-</td>
-                    <td th:text="${traitement.dureeTraitement != null ? traitement.dureeTraitement + ' j' : '-'}">-</td>
-                    <td th:text="${traitement.delaiAttenteJ != null ? traitement.delaiAttenteJ + ' j' : '-'}">-</td>
-                    <td th:text="${traitement.dateDebut != null ? #temporals.format(traitement.dateDebut,'dd/MM/yyyy') : '-'}">-</td>
-                    <td th:text="${traitement.dateFin != null ? #temporals.format(traitement.dateFin,'dd/MM/yyyy') : '-'}">-</td>
+                <tr th:each="evenement : ${evenements}">
+                    <td th:text="${evenement.vache != null ? evenement.vache.numeroBoucle : '-'}">-</td>
+                    <td th:text="${evenement.maladie != null ? evenement.maladie.nom : '-'}">-</td>
+                    <td th:text="${evenement.dateEvenement != null ? #temporals.format(evenement.dateEvenement,'dd/MM/yyyy') : '-'}">-</td>
+                    <td th:text="${evenement.nombreMedicaments}">0</td>
+                    <td th:text="${#numbers.formatDecimal(evenement.prixTotalTraitement,1,2) + ' Ar'}">0 Ar</td>
+                    <td>
+                        <span th:if="${evenement.enCours}"
+                              style="color:#F59E0B;font-weight:600;">En cours</span>
+                        <span th:unless="${evenement.enCours}"
+                              style="color:#16A34A;font-weight:600;">Terminé</span>
+                    </td>
                     <td style="text-align:center;display:flex;justify-content:center;gap:6px;">
-                        <a th:href="@{/traitements/edit/{id}(id=${traitement.id})}"
+                        <a th:href="@{/traitements/detail/{id}(id=${evenement.id})}"
+                           class="btn btn-sm" style="border:1px solid #2563EB;color:#2563EB;">
+                            <i class="fas fa-eye"></i> Détail
+                        </a>
+                        <a th:href="@{/traitements/edit/{id}(id=${evenement.id})}"
                            class="btn btn-sm" style="border:1px solid #6B7280;color:#6B7280;">
                             <i class="fas fa-pen"></i>
                         </a>
-                        <form th:action="@{/traitements/delete/{id}(id=${traitement.id})}" method="post" style="margin:0;">
+                        <form th:action="@{/traitements/delete/{id}(id=${evenement.id})}" method="post" style="margin:0;">
                             <button type="submit"
                                     class="btn btn-sm"
                                     style="border:1px solid #DC2626;color:#DC2626;background:transparent;"
-                                    onclick="return confirm('Supprimer ce traitement ?');">
+                                    onclick="return confirm('Supprimer ce traitement et tous ses médicaments ?');">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </form>
                     </td>
                 </tr>
-                <tr th:if="${#lists.isEmpty(traitements)}">
-                    <td colspan="9" class="text-center" style="padding:32px;color:#9CA3AF;">
+                <tr th:if="${#lists.isEmpty(evenements)}">
+                    <td colspan="7" class="text-center" style="padding:32px;color:#9CA3AF;">
                         Aucun traitement enregistré.
                     </td>
                 </tr>
@@ -92,7 +97,6 @@
             });
         }
     </script>
-
 </div>
 </body>
 </html>

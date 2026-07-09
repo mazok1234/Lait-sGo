@@ -18,10 +18,13 @@ public interface AlerteRepository extends JpaRepository<Alerte, Long> {
 
     // Filtre par type
     List<Alerte> findByAcquitteeFalseAndType_CodeOrderByCreatedAtDesc(String typeCode);
+    List<Alerte> findByAcquitteeFalseAndType_CodeStartingWithOrderByCreatedAtDesc(String typeCodePrefix);
 
     // Filtre niveau + type combinés
     List<Alerte> findByAcquitteeFalseAndNiveau_CodeAndType_CodeOrderByCreatedAtDesc(
             String niveauCode, String typeCode);
+    List<Alerte> findByAcquitteeFalseAndNiveau_CodeAndType_CodeStartingWithOrderByCreatedAtDesc(
+            String niveauCode, String typeCodePrefix);
 
     // Récupérer alerte active par vache + type (mise à jour de gravité)
     Optional<Alerte> findTopByVacheIdAndType_CodeAndAcquitteeFalseOrderByCreatedAtDesc(
@@ -38,4 +41,13 @@ public interface AlerteRepository extends JpaRepository<Alerte, Long> {
 
     Optional<Alerte> findTopByVacheIdAndType_CodeAndAcquitteeTrueOrderByCreatedAtDesc(
     Long vacheId, String typeCode);
+
+    // Variantes "startingWith" pour gérer les types dynamiques (ex: stock_aliment_bas_123)
+    Optional<Alerte> findTopByVacheIdAndType_CodeStartingWithAndAcquitteeFalseOrderByCreatedAtDesc(
+            Long vacheId, String typeCodePrefix);
+    Optional<Alerte> findTopByVacheIdIsNullAndType_CodeStartingWithAndAcquitteeFalseOrderByCreatedAtDesc(
+            String typeCodePrefix);
+
+    List<Alerte> findByType_CodeStartingWithAndVacheIdAndAcquitteeFalse(String typeCodePrefix, Long vacheId);
+    List<Alerte> findByType_CodeStartingWithAndAcquitteeFalse(String typeCodePrefix);
 }
