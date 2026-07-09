@@ -22,6 +22,7 @@
                 <button type="submit" class="btn btn-sm" style="border:1px solid #007AFF;color:#007AFF;">Filtrer</button>
                 <a th:href="@{/admin}" class="btn btn-sm" style="border:1px solid #D1D5DB;color:#1A1A2E;">Reinitialiser</a>
             </form>
+            <div th:if="${filtreErreur}" th:text="${filtreErreur}" style="margin-top:10px;color:#B91C1C;font-size:0.9rem;"></div>
         </div>
 
         <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">

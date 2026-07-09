@@ -28,8 +28,8 @@ public interface ProductionRepository extends JpaRepository<Production, Long> {
     @Query("""
             SELECT COALESCE(SUM(p.quantiteLitres), 0)
             FROM Production p
-            WHERE (:dateDe IS NULL OR p.dateProduction >= :dateDe)
-                AND (:dateA IS NULL OR p.dateProduction <= :dateA)
+            WHERE p.dateProduction >= COALESCE(:dateDe, p.dateProduction)
+                AND p.dateProduction <= COALESCE(:dateA, p.dateProduction)
             """)
     BigDecimal getTotalProductionBetweenDates(@Param("dateDe") LocalDate dateDe,
                                               @Param("dateA") LocalDate dateA);

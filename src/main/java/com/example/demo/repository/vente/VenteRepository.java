@@ -30,8 +30,8 @@ public interface VenteRepository extends JpaRepository<Vente, Integer> {
         @Query("""
                         SELECT COALESCE(SUM(v.quantiteLait * v.prixUnitaire), 0)
                         FROM Vente v
-                        WHERE (:dateDe IS NULL OR v.dateVente >= :dateDe)
-                          AND (:dateA IS NULL OR v.dateVente <= :dateA)
+                        WHERE v.dateVente >= COALESCE(:dateDe, v.dateVente)
+                          AND v.dateVente <= COALESCE(:dateA, v.dateVente)
                         """)
         BigDecimal getTotalRevenusBetweenDates(@Param("dateDe") LocalDate dateDe,
                         @Param("dateA") LocalDate dateA);

@@ -2,6 +2,7 @@ package com.example.demo.controller.auth;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -10,7 +11,6 @@ import java.util.Map;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -55,20 +55,23 @@ public class AdminController {
 
     @GetMapping
     public String dashboard(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateDe,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateA,
+            @RequestParam(required = false) String dateDe,
+            @RequestParam(required = false) String dateA,
             Model model) {
-        if (dateDe != null && dateA != null && dateA.isBefore(dateDe)) {
-            LocalDate tmp = dateDe;
-            dateDe = dateA;
-            dateA = tmp;
+        LocalDate dateDeParsed = parseDateParam(dateDe, "dateDe", model);
+        LocalDate dateAParsed = parseDateParam(dateA, "dateA", model);
+
+        if (dateDeParsed != null && dateAParsed != null && dateAParsed.isBefore(dateDeParsed)) {
+            LocalDate tmp = dateDeParsed;
+            dateDeParsed = dateAParsed;
+            dateAParsed = tmp;
         }
 
         long nbVaches = vacheRepository.count();
         long nbEleveurs = utilisateurRepository.count();
         long nbRations = rationRepository.count();
-        BigDecimal quantiteLait = productionRepository.getTotalProductionBetweenDates(dateDe, dateA);
-        BigDecimal totalVentes = venteRepository.getTotalRevenusBetweenDates(dateDe, dateA);
+        BigDecimal quantiteLait = productionRepository.getTotalProductionBetweenDates(dateDeParsed, dateAParsed);
+        BigDecimal totalVentes = venteRepository.getTotalRevenusBetweenDates(dateDeParsed, dateAParsed);
         long alertesNonAcquittees = alerteService.compterNonAcquittees();
 
         model.addAttribute("nbVaches", nbVaches);
@@ -77,8 +80,8 @@ public class AdminController {
         model.addAttribute("quantiteLait", quantiteLait != null ? quantiteLait : BigDecimal.ZERO);
         model.addAttribute("totalVentes", totalVentes != null ? totalVentes : BigDecimal.ZERO);
         model.addAttribute("alertesNonAcquittees", alertesNonAcquittees);
-        model.addAttribute("dateDe", dateDe);
-        model.addAttribute("dateA", dateA);
+        model.addAttribute("dateDe", dateDeParsed);
+        model.addAttribute("dateA", dateAParsed);
 
         return "admin/dashboard";
     }
@@ -134,6 +137,19 @@ public class AdminController {
 
     private BigDecimal nz(BigDecimal value) {
         return value != null ? value : BigDecimal.ZERO;
+    }
+
+    private LocalDate parseDateParam(String rawDate, String fieldName, Model model) {
+        if (rawDate == null || rawDate.isBlank()) {
+            return null;
+        }
+        try {
+            return LocalDate.parse(rawDate.trim());
+        } catch (DateTimeParseException ex) {
+            model.addAttribute("filtreErreur",
+                    "Date invalide pour " + fieldName + ". Utilisez le format yyyy-MM-dd.");
+            return null;
+        }
     }
 
     private List<Map<String, Object>> buildRentabiliteMensuelle(List<Map<String, Object>> revenus,
