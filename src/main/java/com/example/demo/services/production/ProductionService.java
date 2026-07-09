@@ -107,8 +107,8 @@ public class ProductionService {
     public List<java.util.Map<String, Object>> getProductionParRace() {
         return productionRepository.getProductionParRace();
     }
-}
-public boolean checkBaisseCritique(Production p) {
+
+    public boolean checkBaisseCritique(Production p) {
         if (p == null || p.getVache() == null || p.getQuantiteLitres() == null) return false;
         
         List<Production> historique = productionRepository.findByVacheOrderByDateProductionDesc(p.getVache());
@@ -155,6 +155,4 @@ public boolean checkBaisseCritique(Production p) {
         }
         return false;
     }
-
-    
 }
