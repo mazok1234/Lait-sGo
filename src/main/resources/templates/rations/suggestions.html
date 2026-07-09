@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+<head><title>Suggestions de rations</title></head>
+<body>
+<div th:fragment="mainContent" class="page-content">
+
+    <div class="page-header">
+        <h1 class="page-title">Suggestions de rations</h1>
+        <p class="page-subtitle">Suggestions automatiques basees sur la production, le BCS et l'etat de sante</p>
+    </div>
+
+    <div th:if="${successMessage}" class="card"
+         style="padding:12px 16px;margin-bottom:12px;border:1px solid #86EFAC;background:#F0FDF4;color:#166534;"
+         th:text="${successMessage}"></div>
+
+    <div th:if="${errorMessage}" class="card"
+         style="padding:12px 16px;margin-bottom:12px;border:1px solid #FCA5A5;background:#FEF2F2;color:#991B1B;"
+         th:text="${errorMessage}"></div>
+
+    <div th:if="${#lists.isEmpty(suggestions)}" class="card text-center" style="padding:48px;">
+        <p style="color:#9CA3AF;font-size:1.1rem;">
+            Aucune suggestion pour le moment.<br>
+            <span style="font-size:0.9rem;">Les suggestions apparaissent lorsqu'une vache a une production elevee, un BCS anormal ou un probleme de sante.</span>
+        </p>
+    </div>
+
+    <div th:if="${!#lists.isEmpty(suggestions)}">
+        <div class="card" style="overflow-x:auto;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Vache</th>
+                        <th>Phase</th>
+                        <th>Prod. 7j</th>
+                        <th>BCS / Locomotion</th>
+                        <th>Sante</th>
+                        <th>Ration actuelle</th>
+                        <th>Ration suggeree</th>
+                        <th>Raison</th>
+                        <th style="text-align:center;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="s : ${suggestions}">
+                        <td>
+                            <strong th:text="${s.numeroBoucle}">001</strong>
+                        </td>
+                        <td th:text="${s.phaseActuelle}">Haute</td>
+                        <td>
+                            <span th:if="${s.productionMoyenne7j != null}"
+                                  th:text="${#numbers.formatDecimal(s.productionMoyenne7j,1,1) + ' L'}">
+                                25.0 L
+                            </span>
+                            <span th:if="${s.productionMoyenne7j == null}" style="color:#9CA3AF;">-</span>
+                        </td>
+                        <td>
+                            <span th:if="${s.scoreBcs != null}"
+                                  th:text="'BCS ' + ${#numbers.formatDecimal(s.scoreBcs,1,2)}">
+                                BCS 3.00
+                            </span>
+                            <span th:if="${s.scoreBcs != null and s.scoreLocomotion != null}"> / </span>
+                            <span th:if="${s.scoreLocomotion != null}"
+                                  th:text="'Loc ' + ${s.scoreLocomotion}">
+                                Loc 2
+                            </span>
+                            <span th:if="${s.scoreBcs == null and s.scoreLocomotion == null}" style="color:#9CA3AF;">-</span>
+                        </td>
+                        <td>
+                            <span th:text="${s.statutSanteLibelle != null ? s.statutSanteLibelle : 'Saine'}"
+                                  th:classappend="${s.statutSanteLibelle == 'Malade' or s.statutSanteLibelle == 'En_traitement'} ? 'badge badge-danger' : ''">
+                                Saine
+                            </span>
+                        </td>
+                        <td>
+                            <span th:text="${s.rationActuelleNom != null ? s.rationActuelleNom : 'Aucune'}">
+                                Ration haute
+                            </span>
+                        </td>
+                        <td>
+                            <strong style="color:#007AFF;" th:text="${s.rationSuggereeNom}">
+                                Ration suggeree
+                            </strong>
+                        </td>
+                        <td style="font-size:0.82rem;max-width:200px;" th:text="${s.raisonSuggestion}">
+                            Raison
+                        </td>
+                        <td style="text-align:center;">
+                            <form th:if="${s.rationSuggereeId != null and (s.rationActuelleId == null or s.rationActuelleId != s.rationSuggereeId)}"
+                                  th:action="@{/rations/suggestions/appliquer}" method="post"
+                                  style="display:inline;">
+                                <input type="hidden" name="vacheId" th:value="${s.vacheId}" />
+                                <input type="hidden" name="rationSuggereeId" th:value="${s.rationSuggereeId}" />
+                                <button type="submit" class="btn btn-sm js-confirmer-suggestion"
+                                        style="border:1px solid #16A34A;color:#16A34A;cursor:pointer;"
+                                        th:data-numero-boucle="${s.numeroBoucle}">
+                                    <i class="fas fa-check"></i> Appliquer
+                                </button>
+                            </form>
+                            <span th:if="${s.rationActuelleId != null and s.rationActuelleId == s.rationSuggereeId}"
+                                  style="color:#6B7280;font-size:0.82rem;">
+                                <i class="fas fa-check-circle" style="color:#16A34A;"></i> Deja appliquee
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('submit', function (e) {
+            const btn = e.target.querySelector('.js-confirmer-suggestion');
+            if (btn && !confirm('Appliquer cette suggestion pour la vache ' + btn.dataset.numeroBoucle + ' ?')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</div>
+</body>
+</html>

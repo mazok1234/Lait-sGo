@@ -14,8 +14,9 @@ public class Alerte {
     @JoinColumn(name = "id_niveau", nullable = false)
     private RefNiveauAlerte niveau;
 
-    @Column(name = "type_alerte", nullable = false, length = 50)
-    private String typeAlerte;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_type", nullable = false)
+    private RefTypeAlerte type;
 
     @Column(nullable = false, length = 200)
     private String titre;
@@ -45,8 +46,8 @@ public class Alerte {
     public void setId(Long id) { this.id = id; }
     public RefNiveauAlerte getNiveau() { return niveau; }
     public void setNiveau(RefNiveauAlerte niveau) { this.niveau = niveau; }
-    public String getTypeAlerte() { return typeAlerte; }
-    public void setTypeAlerte(String typeAlerte) { this.typeAlerte = typeAlerte; }  
+    public RefTypeAlerte getType() { return type; }
+    public void setType(RefTypeAlerte type) { this.type = type; }
     public String getTitre() { return titre; }
     public void setTitre(String titre) { this.titre = titre; }
     public String getDescription() { return description; }
