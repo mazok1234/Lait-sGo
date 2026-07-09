@@ -31,21 +31,6 @@ INSERT INTO ref_niveau_alerte (code, libelle, ordre) VALUES
     ('info',      'Info',      3)
 ON CONFLICT (code) DO NOTHING;
 
--- Catalogue des types d'alerte : ne provient d'aucun fichier .sql existant
--- (table nouvelle, requise par le passage type_alerte texte -> id_type FK).
--- Codes repris tels quels de dataTest.sql / AlerteService.MODULE_PAR_TYPE ;
--- seul le libelle (colonne NOT NULL) est un texte ecrit pour l'occasion.
-INSERT INTO ref_type_alerte (code, libelle) VALUES
-    ('vaccin_en_retard',   'Vaccin en retard'),
-    ('rappel_vaccin',      'Rappel vaccin'),
-    ('vaccin_prioritaire', 'Vaccin prioritaire'),
-    ('traitement_en_cours','Traitement en cours'),
-    ('rappel_velage',      'Rappel velage'),
-    ('stock_lait_bas',     'Stock de lait insuffisant'),
-    ('stock_aliment_bas',  'Stock aliment insuffisant'),
-    ('bcs_hors_plage',     'Score BCS hors plage')
-ON CONFLICT (code) DO NOTHING;
-
 INSERT INTO ref_statut_lactation (code, libelle) VALUES
     ('active', 'Active'),
     ('terminee', 'Terminee')
@@ -601,32 +586,32 @@ WHERE NOT EXISTS (
 -- type_alerte qui n'existe plus)
 -- ============================================================
 
-INSERT INTO alerte (id_niveau, id_type, titre, description, vache_id, acquittee)
-SELECT n.id, t.id, x.titre, x.description, vv.id, x.acquittee
-FROM (VALUES
-    ('urgent', 'vaccin_en_retard', 'Vaccin en retard - V001_TEST',
-        'Vaccin Fievre Aphteuse (Primo) en retard de 20 jour(s).', 'V001_TEST', false),
-    ('urgent', 'stock_aliment_bas', 'Stock insuffisant - Foin',
-        'Stock actuel : 30 kg, seuil configure : 50 kg.', NULL, false),
-    ('urgent', 'stock_aliment_bas', 'Stock insuffisant - Ensilage',
-        'Stock actuel : 80 kg, seuil configure : 100 kg.', NULL, false),
-    ('attention', 'vaccin_prioritaire', 'Vaccin prioritaire dans 5j - V002_TEST',
-        'Vaccin Rhinotracheite Infectieuse Bovine (IBR) - rappel proche.', 'V002_TEST', false),
-    ('attention', 'stock_lait_bas', 'Stock de lait insuffisant',
-        'Stock restant apres vente : 5 L (seuil critique : 50 L).', NULL, false),
-    ('attention', 'rappel_velage', 'Rappel velage - V001_TEST',
-        'Velage prevu dans 60 jour(s).', 'V001_TEST', false),
-    ('info', 'rappel_vaccin', 'Rappel vaccin - V003_TEST',
-        'Vaccin Charbon Symptomatique - prochain rappel dans 65 jours.', 'V003_TEST', false),
-    ('urgent', 'rappel_velage', 'Rappel velage - V004_TEST',
-        'Velage prevu dans 30 jour(s).', 'V004_TEST', false),
-    ('attention', 'traitement_en_cours', 'Vache en traitement - V003_TEST [ACQUITTEE]',
-        'Test alerte acquittee - affichee en bas de liste.', 'V003_TEST', true)
-) AS x(niveau_code, type_code, titre, description, numero_boucle, acquittee)
-JOIN ref_niveau_alerte n ON n.code = x.niveau_code
-JOIN ref_type_alerte t ON t.code = x.type_code
-LEFT JOIN vache vv ON vv.numero_boucle = x.numero_boucle
-WHERE NOT EXISTS (SELECT 1 FROM alerte al WHERE al.titre = x.titre);
+-- INSERT INTO alerte (id_niveau, id_type, titre, description, vache_id, acquittee)
+-- SELECT n.id, t.id, x.titre, x.description, vv.id, x.acquittee
+-- FROM (VALUES
+--     ('urgent', 'vaccin_en_retard', 'Vaccin en retard - V001_TEST',
+--         'Vaccin Fievre Aphteuse (Primo) en retard de 20 jour(s).', 'V001_TEST', false),
+--     ('urgent', 'stock_aliment_bas', 'Stock insuffisant - Foin',
+--         'Stock actuel : 30 kg, seuil configure : 50 kg.', NULL, false),
+--     ('urgent', 'stock_aliment_bas', 'Stock insuffisant - Ensilage',
+--         'Stock actuel : 80 kg, seuil configure : 100 kg.', NULL, false),
+--     ('attention', 'vaccin_prioritaire', 'Vaccin prioritaire dans 5j - V002_TEST',
+--         'Vaccin Rhinotracheite Infectieuse Bovine (IBR) - rappel proche.', 'V002_TEST', false),
+--     ('attention', 'stock_lait_bas', 'Stock de lait insuffisant',
+--         'Stock restant apres vente : 5 L (seuil critique : 50 L).', NULL, false),
+--     ('attention', 'rappel_velage', 'Rappel velage - V001_TEST',
+--         'Velage prevu dans 60 jour(s).', 'V001_TEST', false),
+--     ('info', 'rappel_vaccin', 'Rappel vaccin - V003_TEST',
+--         'Vaccin Charbon Symptomatique - prochain rappel dans 65 jours.', 'V003_TEST', false),
+--     ('urgent', 'rappel_velage', 'Rappel velage - V004_TEST',
+--         'Velage prevu dans 30 jour(s).', 'V004_TEST', false),
+--     ('attention', 'traitement_en_cours', 'Vache en traitement - V003_TEST [ACQUITTEE]',
+--         'Test alerte acquittee - affichee en bas de liste.', 'V003_TEST', true)
+-- ) AS x(niveau_code, type_code, titre, description, numero_boucle, acquittee)
+-- JOIN ref_niveau_alerte n ON n.code = x.niveau_code
+-- JOIN ref_type_alerte t ON t.code = x.type_code
+-- LEFT JOIN vache vv ON vv.numero_boucle = x.numero_boucle
+-- WHERE NOT EXISTS (SELECT 1 FROM alerte al WHERE al.titre = x.titre);
 
 COMMIT;
 
