@@ -138,7 +138,7 @@ public boolean checkBaisseCritique(Production p) {
                 
                 alerteService.envoyerAlerte(
                     "baisse_production", 
-                    "ATTENTION", 
+                    "attention", 
                     "Baisse prod. Lait — " + p.getVache().getNumeroBoucle(), 
                     description, 
                     p.getVache().getId()
