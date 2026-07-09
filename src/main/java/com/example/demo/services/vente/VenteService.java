@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.example.demo.entity.production.Production;
 import com.example.demo.entity.vente.Vente;
@@ -104,7 +106,7 @@ public class VenteService {
         vente.setQuantiteLait(quantite);
         vente.setPrixUnitaire(prixUnitaire);
         vente.setCreatedAt(LocalDateTime.now());
-        vente.setCreatedBy(utilisateurRepository.findById(1L).orElseThrow());
+        vente.setCreatedBy(resolveCreateurVente());
 
         Vente saved = venteRepository.save(vente);
 
@@ -143,6 +145,25 @@ public class VenteService {
         } else {
             alerteService.acquitterAutomatiquement("stock_lait_bas", null);
         }
+    }
+
+    private com.example.demo.entity.auth.Utilisateur resolveCreateurVente() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            if (username != null && !username.isBlank() && !"anonymousUser".equalsIgnoreCase(username)) {
+                var byEmail = utilisateurRepository.findByEmail(username);
+                if (byEmail.isPresent()) {
+                    return byEmail.get();
+                }
+            }
+        }
+
+        return utilisateurRepository.findById(1L)
+                .orElse(utilisateurRepository.findAll(PageRequest.of(0, 1))
+                        .stream()
+                        .findFirst()
+                        .orElse(null));
     }
 
 @Transactional

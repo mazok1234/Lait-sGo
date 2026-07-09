@@ -1,3 +1,7 @@
+-- Forcer UTF-8 avant tout INSERT (utile si la session psql est en WIN1252)
+\encoding UTF8
+SET client_encoding TO 'UTF8';
+
 BEGIN;
 
 -- ============================================================
