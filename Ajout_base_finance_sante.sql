@@ -37,7 +37,7 @@ INSERT INTO maladie_medicament (maladie_id, medicament_id) VALUES
 (4, 4),
 (5, 5);
 
-INSERT INTO vache (id, numero_identification, nom, date_naissance, race) VALUES
+INSERT INTO vache (id, numero_boucle, nom, date_naissance, race) VALUES
 (1, 'FR001234567', 'Marguerite', '2021-04-12', 'Holstein'),
 (2, 'FR001234568', 'Blanchette', '2020-09-03', 'Montbéliarde'),
 (3, 'FR001234569', 'Rosette',    '2022-01-20', 'Normande'),
