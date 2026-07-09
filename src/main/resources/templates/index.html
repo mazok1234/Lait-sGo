@@ -51,9 +51,18 @@
                             </a>
                         </li>
                         <li>
-                            <a th:href="@{/alertes}">
+                            <a th:href="@{/alertes}" class="nav-link" style="position:relative;">
                                 <i class="fas fa-bell"></i>
                                 <span>Alertes</span>
+                                <span id="alerte-count"
+                                      style="position:absolute;top:-4px;right:-8px;
+                                             background:#DC2626;color:white;
+                                             font-size:0.65rem;font-weight:700;
+                                             min-width:18px;height:18px;
+                                             padding:0 4px;border-radius:9px;
+                                             display:flex;align-items:center;justify-content:center;">
+                                </span>
+
                             </a>
                         </li>
                         <li>
