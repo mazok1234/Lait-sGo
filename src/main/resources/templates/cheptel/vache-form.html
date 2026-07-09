@@ -8,7 +8,7 @@
     <div class="cheptel-wrapper">
         <div class="cheptel-header">
             <h1><i class="fas fa-plus-circle" style="color:#2f6ed4"></i> <span th:text="${mode == 'edit' ? 'Modifier une vache' : 'Ajouter une vache'}">Ajouter une vache</span></h1>
-<a th:href="@{/cheptel/vaches}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Retour à la liste</a>
+<a th:href="@{/cheptel}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Retour à la liste</a>
         </div>
 
         <div class="card">
@@ -95,7 +95,7 @@
                     </div>
                     <div class="form-group full-width">
                         <div class="form-actions">
-<a th:href="@{/cheptel/vaches}" class="btn btn-outline">Annuler</a>
+<a th:href="@{/cheptel}" class="btn btn-outline">Annuler</a>
                             <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Enregistrer</button>
                         </div>
                     </div>
