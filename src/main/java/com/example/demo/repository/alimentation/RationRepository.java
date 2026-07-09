@@ -98,4 +98,46 @@ public interface RationRepository extends JpaRepository<Ration, Long> {
         Long getRationId();
         String getRationRecommandee();
     }
+
+
+    @Query(value = """
+        SELECT vache_id AS vacheId,
+               numero_boucle AS numeroBoucle,
+               score_bcs AS scoreBcs,
+               score_locomotion AS scoreLocomotion,
+               jours_en_lait AS joursEnLait,
+               phase_actuelle AS phaseActuelle,
+               phase_id AS phaseId,
+               production_moyenne_7j AS productionMoyenne7j,
+               statut_sante_id AS statutSanteId,
+               statut_sante_libelle AS statutSanteLibelle,
+               ration_actuelle_id AS rationActuelleId,
+               ration_actuelle_nom AS rationActuelleNom,
+               ration_suggeree_id AS rationSuggereeId,
+               ration_suggeree_nom AS rationSuggereeNom,
+               priorite_suggestion AS prioriteSuggestion,
+               raison_suggestion AS raisonSuggestion
+        FROM v_suggestion_ration
+        ORDER BY priorite_suggestion DESC NULLS LAST, numero_boucle
+    """, nativeQuery = true)
+    List<SuggestionProjection> findAllSuggestions();
+
+    interface SuggestionProjection {
+        Long getVacheId();
+        String getNumeroBoucle();
+        java.math.BigDecimal getScoreBcs();
+        Short getScoreLocomotion();
+        Integer getJoursEnLait();
+        String getPhaseActuelle();
+        Integer getPhaseId();
+        java.math.BigDecimal getProductionMoyenne7j();
+        Integer getStatutSanteId();
+        String getStatutSanteLibelle();
+        Long getRationActuelleId();
+        String getRationActuelleNom();
+        Long getRationSuggereeId();
+        String getRationSuggereeNom();
+        Integer getPrioriteSuggestion();
+        String getRaisonSuggestion();
+    }
 }
