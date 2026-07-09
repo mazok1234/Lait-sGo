@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+<head>
+    <title>Comparaison de productivité entre les races</title>
+    <style>
+        .race-selection {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+        .race-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        .race-checkbox input {
+            width: auto;
+            cursor: pointer;
+        }
+        .selection-actions {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+<div th:fragment="mainContent" class="page-content">
+    <div class="cheptel-wrapper">
+        <div class="cheptel-header">
+            <h1><i class="fas fa-chart-bar" style="color:#2f6ed4"></i> Comparaison de productivité entre les races</h1>
+            <a th:href="@{/cheptel/races}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Retour aux races</a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div th:if="${productionParRace.empty}" class="card" style="padding:12px 16px;border:1px solid #bcd6f6;background:#eef4fa;color:#1f3f66;">
+                    <i class="fas fa-info-circle"></i> Aucune donnée de production disponible pour comparer les races.
+                </div>
+
+                <div th:if="${!productionParRace.empty}">
+                    <h3 style="margin-bottom:15px;">Sélectionnez les races à comparer :</h3>
+                    <div class="selection-actions">
+                        <button type="button" class="btn btn-outline" onclick="selectionnerToutes()">Tout sélectionner</button>
+                        <button type="button" class="btn btn-outline" onclick="deselectionnerToutes()">Tout désélectionner</button>
+                    </div>
+                    <div class="race-selection">
+                        <label class="race-checkbox" th:each="stat : ${productionParRace}">
+                            <input type="checkbox" th:id="'checkbox_' + ${stat.race}" th:value="${stat.race}" checked onchange="filtrerRaces()">
+                            <span th:text="${stat.race}">Race</span>
+                        </label>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Race</th>
+                                    <th>Nombre de vaches</th>
+                                    <th>Production totale (L)</th>
+                                    <th>Production par vache (L)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="stat : ${productionParRace}" th:id="'ligne_' + ${stat.race}">
+                                    <td th:text="${stat.race}">Race</td>
+                                    <td th:text="${stat.nombreVaches}">0</td>
+                                    <td th:text="${#numbers.formatDecimal(stat.totalProduction, 1, 2)}">0.00</td>
+                                    <td th:text="${#numbers.formatDecimal(stat.productionParVache, 1, 2)}">0.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function selectionnerToutes() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.checked = true;
+            });
+            filtrerRaces();
+        }
+
+        function deselectionnerToutes() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+            });
+            filtrerRaces();
+        }
+
+        function filtrerRaces() {
+            // Récupérer toutes les cases cochées
+            const casesCochees = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+                .map(cb => cb.value);
+            
+            // Afficher/masquer les lignes du tableau
+            document.querySelectorAll('tbody tr').forEach(ligne => {
+                const race = ligne.id.replace('ligne_', '');
+                if (casesCochees.includes(race)) {
+                    ligne.style.display = '';
+                } else {
+                    ligne.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</div>
+</body>
+</html>

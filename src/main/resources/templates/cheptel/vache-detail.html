@@ -10,7 +10,7 @@
             <h1><i class="fas fa-id-card" style="color:#2f6ed4"></i> Fiche vache <span th:text="${vache != null ? vache.numeroBoucle : ''}">#12345</span></h1>
             <div class="flex-row">
                 <a th:href="@{'/cheptel/vaches/' + ${vache.id} + '/edit'}" class="btn btn-outline"><i class="far fa-edit"></i> Modifier</a>
-<a th:href="@{/cheptel/vaches}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Retour</a>
+<a th:href="@{/cheptel}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Retour</a>
             </div>
         </div>
 

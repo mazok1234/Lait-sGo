@@ -14,261 +14,313 @@
       "edit_count": 1,
       "last_lines": 53,
       "last_ts": 1783013904654,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "67990c7f"
+      "last_content_hash": "67990c7f",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "target/classes/com/example/demo/cheptel/entities/Race.class": {
       "ipo_ts": 1783013905511,
       "edit_count": 2,
       "last_lines": 9,
       "last_ts": 1783014320453,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "a45db566"
+      "last_content_hash": "a45db566",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "src/main/java/com/example/demo/cheptel/entities/StatutVache.java": {
       "ipo_ts": 1783013931715,
       "edit_count": 1,
       "last_lines": 53,
       "last_ts": 1783013931715,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "bcad3c30"
+      "last_content_hash": "bcad3c30",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "target/classes/com/example/demo/cheptel/entities/StatutVache.class": {
       "ipo_ts": 1783013932861,
       "edit_count": 2,
       "last_lines": 9,
       "last_ts": 1783014320502,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "d8b0ae58"
+      "last_content_hash": "d8b0ae58",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "src/main/java/com/example/demo/cheptel/entities/Vache.java": {
       "ipo_ts": 1783013953954,
       "edit_count": 2,
       "last_lines": 123,
       "last_ts": 1783013999158,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "cc92f164"
+      "last_content_hash": "cc92f164",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "target/classes/com/example/demo/cheptel/entities/Vache.class": {
       "ipo_ts": 1783014000271,
       "edit_count": 2,
       "last_lines": 16,
       "last_ts": 1783014320556,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "45f1c3e4"
+      "last_content_hash": "45f1c3e4",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "src/main/java/com/example/demo/cheptel/repositories/RaceRepository.java": {
       "ipo_ts": 1783014009453,
       "edit_count": 1,
       "last_lines": 8,
       "last_ts": 1783014009453,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "fbfe42e0"
+      "last_content_hash": "fbfe42e0",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "target/classes/com/example/demo/cheptel/repositories/RaceRepository.class": {
       "ipo_ts": 1783014010194,
       "edit_count": 2,
       "last_lines": 2,
       "last_ts": 1783014320850,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "3480142a"
+      "last_content_hash": "3480142a",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "src/main/java/com/example/demo/cheptel/repositories/StatutVacheRepository.java": {
       "ipo_ts": 1783014014869,
       "edit_count": 2,
       "last_lines": 8,
       "last_ts": 1783014020456,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "1da0f70b"
+      "last_content_hash": "1da0f70b",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "target/classes/com/example/demo/cheptel/repositories/StatutVacheRepository.class": {
       "ipo_ts": 1783014021501,
       "edit_count": 2,
       "last_lines": 2,
       "last_ts": 1783014320891,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "731d76e5"
+      "last_content_hash": "731d76e5",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "src/main/java/com/example/demo/cheptel/repositories/VacheRepository.java": {
       "ipo_ts": 1783014030340,
       "edit_count": 1,
       "last_lines": 9,
       "last_ts": 1783014030340,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "562f4d36"
+      "last_content_hash": "562f4d36",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "target/classes/com/example/demo/cheptel/repositories/VacheRepository.class": {
       "ipo_ts": 1783014030888,
       "edit_count": 2,
       "last_lines": 3,
       "last_ts": 1783014320633,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "90e61884"
+      "last_content_hash": "90e61884",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "src/main/java/com/example/demo/cheptel/services/RaceService.java": {
       "ipo_ts": 1783014057878,
       "edit_count": 1,
       "last_lines": 41,
       "last_ts": 1783014057878,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "e8baa432"
+      "last_content_hash": "e8baa432",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "target/classes/com/example/demo/cheptel/services/RaceService.class": {
       "ipo_ts": 1783014059569,
       "edit_count": 2,
       "last_lines": 26,
       "last_ts": 1783014320967,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "e057afa8"
+      "last_content_hash": "e057afa8",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "src/main/java/com/example/demo/cheptel/services/StatutVacheService.java": {
       "ipo_ts": 1783014086257,
       "edit_count": 1,
       "last_lines": 41,
       "last_ts": 1783014086257,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "50868ba"
+      "last_content_hash": "50868ba",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "target/classes/com/example/demo/cheptel/services/StatutVacheService.class": {
       "ipo_ts": 1783014087327,
       "edit_count": 2,
       "last_lines": 26,
       "last_ts": 1783014321036,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "799852e0"
+      "last_content_hash": "799852e0",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "src/main/java/com/example/demo/cheptel/services/VacheService.java": {
       "ipo_ts": 1783014127951,
       "edit_count": 1,
       "last_lines": 66,
       "last_ts": 1783014127951,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "7347ed10"
+      "last_content_hash": "7347ed10",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "target/classes/com/example/demo/cheptel/services/VacheService.class": {
       "ipo_ts": 1783014128788,
       "edit_count": 2,
       "last_lines": 40,
       "last_ts": 1783014321095,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "9be9df9d"
+      "last_content_hash": "9be9df9d",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "src/main/java/com/example/demo/cheptel/controllers/CheptelPageController.java": {
       "ipo_ts": 1783014158348,
       "edit_count": 9,
       "last_lines": 256,
       "last_ts": 1783018624991,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "cecc953f"
+      "last_content_hash": "cecc953f",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "target/classes/com/example/demo/cheptel/controllers/CheptelPageController.class": {
       "ipo_ts": 1783014159505,
       "edit_count": 10,
       "last_lines": 76,
       "last_ts": 1783018625738,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "97b89cad"
+      "last_content_hash": "97b89cad",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "src/main/java/com/example/demo/cheptel/controllers/api/CheptelApiController.java": {
       "ipo_ts": 1783014226875,
       "edit_count": 3,
       "last_lines": 148,
       "last_ts": 1783015878118,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "a4e5b89f"
+      "last_content_hash": "a4e5b89f",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "target/classes/com/example/demo/cheptel/controllers/api/CheptelApiController.class": {
       "ipo_ts": 1783014228893,
       "edit_count": 4,
       "last_lines": 76,
       "last_ts": 1783015880156,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "39c9ab47"
+      "last_content_hash": "39c9ab47",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "src/main/java/com/example/demo/cheptel/controllers/api/RaceApiController.java": {
       "ipo_ts": 1783014242118,
       "edit_count": 1,
       "last_lines": 41,
       "last_ts": 1783014242118,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "1fb0acce"
+      "last_content_hash": "1fb0acce",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "target/classes/com/example/demo/cheptel/controllers/api/RaceApiController.class": {
       "ipo_ts": 1783014243115,
       "edit_count": 2,
       "last_lines": 18,
       "last_ts": 1783014320404,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "55b47d58"
+      "last_content_hash": "55b47d58",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "src/main/java/com/example/demo/cheptel/controllers/api/StatutVacheApiController.java": {
       "ipo_ts": 1783014251550,
       "edit_count": 1,
       "last_lines": 41,
       "last_ts": 1783014251550,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "22950472"
+      "last_content_hash": "22950472",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "target/classes/com/example/demo/cheptel/controllers/api/StatutVacheApiController.class": {
       "ipo_ts": 1783014253407,
       "edit_count": 2,
       "last_lines": 18,
       "last_ts": 1783014320804,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "3f0d30e9"
+      "last_content_hash": "3f0d30e9",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst": {
       "ipo_ts": 1783014316304,
-      "edit_count": 1,
-      "last_lines": 14,
-      "last_ts": 1783014316304,
+      "edit_count": 2,
+      "last_lines": 111,
+      "last_ts": 1783526668313,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "55fcc7a4"
+      "last_content_hash": "6c2ad764"
     },
     "target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst": {
       "ipo_ts": 1783014321139,
-      "edit_count": 1,
+      "edit_count": 2,
       "last_lines": 1,
-      "last_ts": 1783014321139,
+      "last_ts": 1783526698544,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "bc0018ce"
+      "last_content_hash": "88dce475"
     },
     "src/main/resources/templates/cheptel/dashboard.html": {
       "ipo_ts": 1783014609009,
-      "edit_count": 20,
-      "last_lines": 629,
-      "last_ts": 1783020853396,
+      "edit_count": 21,
+      "last_lines": 153,
+      "last_ts": 1783528467159,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "2eaf3779"
+      "last_content_hash": "557028cb"
     },
     "src/main/resources/templates/cheptel/vaches.html": {
       "ipo_ts": 1783014609209,
@@ -281,93 +333,97 @@
     },
     "target/classes/templates/cheptel/dashboard.html": {
       "ipo_ts": 1783014609756,
-      "edit_count": 19,
-      "last_lines": 629,
-      "last_ts": 1783020854500,
+      "edit_count": 21,
+      "last_lines": 153,
+      "last_ts": 1783528467850,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "2eaf3779"
+      "last_content_hash": "557028cb"
     },
     "target/classes/templates/cheptel/vaches.html": {
       "ipo_ts": 1783014609787,
-      "edit_count": 2,
-      "last_lines": 72,
-      "last_ts": 1783019008190,
+      "edit_count": 3,
+      "last_lines": 80,
+      "last_ts": 1783526539485,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "bcc7e02b"
+      "last_content_hash": "7371f6c9"
     },
     "src/main/resources/templates/cheptel/vache-detail.html": {
       "ipo_ts": 1783014633295,
-      "edit_count": 2,
-      "last_lines": 40,
-      "last_ts": 1783019009609,
+      "edit_count": 3,
+      "last_lines": 51,
+      "last_ts": 1783528643672,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "155ed915"
+      "last_content_hash": "baa6a6a8"
     },
     "src/main/resources/templates/cheptel/vache-form.html": {
       "ipo_ts": 1783014633315,
-      "edit_count": 3,
-      "last_lines": 54,
-      "last_ts": 1783019015291,
+      "edit_count": 5,
+      "last_lines": 108,
+      "last_ts": 1783527898816,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "82b8a3e1"
+      "last_content_hash": "ca767c51"
     },
     "src/main/resources/templates/cheptel/races.html": {
       "ipo_ts": 1783014633452,
-      "edit_count": 2,
-      "last_lines": 65,
-      "last_ts": 1783019019121,
+      "edit_count": 13,
+      "last_lines": 76,
+      "last_ts": 1783530191457,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "ae370f71"
+      "last_content_hash": "b6686d21"
     },
     "src/main/resources/templates/cheptel/etats-sante.html": {
       "ipo_ts": 1783014633547,
       "edit_count": 2,
       "last_lines": 62,
       "last_ts": 1783019023142,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "2c960f48"
+      "last_content_hash": "2c960f48",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "target/classes/templates/cheptel/etats-sante.html": {
       "ipo_ts": 1783014634129,
       "edit_count": 2,
       "last_lines": 62,
       "last_ts": 1783019024129,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "2c960f48"
+      "last_content_hash": "2c960f48",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "target/classes/templates/cheptel/races.html": {
       "ipo_ts": 1783014634171,
-      "edit_count": 2,
-      "last_lines": 65,
-      "last_ts": 1783019020150,
+      "edit_count": 6,
+      "last_lines": 76,
+      "last_ts": 1783530195210,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "ae370f71"
+      "last_content_hash": "85256de5"
     },
     "target/classes/templates/cheptel/vache-detail.html": {
       "ipo_ts": 1783014634218,
-      "edit_count": 2,
-      "last_lines": 40,
-      "last_ts": 1783019010868,
+      "edit_count": 4,
+      "last_lines": 51,
+      "last_ts": 1783528656216,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "155ed915"
+      "last_content_hash": "a6de24db"
     },
     "target/classes/templates/cheptel/vache-form.html": {
       "ipo_ts": 1783014634262,
-      "edit_count": 3,
-      "last_lines": 54,
-      "last_ts": 1783019016010,
+      "edit_count": 6,
+      "last_lines": 108,
+      "last_ts": 1783527899567,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "82b8a3e1"
+      "last_content_hash": "ca767c51"
     },
     "src/main/resources/templates/index.html": {
       "ipo_ts": 1783015275641,
@@ -380,12 +436,12 @@
     },
     "target/classes/templates/index.html": {
       "ipo_ts": 1783015276605,
-      "edit_count": 1,
-      "last_lines": 106,
-      "last_ts": 1783015276605,
+      "edit_count": 2,
+      "last_lines": 271,
+      "last_ts": 1783526539590,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "68b39d75"
+      "last_content_hash": "9474a761"
     },
     "src/main/resources/static/js/main.js": {
       "ipo_ts": 1783015852619,
@@ -398,9 +454,9 @@
     },
     "target/classes/static/js/main.js": {
       "ipo_ts": 1783015854215,
-      "edit_count": 1,
+      "edit_count": 2,
       "last_lines": 96,
-      "last_ts": 1783015854215,
+      "last_ts": 1783526538639,
       "delisted": false,
       "last_source": "onEdit",
       "last_content_hash": "390df466"
@@ -410,18 +466,22 @@
       "edit_count": 1,
       "last_lines": 760,
       "last_ts": 1783016162997,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "5f7bef92"
+      "last_content_hash": "5f7bef92",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "target/classes/com/example/demo/cheptel/controllers/CheptelPageController$VacheForm.class": {
       "ipo_ts": 1783018613660,
       "edit_count": 2,
       "last_lines": 16,
       "last_ts": 1783018625673,
-      "delisted": false,
+      "delisted": true,
       "last_source": "onEdit",
-      "last_content_hash": "54ca4860"
+      "last_content_hash": "54ca4860",
+      "delisted_at": 1783526433538,
+      "delist_rounds": 0
     },
     "src/main/resources/static/css/main.css": {
       "ipo_ts": 1783018962495,
@@ -434,30 +494,1650 @@
     },
     "target/classes/static/css/main.css": {
       "ipo_ts": 1783018963548,
-      "edit_count": 1,
-      "last_lines": 720,
-      "last_ts": 1783018963548,
+      "edit_count": 2,
+      "last_lines": 1458,
+      "last_ts": 1783526538435,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "36e0ed61"
+      "last_content_hash": "26108527"
     },
     "target/surefire-reports/com.example.demo.DemoApplicationTests.txt": {
       "ipo_ts": 1783020220015,
-      "edit_count": 3,
+      "edit_count": 11,
       "last_lines": 4,
-      "last_ts": 1783020282819,
+      "last_ts": 1783530806471,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "b1a414f5"
+      "last_content_hash": "bac5bb5d"
     },
     "target/surefire-reports/TEST-com.example.demo.DemoApplicationTests.xml": {
       "ipo_ts": 1783020220246,
-      "edit_count": 3,
-      "last_lines": 120,
-      "last_ts": 1783020282976,
+      "edit_count": 11,
+      "last_lines": 139,
+      "last_ts": 1783530806442,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "b144aac"
+      "last_content_hash": "6972a278"
+    },
+    "target/classes/com/example/demo/DemoApplication.class": {
+      "ipo_ts": 1783526527013,
+      "edit_count": 4,
+      "last_lines": 7,
+      "last_ts": 1783528061040,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "c9bb8a32"
+    },
+    "target/classes/com/example/demo/controller/alerte/AlerteApiController$AlerteCreateRequest.class": {
+      "ipo_ts": 1783526527063,
+      "edit_count": 4,
+      "last_lines": 7,
+      "last_ts": 1783528061066,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "d31b1100"
+    },
+    "target/classes/com/example/demo/controller/alerte/AlerteApiController.class": {
+      "ipo_ts": 1783526527116,
+      "edit_count": 4,
+      "last_lines": 16,
+      "last_ts": 1783528061086,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "41e6636d"
+    },
+    "target/classes/com/example/demo/controller/alerte/AlerteController.class": {
+      "ipo_ts": 1783526527163,
+      "edit_count": 4,
+      "last_lines": 16,
+      "last_ts": 1783528061110,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "9cfaf5c3"
+    },
+    "target/classes/com/example/demo/controller/alimentation/AffectationRationVacheController.class": {
+      "ipo_ts": 1783526527230,
+      "edit_count": 4,
+      "last_lines": 20,
+      "last_ts": 1783528061140,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "fbcddd70"
+    },
+    "target/classes/com/example/demo/AlerteInitializer.class": {
+      "ipo_ts": 1783526527280,
+      "edit_count": 4,
+      "last_lines": 20,
+      "last_ts": 1783528060166,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "1cc1e66d"
+    },
+    "target/classes/com/example/demo/controller/alimentation/AlimentController.class": {
+      "ipo_ts": 1783526527323,
+      "edit_count": 4,
+      "last_lines": 23,
+      "last_ts": 1783528061164,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "a6736b3d"
+    },
+    "target/classes/com/example/demo/controller/alimentation/MouvementAlimentController.class": {
+      "ipo_ts": 1783526527384,
+      "edit_count": 4,
+      "last_lines": 25,
+      "last_ts": 1783528061180,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "e00967ac"
+    },
+    "target/classes/com/example/demo/controller/alimentation/RationController.class": {
+      "ipo_ts": 1783526527451,
+      "edit_count": 4,
+      "last_lines": 49,
+      "last_ts": 1783528061200,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "b4effad0"
+    },
+    "target/classes/com/example/demo/controller/alimentation/RefTypeAlimentController.class": {
+      "ipo_ts": 1783526527515,
+      "edit_count": 4,
+      "last_lines": 18,
+      "last_ts": 1783528061216,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "2b0a2e62"
+    },
+    "target/classes/com/example/demo/controller/auth/AdminController.class": {
+      "ipo_ts": 1783526527639,
+      "edit_count": 6,
+      "last_lines": 62,
+      "last_ts": 1783529461588,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "6cf16d12"
+    },
+    "target/classes/com/example/demo/controller/auth/LoginController.class": {
+      "ipo_ts": 1783526527749,
+      "edit_count": 4,
+      "last_lines": 4,
+      "last_ts": 1783528061932,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "a40f6dc4"
+    },
+    "target/classes/com/example/demo/controller/auth/RootController.class": {
+      "ipo_ts": 1783526527923,
+      "edit_count": 4,
+      "last_lines": 9,
+      "last_ts": 1783528061957,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "a1a18d3a"
+    },
+    "target/classes/com/example/demo/controller/cheptel/CheptelApiController.class": {
+      "ipo_ts": 1783526528024,
+      "edit_count": 4,
+      "last_lines": 64,
+      "last_ts": 1783528062139,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "2af875d5"
+    },
+    "target/classes/com/example/demo/controller/cheptel/CheptelPageController$VacheAvecStatuts.class": {
+      "ipo_ts": 1783526528082,
+      "edit_count": 11,
+      "last_lines": 5,
+      "last_ts": 1783529462252,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "77d4278d"
+    },
+    "target/classes/com/example/demo/controller/cheptel/CheptelPageController$VacheForm.class": {
+      "ipo_ts": 1783526528151,
+      "edit_count": 8,
+      "last_lines": 24,
+      "last_ts": 1783529462298,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "777d78eb"
+    },
+    "target/classes/com/example/demo/controller/cheptel/CheptelPageController.class": {
+      "ipo_ts": 1783526528234,
+      "edit_count": 11,
+      "last_lines": 200,
+      "last_ts": 1783529462384,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "48563d37"
+    },
+    "target/classes/com/example/demo/controller/cheptel/RaceApiController.class": {
+      "ipo_ts": 1783526528278,
+      "edit_count": 4,
+      "last_lines": 18,
+      "last_ts": 1783528062459,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "f3dee085"
+    },
+    "target/classes/com/example/demo/controller/production/ProductionController.class": {
+      "ipo_ts": 1783526528351,
+      "edit_count": 6,
+      "last_lines": 24,
+      "last_ts": 1783529463874,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "fb9c4aee"
+    },
+    "target/classes/com/example/demo/controller/reproduction/ReproductionController.class": {
+      "ipo_ts": 1783526528407,
+      "edit_count": 4,
+      "last_lines": 63,
+      "last_ts": 1783528062493,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "af3c44e4"
+    },
+    "target/classes/com/example/demo/controller/sante/TraitementController.class": {
+      "ipo_ts": 1783526528485,
+      "edit_count": 4,
+      "last_lines": 26,
+      "last_ts": 1783528062509,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "a46f48bb"
+    },
+    "target/classes/com/example/demo/controller/sante/VaccinController.class": {
+      "ipo_ts": 1783526528632,
+      "edit_count": 4,
+      "last_lines": 43,
+      "last_ts": 1783528062531,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "826d7019"
+    },
+    "target/classes/com/example/demo/controller/vente/VenteController.class": {
+      "ipo_ts": 1783526528693,
+      "edit_count": 4,
+      "last_lines": 27,
+      "last_ts": 1783528062547,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "4d14b6e0"
+    },
+    "target/classes/com/example/demo/dto/AlerteDTO.class": {
+      "ipo_ts": 1783526528751,
+      "edit_count": 4,
+      "last_lines": 8,
+      "last_ts": 1783528061230,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "95a89442"
+    },
+    "target/classes/com/example/demo/dto/AlerteReproductionDTO.class": {
+      "ipo_ts": 1783526528819,
+      "edit_count": 4,
+      "last_lines": 6,
+      "last_ts": 1783528061245,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "55698961"
+    },
+    "target/classes/com/example/demo/dto/ReproductionDTO.class": {
+      "ipo_ts": 1783526528889,
+      "edit_count": 4,
+      "last_lines": 38,
+      "last_ts": 1783528062562,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "a6756994"
+    },
+    "target/classes/com/example/demo/dto/VaccinStatDTO.class": {
+      "ipo_ts": 1783526528955,
+      "edit_count": 4,
+      "last_lines": 14,
+      "last_ts": 1783528061260,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "fd8f1a54"
+    },
+    "target/classes/com/example/demo/entity/alerte/Alerte.class": {
+      "ipo_ts": 1783526529016,
+      "edit_count": 4,
+      "last_lines": 12,
+      "last_ts": 1783528061277,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "12fdd6c2"
+    },
+    "target/classes/com/example/demo/entity/alerte/RefNiveauAlerte.class": {
+      "ipo_ts": 1783526529066,
+      "edit_count": 4,
+      "last_lines": 6,
+      "last_ts": 1783528061292,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "20354017"
+    },
+    "target/classes/com/example/demo/entity/alimentation/AffectationRationVache.class": {
+      "ipo_ts": 1783526529117,
+      "edit_count": 4,
+      "last_lines": 14,
+      "last_ts": 1783528061307,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "2670a2b8"
+    },
+    "target/classes/com/example/demo/entity/alimentation/Aliment.class": {
+      "ipo_ts": 1783526529174,
+      "edit_count": 4,
+      "last_lines": 13,
+      "last_ts": 1783528061323,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "3d7ba81"
+    },
+    "target/classes/com/example/demo/entity/alimentation/MouvementAliment.class": {
+      "ipo_ts": 1783526529246,
+      "edit_count": 4,
+      "last_lines": 12,
+      "last_ts": 1783528061337,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "507d63b0"
+    },
+    "target/classes/com/example/demo/entity/alimentation/Ration.class": {
+      "ipo_ts": 1783526529338,
+      "edit_count": 4,
+      "last_lines": 7,
+      "last_ts": 1783528061354,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "daa263fa"
+    },
+    "target/classes/com/example/demo/entity/alimentation/RationAliment.class": {
+      "ipo_ts": 1783526529387,
+      "edit_count": 4,
+      "last_lines": 12,
+      "last_ts": 1783528061371,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "b358adf8"
+    },
+    "target/classes/com/example/demo/entity/alimentation/RefTypeAliment.class": {
+      "ipo_ts": 1783526529448,
+      "edit_count": 4,
+      "last_lines": 9,
+      "last_ts": 1783528061386,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "e8076428"
+    },
+    "target/classes/com/example/demo/entity/auth/RefRoleUtilisateur.class": {
+      "ipo_ts": 1783526529486,
+      "edit_count": 4,
+      "last_lines": 10,
+      "last_ts": 1783528061974,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "fd6c378b"
+    },
+    "target/classes/com/example/demo/entity/auth/Utilisateur.class": {
+      "ipo_ts": 1783526529530,
+      "edit_count": 4,
+      "last_lines": 16,
+      "last_ts": 1783528061991,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "6f9f7624"
+    },
+    "target/classes/com/example/demo/entity/cheptel/RefRace.class": {
+      "ipo_ts": 1783526529576,
+      "edit_count": 4,
+      "last_lines": 10,
+      "last_ts": 1783528061400,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "d393cd51"
+    },
+    "target/classes/com/example/demo/entity/cheptel/RefStatutLactationVache.class": {
+      "ipo_ts": 1783526529619,
+      "edit_count": 4,
+      "last_lines": 9,
+      "last_ts": 1783528062156,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "cc75c0c6"
+    },
+    "target/classes/com/example/demo/entity/cheptel/RefStatutRepro.class": {
+      "ipo_ts": 1783526529661,
+      "edit_count": 4,
+      "last_lines": 9,
+      "last_ts": 1783528062580,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "a3f18210"
+    },
+    "target/classes/com/example/demo/entity/cheptel/RefStatutSante.class": {
+      "ipo_ts": 1783526529699,
+      "edit_count": 4,
+      "last_lines": 9,
+      "last_ts": 1783528062597,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "16f6e11e"
+    },
+    "target/classes/com/example/demo/entity/cheptel/RefStatutVie.class": {
+      "ipo_ts": 1783526529752,
+      "edit_count": 4,
+      "last_lines": 9,
+      "last_ts": 1783528062172,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "6d253d40"
+    },
+    "target/classes/com/example/demo/entity/cheptel/Vache.class": {
+      "ipo_ts": 1783526529810,
+      "edit_count": 4,
+      "last_lines": 24,
+      "last_ts": 1783528061416,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "fdb60562"
+    },
+    "target/classes/com/example/demo/entity/cheptel/VacheHistoriqueLactation.class": {
+      "ipo_ts": 1783526529857,
+      "edit_count": 4,
+      "last_lines": 13,
+      "last_ts": 1783528062187,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "6759d0c2"
+    },
+    "target/classes/com/example/demo/entity/cheptel/VacheHistoriqueRepro.class": {
+      "ipo_ts": 1783526529898,
+      "edit_count": 4,
+      "last_lines": 13,
+      "last_ts": 1783528062612,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "eef90c8b"
+    },
+    "target/classes/com/example/demo/entity/cheptel/VacheHistoriqueSante.class": {
+      "ipo_ts": 1783526529947,
+      "edit_count": 4,
+      "last_lines": 13,
+      "last_ts": 1783528062627,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "1b553c6"
+    },
+    "target/classes/com/example/demo/entity/cheptel/VacheHistoriqueVie.class": {
+      "ipo_ts": 1783526529996,
+      "edit_count": 4,
+      "last_lines": 13,
+      "last_ts": 1783528062203,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "d9c877a5"
+    },
+    "target/classes/com/example/demo/entity/production/Lactation.class": {
+      "ipo_ts": 1783526530044,
+      "edit_count": 4,
+      "last_lines": 19,
+      "last_ts": 1783528062008,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "f93e03c5"
+    },
+    "target/classes/com/example/demo/entity/production/Production.class": {
+      "ipo_ts": 1783526530086,
+      "edit_count": 4,
+      "last_lines": 22,
+      "last_ts": 1783528062025,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "7c59c146"
+    },
+    "target/classes/com/example/demo/entity/production/RefStatutLactation.class": {
+      "ipo_ts": 1783526530122,
+      "edit_count": 4,
+      "last_lines": 10,
+      "last_ts": 1783528062046,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "82889489"
+    },
+    "target/classes/com/example/demo/entity/reproduction/RefTypeIA.class": {
+      "ipo_ts": 1783526530162,
+      "edit_count": 4,
+      "last_lines": 9,
+      "last_ts": 1783528062644,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "6127dc0f"
+    },
+    "target/classes/com/example/demo/entity/reproduction/Reproduction.class": {
+      "ipo_ts": 1783526530210,
+      "edit_count": 4,
+      "last_lines": 7,
+      "last_ts": 1783528061433,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "9e93bd47"
+    },
+    "target/classes/com/example/demo/entity/sante/EvenementSante.class": {
+      "ipo_ts": 1783526530257,
+      "edit_count": 4,
+      "last_lines": 17,
+      "last_ts": 1783528062660,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "c0e9e5e3"
+    },
+    "target/classes/com/example/demo/entity/sante/HistoriqueVaccin.class": {
+      "ipo_ts": 1783526530307,
+      "edit_count": 4,
+      "last_lines": 12,
+      "last_ts": 1783528061448,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "77a2f5db"
+    },
+    "target/classes/com/example/demo/entity/sante/Maladie.class": {
+      "ipo_ts": 1783526530353,
+      "edit_count": 4,
+      "last_lines": 7,
+      "last_ts": 1783528062675,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "e8e1e031"
+    },
+    "target/classes/com/example/demo/entity/sante/Medicament.class": {
+      "ipo_ts": 1783526530412,
+      "edit_count": 4,
+      "last_lines": 10,
+      "last_ts": 1783528062693,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "938edde7"
+    },
+    "target/classes/com/example/demo/entity/sante/ProtocoleVaccin.class": {
+      "ipo_ts": 1783526530486,
+      "edit_count": 4,
+      "last_lines": 15,
+      "last_ts": 1783528061462,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "91959d0b"
+    },
+    "target/classes/com/example/demo/entity/sante/TraitementSante.class": {
+      "ipo_ts": 1783526530564,
+      "edit_count": 4,
+      "last_lines": 29,
+      "last_ts": 1783528062708,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "539d54b6"
+    },
+    "target/classes/com/example/demo/entity/vente/Vente.class": {
+      "ipo_ts": 1783526530612,
+      "edit_count": 4,
+      "last_lines": 14,
+      "last_ts": 1783528062063,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "8c78c5d8"
+    },
+    "target/classes/com/example/demo/repository/alerte/AlerteRepository.class": {
+      "ipo_ts": 1783526530650,
+      "edit_count": 4,
+      "last_lines": 6,
+      "last_ts": 1783528061482,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "acd20a39"
+    },
+    "target/classes/com/example/demo/repository/alerte/RefNiveauAlerteRepository.class": {
+      "ipo_ts": 1783526530717,
+      "edit_count": 4,
+      "last_lines": 4,
+      "last_ts": 1783528061497,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "bb4f6df1"
+    },
+    "target/classes/com/example/demo/repository/alimentation/AffectationRationVacheRepository.class": {
+      "ipo_ts": 1783526530778,
+      "edit_count": 4,
+      "last_lines": 3,
+      "last_ts": 1783528061512,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "75fdbbcb"
+    },
+    "target/classes/com/example/demo/repository/alimentation/AlimentRepository.class": {
+      "ipo_ts": 1783526530831,
+      "edit_count": 4,
+      "last_lines": 3,
+      "last_ts": 1783528061530,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "2aa931a8"
+    },
+    "target/classes/com/example/demo/repository/alimentation/MouvementAlimentRepository.class": {
+      "ipo_ts": 1783526530891,
+      "edit_count": 4,
+      "last_lines": 26,
+      "last_ts": 1783528061544,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "69985ac4"
+    },
+    "target/classes/com/example/demo/repository/alimentation/RationAlimentRepository.class": {
+      "ipo_ts": 1783526530930,
+      "edit_count": 4,
+      "last_lines": 4,
+      "last_ts": 1783528061560,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "bc7f83a4"
+    },
+    "target/classes/com/example/demo/repository/alimentation/RationRepository$NutritionProjection.class": {
+      "ipo_ts": 1783526531000,
+      "edit_count": 4,
+      "last_lines": 4,
+      "last_ts": 1783528061575,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "cf2a8a85"
+    },
+    "target/classes/com/example/demo/repository/alimentation/RationRepository$RationActiveVacheProjection.class": {
+      "ipo_ts": 1783526531066,
+      "edit_count": 4,
+      "last_lines": 5,
+      "last_ts": 1783528061589,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "cf47dd5a"
+    },
+    "target/classes/com/example/demo/repository/alimentation/RationRepository$RationCardProjection.class": {
+      "ipo_ts": 1783526531104,
+      "edit_count": 4,
+      "last_lines": 4,
+      "last_ts": 1783528061603,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "45addffd"
+    },
+    "target/classes/com/example/demo/repository/alimentation/RationRepository$StadeProjection.class": {
+      "ipo_ts": 1783526531164,
+      "edit_count": 4,
+      "last_lines": 7,
+      "last_ts": 1783528061622,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "760df5fc"
+    },
+    "target/classes/com/example/demo/repository/alimentation/RationRepository.class": {
+      "ipo_ts": 1783526531209,
+      "edit_count": 4,
+      "last_lines": 34,
+      "last_ts": 1783528061642,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "827129b5"
+    },
+    "target/classes/com/example/demo/repository/alimentation/RefTypeAlimentRepository.class": {
+      "ipo_ts": 1783526531278,
+      "edit_count": 4,
+      "last_lines": 3,
+      "last_ts": 1783528061663,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "79a34a91"
+    },
+    "target/classes/com/example/demo/repository/auth/UtilisateurRepository.class": {
+      "ipo_ts": 1783526531334,
+      "edit_count": 4,
+      "last_lines": 3,
+      "last_ts": 1783528062079,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "1ae1f63c"
+    },
+    "target/classes/com/example/demo/repository/cheptel/RefRaceRepository.class": {
+      "ipo_ts": 1783526531402,
+      "edit_count": 4,
+      "last_lines": 2,
+      "last_ts": 1783528062723,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "4c366319"
+    },
+    "target/classes/com/example/demo/repository/cheptel/RefStatutLactationVacheRepository.class": {
+      "ipo_ts": 1783526531453,
+      "edit_count": 4,
+      "last_lines": 3,
+      "last_ts": 1783528062220,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "b7c710df"
+    },
+    "target/classes/com/example/demo/repository/cheptel/RefStatutReproRepository.class": {
+      "ipo_ts": 1783526531493,
+      "edit_count": 4,
+      "last_lines": 3,
+      "last_ts": 1783528062738,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "49462896"
+    },
+    "target/classes/com/example/demo/repository/cheptel/RefStatutSanteRepository.class": {
+      "ipo_ts": 1783526531546,
+      "edit_count": 4,
+      "last_lines": 3,
+      "last_ts": 1783528062752,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "150382e4"
+    },
+    "target/classes/com/example/demo/repository/cheptel/RefStatutVieRepository.class": {
+      "ipo_ts": 1783526531587,
+      "edit_count": 4,
+      "last_lines": 3,
+      "last_ts": 1783528062234,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "8beaef48"
+    },
+    "target/classes/com/example/demo/repository/cheptel/VacheHistoriqueLactationRepository.class": {
+      "ipo_ts": 1783526531633,
+      "edit_count": 4,
+      "last_lines": 4,
+      "last_ts": 1783528062251,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "d07337b2"
+    },
+    "target/classes/com/example/demo/repository/cheptel/VacheHistoriqueReproRepository.class": {
+      "ipo_ts": 1783526531681,
+      "edit_count": 4,
+      "last_lines": 4,
+      "last_ts": 1783528062768,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "a1a0eb7f"
+    },
+    "target/classes/com/example/demo/repository/cheptel/VacheHistoriqueSanteRepository.class": {
+      "ipo_ts": 1783526531731,
+      "edit_count": 4,
+      "last_lines": 4,
+      "last_ts": 1783528062784,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "546edaa8"
+    },
+    "target/classes/com/example/demo/repository/cheptel/VacheHistoriqueVieRepository.class": {
+      "ipo_ts": 1783526535354,
+      "edit_count": 4,
+      "last_lines": 4,
+      "last_ts": 1783528062266,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "d180c183"
+    },
+    "target/classes/com/example/demo/repository/production/LactationRepository.class": {
+      "ipo_ts": 1783526535394,
+      "edit_count": 4,
+      "last_lines": 5,
+      "last_ts": 1783528062798,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "19712a68"
+    },
+    "target/classes/com/example/demo/repository/production/ProductionRepository.class": {
+      "ipo_ts": 1783526535437,
+      "edit_count": 6,
+      "last_lines": 19,
+      "last_ts": 1783529461818,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "a0239fbb"
+    },
+    "target/classes/com/example/demo/repository/production/RefStatutLactationRepository.class": {
+      "ipo_ts": 1783526535482,
+      "edit_count": 4,
+      "last_lines": 4,
+      "last_ts": 1783528062813,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "408c7c54"
+    },
+    "target/classes/com/example/demo/repository/reproduction/RefTypeIaRepository.class": {
+      "ipo_ts": 1783526535517,
+      "edit_count": 4,
+      "last_lines": 2,
+      "last_ts": 1783528062828,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "bc6d66c3"
+    },
+    "target/classes/com/example/demo/repository/reproduction/ReproductionRepository.class": {
+      "ipo_ts": 1783526535554,
+      "edit_count": 4,
+      "last_lines": 3,
+      "last_ts": 1783528061698,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "d58d8fd9"
+    },
+    "target/classes/com/example/demo/repository/sante/EvenementSanteRepository.class": {
+      "ipo_ts": 1783526535604,
+      "edit_count": 4,
+      "last_lines": 3,
+      "last_ts": 1783528062843,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "fdaa202b"
+    },
+    "target/classes/com/example/demo/repository/sante/HistoriqueVaccinRepository.class": {
+      "ipo_ts": 1783526535644,
+      "edit_count": 4,
+      "last_lines": 10,
+      "last_ts": 1783528061713,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "ba14e94a"
+    },
+    "target/classes/com/example/demo/repository/sante/MaladieRepository.class": {
+      "ipo_ts": 1783526535680,
+      "edit_count": 4,
+      "last_lines": 3,
+      "last_ts": 1783528062858,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "bee8befe"
+    },
+    "target/classes/com/example/demo/repository/sante/MedicamentRepository.class": {
+      "ipo_ts": 1783526535718,
+      "edit_count": 4,
+      "last_lines": 3,
+      "last_ts": 1783528062873,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "1cd7967c"
+    },
+    "target/classes/com/example/demo/repository/sante/ProtocoleVaccinRepository.class": {
+      "ipo_ts": 1783526535759,
+      "edit_count": 4,
+      "last_lines": 3,
+      "last_ts": 1783528062887,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "e7585485"
+    },
+    "target/classes/com/example/demo/repository/sante/TraitementSanteRepository.class": {
+      "ipo_ts": 1783526535792,
+      "edit_count": 4,
+      "last_lines": 4,
+      "last_ts": 1783528062902,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "bfacdc72"
+    },
+    "target/classes/com/example/demo/repository/vente/VenteRepository.class": {
+      "ipo_ts": 1783526535831,
+      "edit_count": 4,
+      "last_lines": 12,
+      "last_ts": 1783528062114,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "a239b451"
+    },
+    "target/classes/com/example/demo/security/CurrentUserModelAdvice.class": {
+      "ipo_ts": 1783526535887,
+      "edit_count": 4,
+      "last_lines": 17,
+      "last_ts": 1783528062921,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "4a2931df"
+    },
+    "target/classes/com/example/demo/security/CustomUserDetailsService.class": {
+      "ipo_ts": 1783526535945,
+      "edit_count": 4,
+      "last_lines": 30,
+      "last_ts": 1783528062950,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "63b95779"
+    },
+    "target/classes/com/example/demo/repository/cheptel/VacheRepository.class": {
+      "ipo_ts": 1783526535984,
+      "edit_count": 4,
+      "last_lines": 3,
+      "last_ts": 1783528061681,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "c2b11862"
+    },
+    "target/classes/com/example/demo/security/SecurityConfig.class": {
+      "ipo_ts": 1783526536669,
+      "edit_count": 4,
+      "last_lines": 39,
+      "last_ts": 1783528062983,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "be754d1d"
+    },
+    "target/classes/com/example/demo/services/alerte/AlerteService.class": {
+      "ipo_ts": 1783526536855,
+      "edit_count": 4,
+      "last_lines": 111,
+      "last_ts": 1783528061743,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "7b8c8880"
+    },
+    "target/classes/com/example/demo/services/alimentation/AffectationRationVacheService.class": {
+      "ipo_ts": 1783526536970,
+      "edit_count": 4,
+      "last_lines": 17,
+      "last_ts": 1783528061762,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "3214c947"
+    },
+    "target/classes/com/example/demo/services/alimentation/AlimentService.class": {
+      "ipo_ts": 1783526537072,
+      "edit_count": 4,
+      "last_lines": 14,
+      "last_ts": 1783528060510,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "67d10adb"
+    },
+    "target/classes/com/example/demo/services/alimentation/MouvementAlimentService.class": {
+      "ipo_ts": 1783526537130,
+      "edit_count": 4,
+      "last_lines": 39,
+      "last_ts": 1783528061783,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "a902bf8b"
+    },
+    "target/classes/com/example/demo/services/alimentation/RationService$NutritionVm.class": {
+      "ipo_ts": 1783526537182,
+      "edit_count": 4,
+      "last_lines": 5,
+      "last_ts": 1783528061798,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "7edd987a"
+    },
+    "target/classes/com/example/demo/services/alimentation/RationService$RationActiveVacheVm.class": {
+      "ipo_ts": 1783526537221,
+      "edit_count": 4,
+      "last_lines": 6,
+      "last_ts": 1783528061815,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "ad3267ac"
+    },
+    "target/classes/com/example/demo/services/alimentation/RationService$RationCardVm.class": {
+      "ipo_ts": 1783526537265,
+      "edit_count": 4,
+      "last_lines": 5,
+      "last_ts": 1783528061830,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "afc06809"
+    },
+    "target/classes/com/example/demo/services/alimentation/RationService$StadeVm.class": {
+      "ipo_ts": 1783526537306,
+      "edit_count": 4,
+      "last_lines": 5,
+      "last_ts": 1783528061845,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "adfc3244"
+    },
+    "target/classes/com/example/demo/services/alimentation/RationService.class": {
+      "ipo_ts": 1783526537362,
+      "edit_count": 4,
+      "last_lines": 68,
+      "last_ts": 1783528061874,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "7ee47460"
+    },
+    "target/classes/com/example/demo/services/alimentation/RefTypeAlimentService.class": {
+      "ipo_ts": 1783526537405,
+      "edit_count": 4,
+      "last_lines": 14,
+      "last_ts": 1783528061896,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "6c031294"
+    },
+    "target/classes/com/example/demo/services/cheptel/RaceService.class": {
+      "ipo_ts": 1783526537464,
+      "edit_count": 4,
+      "last_lines": 26,
+      "last_ts": 1783528062385,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "2394f40a"
+    },
+    "target/classes/com/example/demo/services/cheptel/StatutLactationVacheService.class": {
+      "ipo_ts": 1783526537517,
+      "edit_count": 4,
+      "last_lines": 43,
+      "last_ts": 1783528062286,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "1f7beb91"
+    },
+    "target/classes/com/example/demo/services/cheptel/StatutReproService.class": {
+      "ipo_ts": 1783526537573,
+      "edit_count": 4,
+      "last_lines": 43,
+      "last_ts": 1783528062399,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "b7af6a8f"
+    },
+    "target/classes/com/example/demo/services/cheptel/StatutSanteService.class": {
+      "ipo_ts": 1783526537639,
+      "edit_count": 4,
+      "last_lines": 43,
+      "last_ts": 1783528062419,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "f6492b00"
+    },
+    "target/classes/com/example/demo/services/cheptel/StatutVieService.class": {
+      "ipo_ts": 1783526537687,
+      "edit_count": 4,
+      "last_lines": 43,
+      "last_ts": 1783528062301,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "e304a634"
+    },
+    "target/classes/com/example/demo/services/cheptel/VacheService.class": {
+      "ipo_ts": 1783526537748,
+      "edit_count": 4,
+      "last_lines": 62,
+      "last_ts": 1783528062439,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "d3535cb8"
+    },
+    "target/classes/com/example/demo/services/production/ProductionService.class": {
+      "ipo_ts": 1783526537802,
+      "edit_count": 7,
+      "last_lines": 59,
+      "last_ts": 1783529464015,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "614bf81a"
+    },
+    "target/classes/com/example/demo/services/reproduction/ReproductionAlerteService.class": {
+      "ipo_ts": 1783526537857,
+      "edit_count": 4,
+      "last_lines": 49,
+      "last_ts": 1783528060337,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "a45f487"
+    },
+    "target/classes/com/example/demo/services/reproduction/ReproductionService.class": {
+      "ipo_ts": 1783526537918,
+      "edit_count": 4,
+      "last_lines": 181,
+      "last_ts": 1783528063038,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "e5490ccd"
+    },
+    "target/classes/com/example/demo/services/sante/ExportService.class": {
+      "ipo_ts": 1783526537968,
+      "edit_count": 4,
+      "last_lines": 38,
+      "last_ts": 1783528063064,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "3f622f1"
+    },
+    "target/classes/com/example/demo/services/sante/ImportService.class": {
+      "ipo_ts": 1783526538015,
+      "edit_count": 4,
+      "last_lines": 44,
+      "last_ts": 1783528063099,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "cbae629e"
+    },
+    "target/classes/com/example/demo/services/sante/TraitementSanteService.class": {
+      "ipo_ts": 1783526538070,
+      "edit_count": 4,
+      "last_lines": 99,
+      "last_ts": 1783528063125,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "9f23a81c"
+    },
+    "target/classes/com/example/demo/services/sante/VaccinService.class": {
+      "ipo_ts": 1783526538132,
+      "edit_count": 4,
+      "last_lines": 73,
+      "last_ts": 1783528060548,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "2317db73"
+    },
+    "target/classes/com/example/demo/services/vente/VentePdfService.class": {
+      "ipo_ts": 1783526538173,
+      "edit_count": 4,
+      "last_lines": 20,
+      "last_ts": 1783528063145,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "77b32696"
+    },
+    "target/classes/com/example/demo/services/vente/VenteService.class": {
+      "ipo_ts": 1783526538226,
+      "edit_count": 6,
+      "last_lines": 47,
+      "last_ts": 1783529464476,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "ec3d23bf"
+    },
+    "target/test-classes/com/example/demo/DemoApplicationTests.class": {
+      "ipo_ts": 1783526538266,
+      "edit_count": 4,
+      "last_lines": 5,
+      "last_ts": 1783528076524,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "ecddca0c"
+    },
+    "target/classes/application.properties": {
+      "ipo_ts": 1783526538389,
+      "edit_count": 18,
+      "last_lines": 18,
+      "last_ts": 1783530782095,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "9e25483d"
+    },
+    "target/classes/static/css/style.css": {
+      "ipo_ts": 1783526538485,
+      "edit_count": 1,
+      "last_lines": 219,
+      "last_ts": 1783526538485,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "321704dc"
+    },
+    "target/classes/templates/admin/dashboard.html": {
+      "ipo_ts": 1783526538692,
+      "edit_count": 1,
+      "last_lines": 78,
+      "last_ts": 1783526538692,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "eb0eab42"
+    },
+    "target/classes/templates/admin/rapports.html": {
+      "ipo_ts": 1783526538749,
+      "edit_count": 1,
+      "last_lines": 145,
+      "last_ts": 1783526538749,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "cfaeb9a2"
+    },
+    "target/classes/templates/admin/statistiques.html": {
+      "ipo_ts": 1783526538870,
+      "edit_count": 1,
+      "last_lines": 439,
+      "last_ts": 1783526538870,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "3dfbdb30"
+    },
+    "target/classes/templates/affectations_rations/ajout.html": {
+      "ipo_ts": 1783526538911,
+      "edit_count": 1,
+      "last_lines": 62,
+      "last_ts": 1783526538911,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "710f2a97"
+    },
+    "target/classes/templates/affectations_rations/modifier.html": {
+      "ipo_ts": 1783526538957,
+      "edit_count": 1,
+      "last_lines": 64,
+      "last_ts": 1783526538957,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "997622de"
+    },
+    "target/classes/static/js/listeVaccin.js": {
+      "ipo_ts": 1783526539002,
+      "edit_count": 1,
+      "last_lines": 145,
+      "last_ts": 1783526539002,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "471df188"
+    },
+    "target/classes/templates/alertes/detail.html": {
+      "ipo_ts": 1783526539043,
+      "edit_count": 1,
+      "last_lines": 92,
+      "last_ts": 1783526539043,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "1db55485"
+    },
+    "target/classes/templates/aliments/ajout.html": {
+      "ipo_ts": 1783526539081,
+      "edit_count": 1,
+      "last_lines": 84,
+      "last_ts": 1783526539081,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "9a46c52f"
+    },
+    "target/classes/templates/aliments/liste.html": {
+      "ipo_ts": 1783526539115,
+      "edit_count": 1,
+      "last_lines": 112,
+      "last_ts": 1783526539115,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "a8ad8118"
+    },
+    "target/classes/templates/aliments/modifier.html": {
+      "ipo_ts": 1783526539222,
+      "edit_count": 1,
+      "last_lines": 85,
+      "last_ts": 1783526539222,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "98012fdd"
+    },
+    "target/classes/templates/login.html": {
+      "ipo_ts": 1783526539643,
+      "edit_count": 1,
+      "last_lines": 136,
+      "last_ts": 1783526539643,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "7f997019"
+    },
+    "target/classes/templates/mouvementsAlim/form.html": {
+      "ipo_ts": 1783526539680,
+      "edit_count": 1,
+      "last_lines": 86,
+      "last_ts": 1783526539680,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "9eb6a013"
+    },
+    "target/classes/templates/mouvementsAlim/liste.html": {
+      "ipo_ts": 1783526539719,
+      "edit_count": 1,
+      "last_lines": 74,
+      "last_ts": 1783526539719,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "20925680"
+    },
+    "target/classes/templates/production/ajoutProduction.html": {
+      "ipo_ts": 1783526539760,
+      "edit_count": 1,
+      "last_lines": 63,
+      "last_ts": 1783526539760,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "c4329ff9"
+    },
+    "target/classes/templates/production/liste.html": {
+      "ipo_ts": 1783526539804,
+      "edit_count": 1,
+      "last_lines": 92,
+      "last_ts": 1783526539804,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "eb51a807"
+    },
+    "target/classes/templates/rations/ajout-aliment.html": {
+      "ipo_ts": 1783526539851,
+      "edit_count": 1,
+      "last_lines": 57,
+      "last_ts": 1783526539851,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "2aef8f60"
+    },
+    "target/classes/templates/rations/ajout.html": {
+      "ipo_ts": 1783526539904,
+      "edit_count": 1,
+      "last_lines": 58,
+      "last_ts": 1783526539904,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "9e505586"
+    },
+    "target/classes/templates/alertes/dashboard.html": {
+      "ipo_ts": 1783526540081,
+      "edit_count": 1,
+      "last_lines": 351,
+      "last_ts": 1783526540081,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "65af533c"
+    },
+    "target/classes/templates/rations/liste.html": {
+      "ipo_ts": 1783526540128,
+      "edit_count": 1,
+      "last_lines": 113,
+      "last_ts": 1783526540128,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "472b627e"
+    },
+    "target/classes/templates/rations/modifier.html": {
+      "ipo_ts": 1783526540163,
+      "edit_count": 1,
+      "last_lines": 58,
+      "last_ts": 1783526540163,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "719e96ed"
+    },
+    "target/classes/templates/reproduction/dashboard.html": {
+      "ipo_ts": 1783526540203,
+      "edit_count": 1,
+      "last_lines": 99,
+      "last_ts": 1783526540203,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "489b1791"
+    },
+    "target/classes/templates/reproduction/historique_ia.html": {
+      "ipo_ts": 1783526540241,
+      "edit_count": 1,
+      "last_lines": 119,
+      "last_ts": 1783526540241,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "96c0bea4"
+    },
+    "target/classes/templates/reproduction/ia_en_attente.html": {
+      "ipo_ts": 1783526540285,
+      "edit_count": 1,
+      "last_lines": 85,
+      "last_ts": 1783526540285,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "c9891bc7"
+    },
+    "target/classes/templates/reproduction/index.html": {
+      "ipo_ts": 1783526540322,
+      "edit_count": 1,
+      "last_lines": 32,
+      "last_ts": 1783526540322,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "abd88b62"
+    },
+    "target/classes/templates/reproduction/nouvelle_ia.html": {
+      "ipo_ts": 1783526540417,
+      "edit_count": 1,
+      "last_lines": 76,
+      "last_ts": 1783526540417,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "ab93952f"
+    },
+    "target/classes/templates/reproduction/reproduction_alertes.html": {
+      "ipo_ts": 1783526540467,
+      "edit_count": 1,
+      "last_lines": 61,
+      "last_ts": 1783526540467,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "4406e260"
+    },
+    "target/classes/templates/reproduction/velage.html": {
+      "ipo_ts": 1783526540517,
+      "edit_count": 1,
+      "last_lines": 29,
+      "last_ts": 1783526540517,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "2b0033df"
+    },
+    "target/classes/templates/rations/details.html": {
+      "ipo_ts": 1783526540570,
+      "edit_count": 1,
+      "last_lines": 118,
+      "last_ts": 1783526540570,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "2e8431b0"
+    },
+    "target/classes/templates/Traitement/liste.html": {
+      "ipo_ts": 1783526540606,
+      "edit_count": 1,
+      "last_lines": 98,
+      "last_ts": 1783526540606,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "d9db54fe"
+    },
+    "target/classes/templates/types_aliments/ajout.html": {
+      "ipo_ts": 1783526540649,
+      "edit_count": 1,
+      "last_lines": 42,
+      "last_ts": 1783526540649,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "7a3768c3"
+    },
+    "target/classes/templates/types_aliments/liste.html": {
+      "ipo_ts": 1783526540694,
+      "edit_count": 1,
+      "last_lines": 49,
+      "last_ts": 1783526540694,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "440517ae"
+    },
+    "target/classes/templates/types_aliments/modifier.html": {
+      "ipo_ts": 1783526540750,
+      "edit_count": 1,
+      "last_lines": 43,
+      "last_ts": 1783526540750,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "d0d42315"
+    },
+    "target/classes/templates/vaccins/form.html": {
+      "ipo_ts": 1783526540793,
+      "edit_count": 1,
+      "last_lines": 111,
+      "last_ts": 1783526540793,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "dd430952"
+    },
+    "target/classes/templates/vaccins/liste.html": {
+      "ipo_ts": 1783526540838,
+      "edit_count": 1,
+      "last_lines": 196,
+      "last_ts": 1783526540838,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "e99763e8"
+    },
+    "target/classes/templates/vaccins/rappels.html": {
+      "ipo_ts": 1783526540888,
+      "edit_count": 1,
+      "last_lines": 122,
+      "last_ts": 1783526540888,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "5521b60c"
+    },
+    "target/classes/templates/vaccins/stats.html": {
+      "ipo_ts": 1783526540950,
+      "edit_count": 1,
+      "last_lines": 132,
+      "last_ts": 1783526540950,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "3bfc45d3"
+    },
+    "target/classes/templates/vente/form.html": {
+      "ipo_ts": 1783526540991,
+      "edit_count": 1,
+      "last_lines": 64,
+      "last_ts": 1783526540991,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "867262ad"
+    },
+    "target/classes/templates/vente/liste.html": {
+      "ipo_ts": 1783526541037,
+      "edit_count": 1,
+      "last_lines": 80,
+      "last_ts": 1783526541037,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "441dd97"
+    },
+    "target/classes/templates/Traitement/ajoutTraitement.html": {
+      "ipo_ts": 1783526541079,
+      "edit_count": 1,
+      "last_lines": 107,
+      "last_ts": 1783526541079,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "9fa73283"
+    },
+    "target/classes/templates/vente/vente-pdf.html": {
+      "ipo_ts": 1783526541120,
+      "edit_count": 1,
+      "last_lines": 22,
+      "last_ts": 1783526541120,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "1c485212"
+    },
+    "target/classes/com/example/demo/services/sante/ImportService$1.class": {
+      "ipo_ts": 1783526677544,
+      "edit_count": 2,
+      "last_lines": 7,
+      "last_ts": 1783528063080,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "14734b4b"
+    },
+    "target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst": {
+      "ipo_ts": 1783526677739,
+      "edit_count": 1,
+      "last_lines": 123,
+      "last_ts": 1783526677739,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "66d9091d"
+    },
+    "target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst": {
+      "ipo_ts": 1783526699624,
+      "edit_count": 1,
+      "last_lines": 1,
+      "last_ts": 1783526699624,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "fabc07a0"
+    },
+    "target/maven-archiver/pom.properties": {
+      "ipo_ts": 1783526720852,
+      "edit_count": 1,
+      "last_lines": 3,
+      "last_ts": 1783526720852,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "98bd0905"
+    },
+    "target/demo-0.0.1-SNAPSHOT.jar.original": {
+      "ipo_ts": 1783526722468,
+      "edit_count": 8,
+      "last_lines": 1197,
+      "last_ts": 1783530808121,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "b5ec289f"
+    },
+    "target/demo-0.0.1-SNAPSHOT.jar": {
+      "ipo_ts": 1783526731513,
+      "edit_count": 8,
+      "last_lines": 316141,
+      "last_ts": 1783530818822,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "cc720b75"
+    },
+    ".github/modernize/java-upgrade/.gitignore": {
+      "ipo_ts": 1783529068594,
+      "edit_count": 1,
+      "last_lines": 2,
+      "last_ts": 1783529068594,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "13741e85"
+    },
+    ".github/modernize/java-upgrade/hooks/scripts/recordToolUse.ps1": {
+      "ipo_ts": 1783529068624,
+      "edit_count": 1,
+      "last_lines": 17,
+      "last_ts": 1783529068624,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "f7843bf0"
+    },
+    ".github/modernize/java-upgrade/hooks/scripts/recordToolUse.sh": {
+      "ipo_ts": 1783529068649,
+      "edit_count": 1,
+      "last_lines": 27,
+      "last_ts": 1783529068649,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "79ce5faf"
+    },
+    "src/main/java/com/example/demo/controller/cheptel/CheptelPageController.java": {
+      "ipo_ts": 1783529280728,
+      "edit_count": 6,
+      "last_lines": 556,
+      "last_ts": 1783529409924,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "5f6deda2"
+    },
+    "src/main/java/com/example/demo/repository/production/ProductionRepository.java": {
+      "ipo_ts": 1783529300024,
+      "edit_count": 1,
+      "last_lines": 47,
+      "last_ts": 1783529300024,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "a1b3fce4"
+    },
+    "src/main/java/com/example/demo/services/production/ProductionService.java": {
+      "ipo_ts": 1783529310970,
+      "edit_count": 1,
+      "last_lines": 102,
+      "last_ts": 1783529310970,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "412ef047"
+    },
+    "src/main/resources/templates/cheptel/comparaison-races.html": {
+      "ipo_ts": 1783529367811,
+      "edit_count": 2,
+      "last_lines": 117,
+      "last_ts": 1783530499274,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "7feaa5ed"
+    },
+    "target/classes/templates/cheptel/comparaison-races.html": {
+      "ipo_ts": 1783529368593,
+      "edit_count": 2,
+      "last_lines": 117,
+      "last_ts": 1783530500050,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "7feaa5ed"
+    },
+    "testcomparaison.sql": {
+      "ipo_ts": 1783530123882,
+      "edit_count": 1,
+      "last_lines": 127,
+      "last_ts": 1783530123882,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "cd78162a"
     }
   }
 }
