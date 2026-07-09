@@ -60,12 +60,13 @@ public class MouvementAlimentService {
                 if (aliment.getSeuilAlerteKg() != null
                         && aliment.getSeuilAlerteKg().compareTo(BigDecimal.ZERO) > 0) {
 
-                    if ("sortie".equalsIgnoreCase(mouvement.getTypeMouvement())
+                        if ("sortie".equalsIgnoreCase(mouvement.getTypeMouvement())
                             && stockActuel.compareTo(aliment.getSeuilAlerteKg()) <= 0) {
 
-                        // Stock sous le seuil → alerte urgent
+                        // Stock sous le seuil → alerte urgent (code spécifique par aliment)
+                        String typeAlerte = "stock_aliment_bas_" + aliment.getId();
                         alerteService.envoyerAlerte(
-                            "stock_aliment_bas",
+                            typeAlerte,
                             "urgent",
                             "Stock insuffisant — " + aliment.getNom(),
                             "Stock actuel : " + stockActuel + " kg"
@@ -76,8 +77,9 @@ public class MouvementAlimentService {
                     } else if ("entree".equalsIgnoreCase(mouvement.getTypeMouvement())
                             && stockActuel.compareTo(aliment.getSeuilAlerteKg()) > 0) {
 
-                        // Stock reconstitué → acquittement automatique
-                        alerteService.acquitterAutomatiquement("stock_aliment_bas", null);
+                        // Stock reconstitué → acquittement automatique (sur le préfixe + id)
+                        String typePrefix = "stock_aliment_bas_" + aliment.getId();
+                        alerteService.acquitterAutomatiquement(typePrefix, null);
                     }
                 }
             });

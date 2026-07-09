@@ -70,6 +70,15 @@
                     <div class="stat-value" th:text="${#numbers.formatDecimal(totalVentes, 1, 2)}">0</div>
                 </div>
             </div>
+            <a class="card stat-card" th:href="@{/alertes}" style="text-decoration:none;color:inherit;">
+                <div class="stat-icon" style="background-color:#FEE2E2;color:#DC2626;">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="stat-body">
+                    <div class="stat-label">Alertes actives</div>
+                    <div class="stat-value" th:text="${alertesNonAcquittees}">0</div>
+                </div>
+            </a>
         </div>
 
     </div>

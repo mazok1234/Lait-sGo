@@ -29,6 +29,17 @@ public class HistoriqueVaccin {
     @Transient
     private Long alerteId;
 
+    @Transient
+    private Boolean alerteAcquittee = false;
+
+    public Boolean getAlerteAcquittee() {
+        return alerteAcquittee;
+    }
+
+    public void setAlerteAcquittee(Boolean alerteAcquittee) {
+        this.alerteAcquittee = alerteAcquittee;
+    }
+
     public HistoriqueVaccin() {
     }
 

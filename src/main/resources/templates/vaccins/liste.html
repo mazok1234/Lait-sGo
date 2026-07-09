@@ -110,20 +110,20 @@
                                     <th:block th:with="prochainRappel=${h.dateVaccination.plusDays(h.protocoleVaccin.dureeRappelJours)},
                                                        aujourdhui=${T(java.time.LocalDate).now()}">
 
-                                        <th:block th:if="${h.alerteId != null}">
-                                            <span th:if="${prochainRappel.isBefore(aujourdhui)}" 
-                                                  class="badge badge-danger">
-                                                URGENT
-                                            </span>
-                                            <span th:if="${!prochainRappel.isBefore(aujourdhui)}" 
-                                                  class="badge" style="background:#FFF3E0; color:#F57C00;">
-                                                ATTENTION
-                                            </span>
+                                        <th:block th:if="${h.alerteId != null and !h.alerteAcquittee}">
+                                            <span th:if="${prochainRappel.isBefore(aujourdhui)}"
+                                                  class="badge badge-danger">URGENT</span>
+                                            <span th:if="${!prochainRappel.isBefore(aujourdhui)}"
+                                                  class="badge" style="background:#FFF3E0; color:#F57C00;">ATTENTION</span>
                                         </th:block>
-                                    
-                                        <th:block th:if="${h.alerteId == null}">
-                                            <span class="badge badge-success">
-                                                À JOUR
+                                        
+                                        <th:block th:if="${h.alerteId == null and !h.alerteAcquittee}">
+                                            <span class="badge badge-success">À JOUR</span>
+                                        </th:block>
+                                        
+                                        <th:block th:if="${h.alerteAcquittee}">
+                                            <span class="badge" style="background:#E8F5E9; color:#2E7D32;">
+                                                <i class="fas fa-check-circle"></i> Acquittée
                                             </span>
                                         </th:block>
 
