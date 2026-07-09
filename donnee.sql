@@ -4,6 +4,22 @@ BEGIN;
 -- 1. RÉFÉRENCES SYSTÈME
 -- ============================================================
 
+INSERT INTO ref_statut_vie (libelle)
+SELECT * FROM (VALUES ('Veau'), ('Genisse'), ('Vache_active'), ('Reformee'), ('Vendue'), ('Morte')) AS v(libelle)
+WHERE NOT EXISTS (SELECT 1 FROM ref_statut_vie s WHERE s.libelle = v.libelle);
+
+INSERT INTO ref_statut_repro (libelle)
+SELECT * FROM (VALUES ('Vide'), ('En_chaleur'), ('Inseminee'), ('Gestante')) AS v(libelle)
+WHERE NOT EXISTS (SELECT 1 FROM ref_statut_repro s WHERE s.libelle = v.libelle);
+
+INSERT INTO ref_statut_lactation_vache (libelle)
+SELECT * FROM (VALUES ('Tarie'), ('En_lactation')) AS v(libelle)
+WHERE NOT EXISTS (SELECT 1 FROM ref_statut_lactation_vache s WHERE s.libelle = v.libelle);
+
+INSERT INTO ref_statut_sante (libelle)
+SELECT * FROM (VALUES ('Saine'), ('Malade'), ('En_traitement')) AS v(libelle)
+WHERE NOT EXISTS (SELECT 1 FROM ref_statut_sante s WHERE s.libelle = v.libelle);
+
 INSERT INTO ref_role_utilisateur (code, libelle) VALUES
     ('admin', 'Administrateur'),
     ('employe', 'Employé')
@@ -15,7 +31,10 @@ INSERT INTO ref_niveau_alerte (code, libelle, ordre) VALUES
     ('info',      'Info',      3)
 ON CONFLICT (code) DO NOTHING;
 
-L.
+-- Catalogue des types d'alerte : ne provient d'aucun fichier .sql existant
+-- (table nouvelle, requise par le passage type_alerte texte -> id_type FK).
+-- Codes repris tels quels de dataTest.sql / AlerteService.MODULE_PAR_TYPE ;
+-- seul le libelle (colonne NOT NULL) est un texte écrit pour l'occasion.
 INSERT INTO ref_type_alerte (code, libelle) VALUES
     ('vaccin_en_retard',   'Vaccin en retard'),
     ('rappel_vaccin',      'Rappel vaccin'),

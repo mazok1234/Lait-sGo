@@ -10,31 +10,8 @@ ALTER TABLE ration
 -- Les rations spécialisées (production/BCS/santé) n'ont pas de phase de lactation dédiée
 ALTER TABLE ration ALTER COLUMN id_phase_lactation DROP NOT NULL;
 
-
-INSERT INTO ration (nom, id_phase_lactation, production_min_l, production_max_l, priorite)
-VALUES ('Ration haute production', NULL, 25.0, NULL, 1);
-
--- Rations pour production faible (<15L)
-INSERT INTO ration (nom, id_phase_lactation, production_min_l, production_max_l, priorite)
-VALUES ('Ration basse production', NULL, NULL, 15.0, 1);
-
--- Rations pour BCS faible (<2.5 = maigre)
-INSERT INTO ration (nom, id_phase_lactation, bcs_min, bcs_max, priorite)
-VALUES ('Ration BCS faible (maigre)', NULL, NULL, 2.49, 2);
-
--- Rations pour BCS élevé (>4.0 = obèse)
-INSERT INTO ration (nom, id_phase_lactation, bcs_min, bcs_max, priorite)
-VALUES ('Ration BCS élevé (obèse)', NULL, 4.01, NULL, 2);
-
--- Ration pour vache malade
-INSERT INTO ration (nom, id_phase_lactation, id_statut_sante, priorite)
-SELECT 'Ration convalescence (malade)', NULL, s.id, 3
-FROM ref_statut_sante s WHERE s.libelle = 'Malade';
-
--- Ration pour vache en traitement
-INSERT INTO ration (nom, id_phase_lactation, id_statut_sante, priorite)
-SELECT 'Ration convalescence (traitement)', NULL, s.id, 3
-FROM ref_statut_sante s WHERE s.libelle = 'En_traitement';
+-- Les rations spécialisées elles-mêmes (Ration haute/basse production, BCS
+-- faible/élevé, convalescence malade/traitement) sont dans donnee.sql.
 
 -- 3. Vue de suggestion automatique de ration
 CREATE OR REPLACE VIEW v_suggestion_ration AS
