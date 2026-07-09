@@ -92,18 +92,7 @@
 
                         <tbody>
                             <tr th:each="h : ${prioritaires}">
-                                <td>
-                                    <a th:if="${h.alerteId != null}" 
-                                       th:href="@{/alertes/{id}(id=${h.alerteId})}" 
-                                       th:text="${h.protocoleVaccin.nomVaccin}"
-                                       style="color: #007AFF; font-weight: 500; text-decoration: underline;"
-                                       title="Cliquez pour gérer et acquitter l'alerte">
-                                    </a>
-                                
-                                    <span th:if="${h.alerteId == null}" 
-                                          th:text="${h.protocoleVaccin.nomVaccin}">
-                                    </span>
-                                </td>
+                                <td th:text="${h.protocoleVaccin.nomVaccin}"></td>
                                 <td th:text="${h.dateVaccination}"></td>
                                 <td th:text="${h.dateVaccination.plusDays(h.protocoleVaccin.dureeRappelJours)}"></td>
                                 <td>
