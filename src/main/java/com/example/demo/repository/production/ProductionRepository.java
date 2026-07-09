@@ -36,4 +36,15 @@ public interface ProductionRepository extends JpaRepository<Production, Long> {
 
     @Query("SELECT new map(MONTH(p.dateProduction) as month, YEAR(p.dateProduction) as year, SUM(p.quantiteLitres) as total) FROM Production p GROUP BY YEAR(p.dateProduction), MONTH(p.dateProduction) ORDER BY year, month")
     List<java.util.Map<String, Object>> getProductionMensuelle();
+    
+    @Query("""
+        SELECT new map(r.libelle as race, SUM(p.quantiteLitres) as totalProduction, COUNT(DISTINCT v.id) as nombreVaches, 
+               SUM(p.quantiteLitres)/COUNT(DISTINCT v.id) as productionParVache)
+        FROM Production p
+        JOIN p.vache v
+        JOIN v.race r
+        GROUP BY r.libelle
+        ORDER BY totalProduction DESC
+    """)
+    List<java.util.Map<String, Object>> getProductionParRace();
 }

@@ -8,7 +8,6 @@
     <div class="cheptel-wrapper">
         <div class="cheptel-header">
             <h1><i class="fas fa-paw" style="color:#2f6ed4"></i> Gestion des races</h1>
-<a th:href="@{/cheptel}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Retour</a>
         </div>
 
         <div class="card">
@@ -66,6 +65,10 @@
                     <i class="fas fa-info-circle"></i> Les races sont associées aux vaches. La suppression est possible si aucune vache n'y est rattachée.
                 </div>
             </div>
+         <div style="display:flex;gap:10px;">
+        <a th:href="@{/cheptel/races/comparaison-productivite}" class="btn btn-primary"><i class="fas fa-chart-bar"></i> Comparer la productivité</a>
+        <a th:href="@{/cheptel}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Retour</a>
+    </div>
         </div>
     </div>
 </div>
