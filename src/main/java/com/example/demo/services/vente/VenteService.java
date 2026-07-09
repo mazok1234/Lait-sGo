@@ -110,7 +110,7 @@ public class VenteService {
 
         // ← INJECTION ALERTE — vérification du stock après vente
         BigDecimal stockRestant = productionRepository.getRemainingStock();
-        if (stockRestant.compareTo(SEUIL_STOCK_LAIT_L) < 0) {
+        if (stockRestant.compareTo(SEUIL_STOCK_LAIT_L) <= 0) {
             alerteService.envoyerAlerte(
                     "stock_lait_bas",
                     "attention",
@@ -133,7 +133,7 @@ public class VenteService {
         if (stockRestant == null) {
             return;
         }
-        if (stockRestant.compareTo(SEUIL_STOCK_LAIT_L) < 0) {
+        if (stockRestant.compareTo(SEUIL_STOCK_LAIT_L) <= 0) {
             alerteService.envoyerAlerte(
                     "stock_lait_bas",
                     "attention",
