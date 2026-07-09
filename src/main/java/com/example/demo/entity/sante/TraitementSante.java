@@ -29,24 +29,17 @@ public class TraitementSante {
 
     @NotNull(message = "Le medicament est obligatoire")
     @ManyToOne
-    @JoinColumn(name = "medicament_id", nullable = false)
-    private Medicament medicament;
+    @JoinColumn(name = "medicament_fille_id", nullable = false)
+    private MedicamentFille medicamentFille;
 
     @Column(name = "nbr_medicament", nullable = false)
     private Integer nbrMedicament = 1;
 
     @NotNull
-    @Column(name = "dose", nullable = false)
-    private BigDecimal dose;
-
-    @NotNull
-    @Column(name = "unite", nullable = false)
-    private String unite;
-
-    @NotNull
     @Column(name = "duree_traitement", nullable = false)
     private Integer dureeTraitement;
 
+    // Override possible du delai par defaut de la fiche fille
     @Column(name = "delai_attente_j", nullable = false)
     private Integer delaiAttenteJ = 0;
 
@@ -61,38 +54,47 @@ public class TraitementSante {
     public void setId(Long id) { this.id = id; }
 
     public EvenementSante getEvenementSante() { return evenementSante; }
-    public void setEvenementSante(EvenementSante evenementSante) { this.evenementSante = evenementSante; }
+    public void setEvenementSante(EvenementSante e) { this.evenementSante = e; }
 
-    public Medicament getMedicament() { return medicament; }
-    public void setMedicament(Medicament medicament) { this.medicament = medicament; }
+    public MedicamentFille getMedicamentFille() { return medicamentFille; }
+    public void setMedicamentFille(MedicamentFille medicamentFille) { this.medicamentFille = medicamentFille; }
 
     public Integer getNbrMedicament() { return nbrMedicament; }
-    public void setNbrMedicament(Integer nbrMedicament) { this.nbrMedicament = nbrMedicament; }
-
-    public BigDecimal getDose() { return dose; }
-    public void setDose(BigDecimal dose) { this.dose = dose; }
-
-    public String getUnite() { return unite; }
-    public void setUnite(String unite) { this.unite = unite; }
+    public void setNbrMedicament(Integer n) { this.nbrMedicament = n; }
 
     public Integer getDureeTraitement() { return dureeTraitement; }
-    public void setDureeTraitement(Integer dureeTraitement) { this.dureeTraitement = dureeTraitement; }
+    public void setDureeTraitement(Integer d) { this.dureeTraitement = d; }
 
     public Integer getDelaiAttenteJ() { return delaiAttenteJ; }
-    public void setDelaiAttenteJ(Integer delaiAttenteJ) { this.delaiAttenteJ = delaiAttenteJ; }
+    public void setDelaiAttenteJ(Integer d) { this.delaiAttenteJ = d; }
 
     public LocalDate getDateDebut() { return dateDebut; }
-    public void setDateDebut(LocalDate dateDebut) { this.dateDebut = dateDebut; }
+    public void setDateDebut(LocalDate d) { this.dateDebut = d; }
 
     public LocalDate getDateFin() { return dateFin; }
-    public void setDateFin(LocalDate dateFin) { this.dateFin = dateFin; }
+    public void setDateFin(LocalDate d) { this.dateFin = d; }
 
-    // --- Champs calculés (non mappés) utilisés par la page liste ---
+    // --- Delegates vers medicamentFille : evite de toucher aux templates existants ---
+
+    @Transient
+    public Medicament getMedicament() {
+        return medicamentFille != null ? medicamentFille.getMedicament() : null;
+    }
+
+    @Transient
+    public BigDecimal getDose() {
+        return medicamentFille != null ? medicamentFille.getDose() : null;
+    }
+
+    @Transient
+    public String getUnite() {
+        return medicamentFille != null ? medicamentFille.getUnite() : null;
+    }
 
     @Transient
     public BigDecimal getPrixUnitaireMedicament() {
-        return (medicament != null && medicament.getPrixUnitaire() != null)
-                ? medicament.getPrixUnitaire()
+        return (medicamentFille != null && medicamentFille.getPrixUnitaire() != null)
+                ? medicamentFille.getPrixUnitaire()
                 : BigDecimal.ZERO;
     }
 
