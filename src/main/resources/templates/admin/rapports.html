@@ -28,7 +28,7 @@
                     <i class="fas fa-file-invoice-dollar"></i>
                 </div>
                 <div class="stat-body">
-                    <div class="stat-label">Dépenses alimentation</div>
+                    <div class="stat-label">Dépenses totales</div>
                     <div class="stat-value" th:text="${#numbers.formatDecimal(totalDepenses, 1, 2) + ' Ar'}">0 Ar</div>
                 </div>
             </div>
@@ -61,7 +61,7 @@
                         <tr th:each="r : ${rentabiliteStats}">
                             <td th:text="${r.month + '/' + r.year}">-</td>
                             <td th:text="${#numbers.formatDecimal(r.revenus, 1, 2)}">0</td>
-                            <td th:text="${#numbers.formatDecimal(r.depenses, 1, 2)}">0</td>
+                            <td th:text="${#numbers.formatDecimal(r.depensesTotales, 1, 2)}">0</td>
                             <td th:text="${#numbers.formatDecimal(r.benefice, 1, 2)}"
                                 th:style="${r.benefice >= 0} ? 'color:#166534;font-weight:600;' : 'color:#B91C1C;font-weight:600;'">0</td>
                         </tr>
