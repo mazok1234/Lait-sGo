@@ -153,7 +153,7 @@ public class VaccinService {
                                         titre,
                                         description,
                                         h.getVache().getId());
-                        alerteRepo.findTopByVacheIdAndType_CodeAndAcquitteeFalseOrderByCreatedAtDesc(
+                        alerteRepo.findTopByVacheIdAndTypeAlerteAndAcquitteeFalseOrderByCreatedAtDesc(
                                         h.getVache().getId(), typeCode).ifPresentOrElse(
                                                         a -> {
                                                                 h.setAlerteId(a.getId());
@@ -161,7 +161,7 @@ public class VaccinService {
                                                         },
                                                         () -> {
                                                                 // Vérifier si une alerte acquittée existe
-                                                                alerteRepo.findTopByVacheIdAndType_CodeAndAcquitteeTrueOrderByCreatedAtDesc(
+                                                                alerteRepo.findTopByVacheIdAndTypeAlerteAndAcquitteeTrueOrderByCreatedAtDesc(
                                                                                 h.getVache().getId(), typeCode)
                                                                                 .ifPresent(a -> {
                                                                                         h.setAlerteId(null); // Pas de

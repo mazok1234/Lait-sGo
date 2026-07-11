@@ -160,8 +160,7 @@ public class ReproductionService {
         Map<String, Object> counters = new HashMap<>();
 
         String sqlAlertes = "SELECT COUNT(*) FROM alerte a "
-                + "JOIN ref_type_alerte t ON t.id = a.id_type "
-                + "WHERE a.acquittee = FALSE and t.code = 'rappel_velage'";
+                + "WHERE a.acquittee = FALSE AND a.type_alerte = 'rappel_velage'";
         String sqlGestations = "SELECT COUNT(*) FROM reproduction WHERE gestation_confirmee = TRUE AND date_velage_reel IS NULL";
 
         counters.put("alertesActives", jdbcTemplate.queryForObject(sqlAlertes, Integer.class));
