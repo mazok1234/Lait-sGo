@@ -7,6 +7,7 @@ import com.example.demo.repository.sante.HistoriqueVaccinRepository;
 import com.example.demo.repository.sante.ProtocoleVaccinRepository;
 import com.example.demo.repository.cheptel.VacheRepository;
 import com.example.demo.services.sante.VaccinService;
+import com.example.demo.services.alerte.AlerteService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +34,7 @@ public class VaccinController {
         private final VaccinService vaccinService;
         private final ExportService exportService;
         private final ImportService importService;
+        private final AlerteService alerteService;
 
         public VaccinController(
                         HistoriqueVaccinRepository historiqueRepo,
@@ -40,13 +42,15 @@ public class VaccinController {
                         ProtocoleVaccinRepository protocoleRepo,
                         VaccinService vaccinService,
                         ExportService exportService,
-                        ImportService importService) {
+                        ImportService importService,
+                        AlerteService alerteService) {
                 this.historiqueRepo = historiqueRepo;
                 this.vacheRepo = vacheRepo;
                 this.protocoleRepo = protocoleRepo;
                 this.vaccinService = vaccinService;
                 this.exportService = exportService;
                 this.importService = importService;
+                this.alerteService = alerteService;
         }
 
         @GetMapping("")
@@ -99,6 +103,13 @@ public class VaccinController {
                 h.setTypeInjection(typeInjection);
 
                 historiqueRepo.save(h);
+
+                // Acquitter les alertes vaccin actives pour cette vache
+                if (h.getVache() != null && h.getVache().getId() != null) {
+                        alerteService.acquitterAutomatiquement("vaccin_en_retard",   h.getVache().getId());
+                        alerteService.acquitterAutomatiquement("vaccin_prioritaire", h.getVache().getId());
+                        alerteService.acquitterAutomatiquement("rappel_vaccin",      h.getVache().getId());
+                }
 
                 return "redirect:/vaccins/historique/form";
         }
