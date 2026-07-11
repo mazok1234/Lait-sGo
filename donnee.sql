@@ -1,6 +1,6 @@
--- Forcer UTF-8 avant tout INSERT (utile si la session psql est en WIN1252)
--- \encoding UTF8
--- SET client_encoding TO 'UTF8';
+-- Forcer PostgreSQL à interpréter le fichier avec l'encodage Windows
+\encoding WIN1252
+SET client_encoding TO 'WIN1252';
 
 BEGIN;
 
@@ -88,13 +88,11 @@ WHERE NOT EXISTS (SELECT 1 FROM protocole_vaccin p WHERE p.nom_vaccin = v.nom_va
 -- 2. UTILISATEURS
 -- ============================================================
 
--- admin@laitgo.mg / Admin123!
 INSERT INTO utilisateur (nom, email, id_role, mot_de_passe_hash, actif)
 SELECT 'Admin Test', 'admin@laitgo.mg', r.id, '$2y$10$k3CgylH3wYI63CdKC.CpNO0i3RD0ml4ZRYcz7dKt.Q9P7qcJM9uVa', true
 FROM ref_role_utilisateur r WHERE r.code = 'admin'
 ON CONFLICT (email) DO NOTHING;
 
--- employe@laitgo.mg / Employe123!
 INSERT INTO utilisateur (nom, email, id_role, mot_de_passe_hash, actif)
 SELECT 'Employe Test', 'employe@laitgo.mg', r.id, '$2y$10$T3bqAFpDJheUhPSV1w/T9.psStGYQsJUhWglT585Kp3fvd5mqwnzC', true
 FROM ref_role_utilisateur r WHERE r.code = 'employe'
@@ -104,11 +102,6 @@ ON CONFLICT (email) DO NOTHING;
 -- 3. ALIMENTS + RATIONS STANDARD (par phase de lactation)
 -- ============================================================
 
--- DOUBLON RÉSOLU : "Foin"/"Ensilage" sont redéfinis avec des valeurs
--- différentes dans db.sql (ufl 0.500/50kg/0.15) et test.sql
--- (ufl 0.650/120kg/320.00). Les deux ne peuvent pas coexister (nom
--- UNIQUE). Version de db.sql conservée (fichier de référence du
--- schéma) ; celle de test.sql est ignorée (contrainte NOT EXISTS).
 INSERT INTO aliment (nom, id_type_aliment, ufl, pdi_g, seuil_alerte_kg, prix_par_kilo)
 SELECT 'Foin', (SELECT id FROM ref_type_aliment WHERE code = 'foin'), 0.500, 45.00, 50, 0.15
 WHERE NOT EXISTS (SELECT 1 FROM aliment WHERE nom = 'Foin');
@@ -219,7 +212,6 @@ ON CONFLICT DO NOTHING;
 -- 6. VACHES DE TEST
 -- ============================================================
 
--- Jeu "alertes" (dataTest.sql)
 INSERT INTO vache (numero_boucle, id_race, date_naissance, poids_kg, score_bcs)
 VALUES
     ('V001_TEST', (SELECT id FROM ref_race WHERE code = 'prim_holstein'), '2021-01-15', 550.0, 3.50),
@@ -228,18 +220,11 @@ VALUES
     ('V004_TEST', (SELECT id FROM ref_race WHERE code = 'prim_holstein'), '2019-11-05', 620.0, 3.10)
 ON CONFLICT (numero_boucle) DO NOTHING;
 
--- Jeu "graphes admin" (test.sql)
 INSERT INTO vache (numero_boucle, id_race, date_naissance, poids_kg, score_bcs)
 SELECT 'TEST-001', r.id, DATE '2022-01-10', 545.0, 3.25
 FROM ref_race r WHERE r.code = 'TEST_HOL'
 ON CONFLICT (numero_boucle) DO NOTHING;
 
--- Jeu "finance/santé" (Ajout_base_finance_sante.sql)
--- Corrigé : vache n'a pas de colonnes "nom"/"race" (texte) — la race
--- est une FK id_race vers ref_race. Le fichier source ne fournissait ni
--- poids_kg ni score_bcs pour ces vaches : laissés à NULL (colonnes
--- nullables), aucune valeur inventée. Le "nom" (Marguerite, etc.)
--- n'a pas d'équivalent dans le schéma actuel et n'est donc pas repris.
 INSERT INTO vache (numero_boucle, id_race, date_naissance)
 SELECT * FROM (VALUES
     ('FR001234567', (SELECT id FROM ref_race WHERE code = 'prim_holstein'), DATE '2021-04-12'),
@@ -250,7 +235,6 @@ SELECT * FROM (VALUES
 ) AS v(numero_boucle, id_race, date_naissance)
 ON CONFLICT (numero_boucle) DO NOTHING;
 
--- Statuts vie / repro / lactation / santé — jeu "alertes"
 INSERT INTO vache_historique_vie (vache_id, statut_id, date_debut)
 SELECT v.id, s.id, '2023-01-01'
 FROM vache v, ref_statut_vie s
@@ -279,7 +263,6 @@ WHERE v.numero_boucle IN ('V001_TEST','V002_TEST','V003_TEST','V004_TEST')
   AND s.libelle = 'Saine'
   AND NOT EXISTS (SELECT 1 FROM vache_historique_sante h WHERE h.vache_id = v.id);
 
--- Historique santé détaillé — jeu "finance/santé" (statuts Saine/En_traitement alternés)
 INSERT INTO vache_historique_sante (vache_id, statut_id, date_debut, date_fin)
 SELECT v.id, s.id, x.date_debut, x.date_fin
 FROM (VALUES
@@ -302,8 +285,6 @@ WHERE NOT EXISTS (
 
 -- ============================================================
 -- 7. ÉVÉNEMENTS SANTÉ + TRAITEMENTS
--- (nbr_medicament corrigé : la colonne existe sur traitement_sante,
--- pas sur evenement_sante)
 -- ============================================================
 
 INSERT INTO evenement_sante (id, vache_id, maladie_id, date_evenement, description)
@@ -373,7 +354,6 @@ WHERE v.numero_boucle = 'V003_TEST'
 -- 9. REPRODUCTION
 -- ============================================================
 
--- V004 : gestante depuis 250 jours → vêlage prévu dans ~30 jours
 UPDATE vache_historique_repro
 SET date_fin = CURRENT_DATE - INTERVAL '1 day'
 WHERE vache_id = (SELECT id FROM vache WHERE numero_boucle = 'V004_TEST')
@@ -393,7 +373,6 @@ FROM vache v
 WHERE v.numero_boucle = 'V004_TEST'
   AND NOT EXISTS (SELECT 1 FROM reproduction r WHERE r.vache_id = v.id);
 
--- V001 : gestante depuis 220 jours → vêlage prévu dans ~60 jours
 UPDATE vache_historique_repro
 SET date_fin = CURRENT_DATE - INTERVAL '1 day'
 WHERE vache_id = (SELECT id FROM vache WHERE numero_boucle = 'V001_TEST')
@@ -417,7 +396,6 @@ WHERE v.numero_boucle = 'V001_TEST'
 -- 10. LACTATION + PRODUCTION
 -- ============================================================
 
--- V002 : lactation active courte (jeu "alertes")
 INSERT INTO lactation (vache_id, numero_lactation, date_debut, id_statut)
 SELECT v.id, 1, CURRENT_DATE - INTERVAL '10 days', s.id
 FROM vache v, ref_statut_lactation s
@@ -434,7 +412,6 @@ WHERE v.numero_boucle = 'V002_TEST' AND l.date_fin IS NULL
       SELECT 1 FROM production p WHERE p.lactation_id = l.id AND p.date_production = CURRENT_DATE
   );
 
--- TEST-001 : lactation active + 6 mois de production (jeu "graphes admin")
 INSERT INTO lactation (vache_id, numero_lactation, date_debut, id_statut)
 SELECT v.id, 1, DATE '2026-01-01', s.id
 FROM vache v
@@ -463,7 +440,6 @@ WHERE NOT EXISTS (
 -- 11. MOUVEMENTS ALIMENTS
 -- ============================================================
 
--- Stock sous seuil (jeu "alertes") : Foin 500-470=30kg<50kg, Ensilage 500-420=80kg<100kg
 INSERT INTO mouvement_aliment (aliment_id, type_mouvement, quantite_kg, date_mouvement)
 SELECT a.id, 'entree', 500.00, CURRENT_DATE - INTERVAL '30 days'
 FROM aliment a WHERE a.nom = 'Foin'
@@ -484,7 +460,6 @@ SELECT a.id, 'sortie', 420.00, CURRENT_DATE
 FROM aliment a WHERE a.nom = 'Ensilage'
   AND NOT EXISTS (SELECT 1 FROM mouvement_aliment m WHERE m.aliment_id = a.id AND m.date_mouvement = CURRENT_DATE AND m.type_mouvement = 'sortie');
 
--- Historique 6 mois (jeu "graphes admin")
 INSERT INTO mouvement_aliment (aliment_id, type_mouvement, quantite_kg, date_mouvement)
 SELECT a.id, x.type_mouvement, x.quantite_kg, x.date_mouvement
 FROM aliment a

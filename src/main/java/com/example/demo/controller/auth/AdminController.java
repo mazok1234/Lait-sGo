@@ -1,5 +1,6 @@
 package com.example.demo.controller.auth;
 
+import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -9,10 +10,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.example.demo.entity.production.Production;
 import com.example.demo.entity.vente.Vente;
 import com.example.demo.services.alerte.AlerteService;
+import com.example.demo.services.auth.AdminExportService;
 import com.example.demo.repository.alimentation.RationRepository;
 import com.example.demo.repository.alimentation.MouvementAlimentRepository;
 import com.example.demo.repository.auth.UtilisateurRepository;
@@ -40,13 +47,15 @@ public class AdminController {
     private final VenteRepository venteRepository;
     private final AlerteService alerteService;
     private final TraitementSanteRepository traitementSanteRepository;
+    private final AdminExportService adminExportService;
 
     public AdminController(VacheRepository vacheRepository, UtilisateurRepository utilisateurRepository,
             RationRepository rationRepository, MouvementAlimentRepository mouvementAlimentRepository,
             ProductionRepository productionRepository,
             VenteRepository venteRepository,
             AlerteService alerteService,
-            TraitementSanteRepository traitementSanteRepository) {
+            TraitementSanteRepository traitementSanteRepository,
+            AdminExportService adminExportService) {
         this.vacheRepository = vacheRepository;
         this.utilisateurRepository = utilisateurRepository;
         this.rationRepository = rationRepository;
@@ -55,6 +64,7 @@ public class AdminController {
         this.venteRepository = venteRepository;
         this.alerteService = alerteService;
         this.traitementSanteRepository = traitementSanteRepository;
+        this.adminExportService = adminExportService;
     }
 
     @GetMapping
@@ -92,6 +102,107 @@ public class AdminController {
 
     @GetMapping("/statistiques")
     public String statistiques(Model model) {
+        model.addAllAttributes(buildStatistiquesData());
+
+        return "admin/statistiques";
+    }
+
+    @GetMapping("/statistiques/export/{format}")
+    public ResponseEntity<InputStreamResource> exportStatistiques(@PathVariable String format) {
+        Map<String, Object> data = buildStatistiquesData();
+        String normalized = format == null ? "" : format.trim().toLowerCase();
+
+        try {
+            if ("excel".equals(normalized) || "xlsx".equals(normalized)) {
+                ByteArrayInputStream in = adminExportService.exportStatistiquesExcel(data);
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=admin_statistiques.xlsx")
+                        .contentType(MediaType.parseMediaType(
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                        .body(new InputStreamResource(in));
+            }
+            if ("pdf".equals(normalized)) {
+                byte[] pdf = adminExportService.exportStatistiquesPdf(data);
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=admin_statistiques.pdf")
+                        .contentType(MediaType.APPLICATION_PDF)
+                        .body(new InputStreamResource(new ByteArrayInputStream(pdf)));
+            }
+            if ("image".equals(normalized) || "png".equals(normalized)) {
+                byte[] png = adminExportService.exportStatistiquesImage(data);
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=admin_statistiques.png")
+                        .contentType(MediaType.IMAGE_PNG)
+                        .body(new InputStreamResource(new ByteArrayInputStream(png)));
+            }
+            if ("csv".equals(normalized)) {
+                byte[] csv = adminExportService.exportStatistiquesCsv(data);
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=admin_statistiques.csv")
+                        .contentType(MediaType.parseMediaType("text/csv"))
+                        .body(new InputStreamResource(new ByteArrayInputStream(csv)));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+
+        return ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping("/rapports")
+    public String rapports(Model model) {
+        model.addAllAttributes(buildRapportsData());
+
+        return "admin/rapports";
+    }
+
+    @GetMapping("/rapports/export/{format}")
+    public ResponseEntity<InputStreamResource> exportRapports(@PathVariable String format) {
+        Map<String, Object> data = buildRapportsData();
+        String normalized = format == null ? "" : format.trim().toLowerCase();
+
+        try {
+            if ("excel".equals(normalized) || "xlsx".equals(normalized)) {
+                ByteArrayInputStream in = adminExportService.exportRapportsExcel(data);
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=admin_rapports.xlsx")
+                        .contentType(MediaType.parseMediaType(
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                        .body(new InputStreamResource(in));
+            }
+            if ("pdf".equals(normalized)) {
+                byte[] pdf = adminExportService.exportRapportsPdf(data);
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=admin_rapports.pdf")
+                        .contentType(MediaType.APPLICATION_PDF)
+                        .body(new InputStreamResource(new ByteArrayInputStream(pdf)));
+            }
+            if ("image".equals(normalized) || "png".equals(normalized)) {
+                byte[] png = adminExportService.exportRapportsImage(data);
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=admin_rapports.png")
+                        .contentType(MediaType.IMAGE_PNG)
+                        .body(new InputStreamResource(new ByteArrayInputStream(png)));
+            }
+            if ("csv".equals(normalized)) {
+                byte[] csv = adminExportService.exportRapportsCsv(data);
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=admin_rapports.csv")
+                        .contentType(MediaType.parseMediaType("text/csv"))
+                        .body(new InputStreamResource(new ByteArrayInputStream(csv)));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+
+        return ResponseEntity.badRequest().build();
+    }
+
+    private BigDecimal nz(BigDecimal value) {
+        return value != null ? value : BigDecimal.ZERO;
+    }
+
+    private Map<String, Object> buildStatistiquesData() {
         List<Map<String, Object>> prodStats = productionRepository.getProductionMensuelle();
         List<Map<String, Object>> venteStats = venteRepository.getRevenusMensuels();
         List<Map<String, Object>> depenseStats = mouvementAlimentRepository.getDepensesMensuelles();
@@ -107,23 +218,22 @@ public class AdminController {
                 ? totalBenefice.multiply(new BigDecimal("100")).divide(nz(totalRevenus), 2, RoundingMode.HALF_UP)
                 : BigDecimal.ZERO;
 
-        model.addAttribute("prodStats", prodStats);
-        model.addAttribute("venteStats", venteStats);
-        model.addAttribute("depenseStats", depenseStats);
-        model.addAttribute("medicamentStats", medicamentStats);
-        model.addAttribute("rentabiliteStats", rentabiliteStats);
-        model.addAttribute("totalRevenus", nz(totalRevenus));
-        model.addAttribute("totalDepensesAlim", nz(totalDepensesAlim));
-        model.addAttribute("totalDepensesMed", nz(totalDepensesMed));
-        model.addAttribute("totalDepenses", totalDepenses);
-        model.addAttribute("totalBenefice", totalBenefice);
-        model.addAttribute("margeBeneficePct", margeBeneficePct);
-
-        return "admin/statistiques";
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("prodStats", prodStats);
+        data.put("venteStats", venteStats);
+        data.put("depenseStats", depenseStats);
+        data.put("medicamentStats", medicamentStats);
+        data.put("rentabiliteStats", rentabiliteStats);
+        data.put("totalRevenus", nz(totalRevenus));
+        data.put("totalDepensesAlim", nz(totalDepensesAlim));
+        data.put("totalDepensesMed", nz(totalDepensesMed));
+        data.put("totalDepenses", totalDepenses);
+        data.put("totalBenefice", totalBenefice);
+        data.put("margeBeneficePct", margeBeneficePct);
+        return data;
     }
 
-    @GetMapping("/rapports")
-    public String rapports(Model model) {
+    private Map<String, Object> buildRapportsData() {
         List<Production> dernieresProductions = productionRepository
                 .findAll(PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "dateProduction"))).getContent();
         List<Vente> dernieresVentes = venteRepository.findAllByOrderByDateVenteDesc(PageRequest.of(0, 10)).getContent();
@@ -138,18 +248,16 @@ public class AdminController {
                 mouvementAlimentRepository.getDepensesMensuelles(),
                 traitementSanteRepository.getDepensesMedicamentsMensuelles());
 
-        model.addAttribute("productions", dernieresProductions);
-        model.addAttribute("ventes", dernieresVentes);
-        model.addAttribute("totalRevenus", nz(totalRevenus));
-        model.addAttribute("totalDepenses", totalDepenses);
-        model.addAttribute("totalBenefice", totalBenefice);
-        model.addAttribute("rentabiliteStats", rentabiliteStats);
-
-        return "admin/rapports";
-    }
-
-    private BigDecimal nz(BigDecimal value) {
-        return value != null ? value : BigDecimal.ZERO;
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("productions", dernieresProductions);
+        data.put("ventes", dernieresVentes);
+        data.put("totalRevenus", nz(totalRevenus));
+        data.put("totalDepensesAlim", nz(totalDepensesAlim));
+        data.put("totalDepensesMed", nz(totalDepensesMed));
+        data.put("totalDepenses", totalDepenses);
+        data.put("totalBenefice", totalBenefice);
+        data.put("rentabiliteStats", rentabiliteStats);
+        return data;
     }
 
     private LocalDate parseDateParam(String rawDate, String fieldName, Model model) {
