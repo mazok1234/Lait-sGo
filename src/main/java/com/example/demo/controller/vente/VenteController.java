@@ -119,9 +119,9 @@ public String importVentes(@RequestParam("file") MultipartFile file,
     try {
         List<Vente> ventes = ventePdfService.importExcel(file.getInputStream());
         venteService.importerVentes(ventes);
-        redirectAttributes.addFlashAttribute(
-                "success",
-                "Ventes importées avec succès : " + ventes.size());
+        // redirectAttributes.addFlashAttribute(
+        //         "success",
+        //         "Ventes importées avec succès : " + ventes.size());
     } catch (IOException | RuntimeException e) {
         redirectAttributes.addFlashAttribute(
                 "error",
