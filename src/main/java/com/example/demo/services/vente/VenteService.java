@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -104,13 +106,13 @@ public class VenteService {
         vente.setQuantiteLait(quantite);
         vente.setPrixUnitaire(prixUnitaire);
         vente.setCreatedAt(LocalDateTime.now());
-        vente.setCreatedBy(utilisateurRepository.findById(1L).orElseThrow());
+        vente.setCreatedBy(resolveCreateurVente());
 
         Vente saved = venteRepository.save(vente);
 
         // ← INJECTION ALERTE — vérification du stock après vente
         BigDecimal stockRestant = productionRepository.getRemainingStock();
-        if (stockRestant.compareTo(SEUIL_STOCK_LAIT_L) < 0) {
+        if (stockRestant.compareTo(SEUIL_STOCK_LAIT_L) <= 0) {
             alerteService.envoyerAlerte(
                     "stock_lait_bas",
                     "attention",
@@ -133,7 +135,7 @@ public class VenteService {
         if (stockRestant == null) {
             return;
         }
-        if (stockRestant.compareTo(SEUIL_STOCK_LAIT_L) < 0) {
+        if (stockRestant.compareTo(SEUIL_STOCK_LAIT_L) <= 0) {
             alerteService.envoyerAlerte(
                     "stock_lait_bas",
                     "attention",
@@ -143,6 +145,25 @@ public class VenteService {
         } else {
             alerteService.acquitterAutomatiquement("stock_lait_bas", null);
         }
+    }
+
+    private com.example.demo.entity.auth.Utilisateur resolveCreateurVente() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            if (username != null && !username.isBlank() && !"anonymousUser".equalsIgnoreCase(username)) {
+                var byEmail = utilisateurRepository.findByEmail(username);
+                if (byEmail.isPresent()) {
+                    return byEmail.get();
+                }
+            }
+        }
+
+        return utilisateurRepository.findById(1L)
+                .orElse(utilisateurRepository.findAll(PageRequest.of(0, 1))
+                        .stream()
+                        .findFirst()
+                        .orElse(null));
     }
 
 @Transactional

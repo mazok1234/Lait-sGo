@@ -13,6 +13,26 @@
             <p class="page-subtitle">Dernières productions, ventes et rapport de rentabilité</p>
         </div>
 
+        <div class="card" style="margin-bottom:18px;">
+            <div class="card-body" style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+                <div style="font-weight:600; color:#1F2937;">Exporter les rapports</div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <a th:href="@{/admin/rapports/export/pdf}" class="btn btn-secondary" style="border-color:#DC2626; color:#DC2626;">
+                        <i class="fas fa-file-pdf"></i> PDF
+                    </a>
+                    <a th:href="@{/admin/rapports/export/image}" class="btn btn-secondary" style="border-color:#2563EB; color:#2563EB;">
+                        <i class="fas fa-image"></i> Image
+                    </a>
+                    <a th:href="@{/admin/rapports/export/excel}" class="btn btn-primary" style="background:#059669; border-color:#059669;">
+                        <i class="fas fa-file-excel"></i> Excel
+                    </a>
+                    <a th:href="@{/admin/rapports/export/csv}" class="btn btn-secondary" style="border-color:#0EA5E9; color:#0EA5E9;">
+                        <i class="fas fa-file-csv"></i> CSV
+                    </a>
+                </div>
+            </div>
+        </div>
+
         <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom:18px;">
             <div class="card stat-card">
                 <div class="stat-icon" style="background-color:#ECFDF5;color:#059669;">
@@ -28,7 +48,7 @@
                     <i class="fas fa-file-invoice-dollar"></i>
                 </div>
                 <div class="stat-body">
-                    <div class="stat-label">Dépenses alimentation</div>
+                    <div class="stat-label">Dépenses totales</div>
                     <div class="stat-value" th:text="${#numbers.formatDecimal(totalDepenses, 1, 2) + ' Ar'}">0 Ar</div>
                 </div>
             </div>
@@ -61,7 +81,7 @@
                         <tr th:each="r : ${rentabiliteStats}">
                             <td th:text="${r.month + '/' + r.year}">-</td>
                             <td th:text="${#numbers.formatDecimal(r.revenus, 1, 2)}">0</td>
-                            <td th:text="${#numbers.formatDecimal(r.depenses, 1, 2)}">0</td>
+                            <td th:text="${#numbers.formatDecimal(r.depensesTotales, 1, 2)}">0</td>
                             <td th:text="${#numbers.formatDecimal(r.benefice, 1, 2)}"
                                 th:style="${r.benefice >= 0} ? 'color:#166534;font-weight:600;' : 'color:#B91C1C;font-weight:600;'">0</td>
                         </tr>

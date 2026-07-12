@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
@@ -20,55 +19,9 @@ public class Medicament {
     @Column(name = "nom", nullable = false, length = 150)
     private String nom;
 
-@Min(value = 0, message = "Le delai d'attente lait doit etre positif")
-    @Column(name = "delai_attente_lait_defaut")
-    private Integer delaiAttenteLaitDefaut = 0;
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    @Column(name = "prix_unitaire", nullable = false, precision = 10, scale = 2)
-    private java.math.BigDecimal prixUnitaire = java.math.BigDecimal.ZERO;
-
-    @Min(value = 0, message = "Le delai d'attente viande doit etre positif")
-    @Column(name = "delai_attente_viande_defaut")
-    private Integer delaiAttenteViandeDefaut = 0;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public Integer getDelaiAttenteLaitDefaut() {
-        return delaiAttenteLaitDefaut;
-    }
-
-    public void setDelaiAttenteLaitDefaut(Integer delaiAttenteLaitDefaut) {
-        this.delaiAttenteLaitDefaut = delaiAttenteLaitDefaut;
-    }
-
-    public Integer getDelaiAttenteViandeDefaut() {
-        return delaiAttenteViandeDefaut;
-    }
-
-    public void setDelaiAttenteViandeDefaut(Integer delaiAttenteViandeDefaut) {
-        this.delaiAttenteViandeDefaut = delaiAttenteViandeDefaut;
-    }
-
-    public java.math.BigDecimal getPrixUnitaire() {
-        return prixUnitaire;
-    }
-
-    public void setPrixUnitaire(java.math.BigDecimal prixUnitaire) {
-        this.prixUnitaire = prixUnitaire;
-    }
+    public String getNom() { return nom; }
+    public void setNom(String nom) { this.nom = nom; }
 }
-

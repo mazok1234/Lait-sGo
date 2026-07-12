@@ -11,6 +11,9 @@
         <p class="page-subtitle">Suivi des traitements, doses et délais d'attente</p>
     </div>
 
+    <div th:if="${success}" style="background:#DCFCE7;color:#166534;padding:12px 14px;border-radius:8px;margin-bottom:16px;" th:text="${success}"></div>
+    <div th:if="${error}" style="background:#FEE2E2;color:#991B1B;padding:12px 14px;border-radius:8px;margin-bottom:16px;" th:text="${error}"></div>
+
     <div class="stats-grid">
         <div class="card">
             <div class="card-icon" style="background:#FFF3E0; color:#F59E0B;">
@@ -29,9 +32,19 @@
                 <input type="text" id="searchInput" placeholder="Recherche ..."
                        class="filter-search" oninput="filterTable(this,'traitementsTable')">
             </div>
-            <a th:href="@{/traitements/new}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Nouveau traitement
-            </a>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <button id="exportBtn" class="btn btn-primary" title="Exporter en Excel"
+                        style="background-color:#1040b9;width:42px;height:42px;display:inline-flex;align-items:center;justify-content:center;padding:0;border-radius:8px;">
+                    <i class="fas fa-file-excel" style="font-size:1.1rem;"></i>
+                </button>
+                <button id="importBtn" class="btn btn-primary" title="Importer depuis Excel"
+                        style="background-color:#10b9b3;width:42px;height:42px;display:inline-flex;align-items:center;justify-content:center;padding:0;border-radius:8px;">
+                    <i class="fas fa-file-upload" style="font-size:1.1rem;"></i>
+                </button>
+                <a th:href="@{/traitements/new}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Nouveau traitement
+                </a>
+            </div>
         </div>
 
         <div class="card-body">
@@ -89,6 +102,51 @@
         </div>
     </div>
 
+    <div id="exportModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.45);z-index:60;padding:24px;align-items:center;justify-content:center;">
+        <div style="background:white;max-width:520px;width:100%;border-radius:14px;padding:24px;box-shadow:0 24px 70px rgba(15,23,42,0.22);">
+            <h2 style="margin-top:0;margin-bottom:18px;font-size:1.2rem;font-weight:700;">Options d'export Excel</h2>
+
+            <form th:action="@{/traitements/export}" method="GET">
+                <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">
+                    <label style="font-size:0.8rem;color:#6B7280;font-weight:600;text-transform:uppercase;">Sélectionner une vache :</label>
+                    <select name="vacheId" style="padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;outline:none;">
+                        <option value="">-- Tout le troupeau --</option>
+                        <option th:each="v : ${vaches}" th:value="${v.id}" th:text="${v.numeroBoucle}"></option>
+                    </select>
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">
+                    <label style="font-size:0.8rem;color:#6B7280;font-weight:600;text-transform:uppercase;">Date de début :</label>
+                    <input type="date" name="datedebut" style="padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;outline:none;width:100%;">
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px;">
+                    <label style="font-size:0.8rem;color:#6B7280;font-weight:600;text-transform:uppercase;">Date de fin :</label>
+                    <input type="date" name="datefin" style="padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;outline:none;width:100%;">
+                </div>
+
+                <div style="display:flex;justify-content:flex-end;gap:10px;">
+                    <button type="button" id="closeExportBtn" class="btn" style="background:#9CA3AF;color:white;">Annuler</button>
+                    <button type="submit" class="btn btn-primary" style="background-color:#10B981;">Télécharger</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="importModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.45);z-index:60;padding:24px;align-items:center;justify-content:center;">
+        <div style="background:white;max-width:620px;width:100%;border-radius:14px;padding:24px;box-shadow:0 24px 70px rgba(15,23,42,0.22);">
+            <h3 style="margin-top:0;margin-bottom:12px;">Importer un historique de traitements</h3>
+
+            <form th:action="@{/traitements/import}" method="POST" enctype="multipart/form-data" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+                <input type="file" name="file" accept=".xlsx, .xls" style="padding:8px;border:1px dashed #D1D5DB;border-radius:6px;flex:1;min-width:240px;" required>
+                <button type="submit" class="btn btn-primary" style="background-color:#007AFF;">
+                    <i class="fas fa-upload"></i> Lancer l'import
+                </button>
+                <button type="button" id="closeImportBtn" class="btn" style="background:#9CA3AF;color:white;">Annuler</button>
+            </form>
+        </div>
+    </div>
+
     <script>
         function filterTable(input, tableId) {
             var filter = input.value.toLowerCase();
@@ -96,6 +154,62 @@
                 row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
             });
         }
+
+        (function () {
+            const exportBtn = document.getElementById('exportBtn');
+            const importBtn = document.getElementById('importBtn');
+            const exportModal = document.getElementById('exportModal');
+            const importModal = document.getElementById('importModal');
+            const closeExportBtn = document.getElementById('closeExportBtn');
+            const closeImportBtn = document.getElementById('closeImportBtn');
+
+            function openModal(modal) {
+                if (modal) {
+                    modal.style.display = 'flex';
+                }
+            }
+
+            function closeModal(modal) {
+                if (modal) {
+                    modal.style.display = 'none';
+                }
+            }
+
+            if (exportBtn) {
+                exportBtn.addEventListener('click', function () {
+                    openModal(exportModal);
+                });
+            }
+            if (importBtn) {
+                importBtn.addEventListener('click', function () {
+                    openModal(importModal);
+                });
+            }
+            if (closeExportBtn) {
+                closeExportBtn.addEventListener('click', function () {
+                    closeModal(exportModal);
+                });
+            }
+            if (closeImportBtn) {
+                closeImportBtn.addEventListener('click', function () {
+                    closeModal(importModal);
+                });
+            }
+            if (exportModal) {
+                exportModal.addEventListener('click', function (event) {
+                    if (event.target === exportModal) {
+                        closeModal(exportModal);
+                    }
+                });
+            }
+            if (importModal) {
+                importModal.addEventListener('click', function (event) {
+                    if (event.target === importModal) {
+                        closeModal(importModal);
+                    }
+                });
+            }
+        })();
     </script>
 </div>
 </body>

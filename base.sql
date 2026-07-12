@@ -51,12 +51,6 @@ CREATE TABLE ref_niveau_alerte (
     ordre   SMALLINT     NOT NULL
 );
 
-CREATE TABLE ref_type_alerte (
-    id      SERIAL PRIMARY KEY,
-    code    VARCHAR(40)  NOT NULL UNIQUE,
-    libelle VARCHAR(150) NOT NULL
-);
-
 CREATE TABLE ref_type_aliment (
     id      SERIAL PRIMARY KEY,
     code    VARCHAR(30)  NOT NULL UNIQUE,
@@ -334,16 +328,19 @@ CREATE INDEX idx_affectation_ration_actif ON affectation_ration_vache(ration_id,
 CREATE TABLE alerte (
     id          BIGSERIAL    PRIMARY KEY,
     id_niveau   INT          NOT NULL REFERENCES ref_niveau_alerte(id),
-    id_type     INT          NOT NULL REFERENCES ref_type_alerte(id),
+    type_alerte VARCHAR(50)  NOT NULL,
     titre       VARCHAR(200) NOT NULL,
     description TEXT,
-    vache_id    BIGINT       REFERENCES vache(id),
+    vache_id    BIGINT       REFERENCES vache(id),  -- nullable si alerte globale ferme
     acquittee   BOOLEAN      NOT NULL DEFAULT FALSE,
     created_at  TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_alerte_acquittee_date ON alerte(acquittee, created_at DESC);
-
+-- Index pour optimiser les requêtes principales
+CREATE INDEX idx_alerte_acquittee_date  ON alerte(acquittee, created_at DESC);
+CREATE INDEX idx_alerte_type            ON alerte(type_alerte);
+CREATE INDEX idx_alerte_vache           ON alerte(vache_id);
+CREATE INDEX idx_alerte_niveau          ON alerte(id_niveau);
 -- ============================================================
 -- 9. VENTES
 -- ============================================================
