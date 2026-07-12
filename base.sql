@@ -209,13 +209,23 @@ CREATE TABLE maladie (
     description TEXT
 );
 
+
 CREATE TABLE medicament (
     id                          BIGSERIAL     PRIMARY KEY,
     nom                         VARCHAR(150)  NOT NULL,
-    delai_attente_lait_defaut   INT           DEFAULT 0,
-    delai_attente_viande_defaut INT           DEFAULT 0,
-    prix_unitaire               DECIMAL(10,2) DEFAULT 0
 );
+
+CREATE TABLE traitement_fille
+(
+    id                          BIGSERIAL     PRIMARY KEY,
+    id_medicament                         VARCHAR(150)  NOT NULL   REFERENCES medicament(id),
+    delai_attente_j     DATE NOT NULL,
+    delai_traitement  DATE NOT NULL,
+    dose DECIMAL(10,2,)
+    unite           VARCHAR(50)   NOT NULL,
+    prix    DECIMAL(10,2)
+);
+
 
 CREATE TABLE maladie_medicament (
     maladie_id    BIGINT NOT NULL REFERENCES maladie(id) ON DELETE CASCADE,
@@ -235,15 +245,12 @@ CREATE TABLE evenement_sante (
 CREATE TABLE traitement_sante (
     id                 BIGSERIAL     PRIMARY KEY,
     evenement_sante_id BIGINT        NOT NULL REFERENCES evenement_sante(id) ON DELETE CASCADE,
-    medicament_id      BIGINT        NOT NULL REFERENCES medicament(id),
-    dose               DECIMAL(10,2) NOT NULL,
-    unite              VARCHAR(50)   NOT NULL,
-    duree_traitement   INT           NOT NULL,
-    delai_attente_j    INT           NOT NULL DEFAULT 0,
+    medicament_id      BIGINT        NOT NULL REFERENCES traitement_fille(id),
     date_debut         DATE          NOT NULL,
     date_fin           DATE          NOT NULL,
     nbr_medicament     INT           NOT NULL DEFAULT 1
 );
+
 
 CREATE TABLE protocole_vaccin (
     id_protocole_vaccin SERIAL PRIMARY KEY,
