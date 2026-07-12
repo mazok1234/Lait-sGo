@@ -8,7 +8,7 @@
 
     <div class="page-header">
         <h1 class="page-title">Nouvelle vente</h1>
-        <p class="page-subtitle">Enregistrer une vente de lait</p>
+        <p class="page-subtitle">Enregistrer une vente (lait, engrais, viande, vache, veau)</p>
     </div>
 
     <div th:if="${success}" class="flash flash-success" style="margin-bottom:20px;">
@@ -37,14 +37,26 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Quantité (L)</label>
-                        <input type="number" step="0.01" min="0.01" th:field="*{quantiteLait}" required>
-                        <span th:if="${#fields.hasErrors('quantiteLait')}" th:errors="*{quantiteLait}" class="error-message"></span>
+                        <label>Produit</label>
+                        <select id="produit-select" th:field="*{produit}" required>
+                            <option value="">-- Choisir un produit --</option>
+                            <option th:each="p : ${produits}"
+                                    th:value="${p.id}"
+                                    th:text="${p.libelle}"
+                                    th:attr="data-unite=${p.uniteDefaut}">Produit</option>
+                        </select>
+                        <span th:if="${#fields.hasErrors('produit')}" th:errors="*{produit}" class="error-message"></span>
                     </div>
 
                     <div class="form-group">
-                        <label>Prix unitaire (Ar/L)</label>
-                        <input type="number" step="0.01" min="0.01" max="9999.99" th:field="*{prixUnitaire}" required>
+                        <label>Quantité (<span id="unite-quantite">-</span>)</label>
+                        <input type="number" step="0.01" min="0.01" th:field="*{quantite}" required>
+                        <span th:if="${#fields.hasErrors('quantite')}" th:errors="*{quantite}" class="error-message"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Prix unitaire (Ar/<span id="unite-prix">-</span>)</label>
+                        <input type="number" step="0.01" min="0.01" th:field="*{prixUnitaire}" required>
                         <span th:if="${#fields.hasErrors('prixUnitaire')}" th:errors="*{prixUnitaire}" class="error-message"></span>
                     </div>
 
@@ -87,7 +99,7 @@
                        required>
 
                 <small class="form-help">
-                    Le fichier doit avoir la meme structure que celui exporté par l'application. Les colonnes doivent être dans le même ordre et les types de données doivent correspondre.
+                    Le fichier doit avoir la meme structure que celui exporté par l'application (colonnes : Date vente, Produit [LAIT/ENGRAIS/VIANDE/VACHE/VEAU], Quantité, Prix unitaire, Montant total, Créé le, Créé par). Les colonnes doivent être dans le même ordre et les types de données doivent correspondre.
                 </small>
 
             </br>
@@ -107,5 +119,23 @@
 </div>
 
 </div>
+
+<script>
+    (function () {
+        var select = document.getElementById('produit-select');
+        var uniteQuantite = document.getElementById('unite-quantite');
+        var unitePrix = document.getElementById('unite-prix');
+
+        function majUnite() {
+            var option = select.options[select.selectedIndex];
+            var unite = (option && option.value) ? option.getAttribute('data-unite') : '-';
+            uniteQuantite.textContent = unite || '-';
+            unitePrix.textContent = unite || '-';
+        }
+
+        select.addEventListener('change', majUnite);
+        majUnite();
+    })();
+</script>
 </body>
 </html>

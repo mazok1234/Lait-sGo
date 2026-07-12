@@ -12,10 +12,11 @@
 
     <div class="box">
         <p>Date de la vente : </p><p th:text="${vente.dateVente}"></p>
-        <p>Quantité de lait vendue : </p><p th:text="${vente.quantiteLait + ' litres'}"></p>
-        <p>Prix par litre du lait:</p><p th:text="${vente.prixUnitaire + ' Ar'}"></p>
-        <p>Montant total de la vente : </p><p th:text="${vente.prixUnitaire.multiply(vente.quantiteLait) + ' Ar'}"></p>
-         
+        <p>Produit vendu : </p><p th:text="${vente.produit != null ? vente.produit.libelle : '-'}"></p>
+        <p>Quantité vendue : </p><p th:text="${vente.quantite + ' ' + (vente.produit != null ? vente.produit.uniteDefaut : '')}"></p>
+        <p>Prix unitaire :</p><p th:text="${vente.prixUnitaire + ' Ar'}"></p>
+        <p>Montant total de la vente : </p><p th:text="${vente.prixUnitaire.multiply(vente.quantite) + ' Ar'}"></p>
+
     </div>
 
 </body>

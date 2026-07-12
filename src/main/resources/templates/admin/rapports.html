@@ -135,7 +135,8 @@
                     <thead>
                         <tr>
                             <th>Date</th>
-                            <th>Quantité (L)</th>
+                            <th>Produit</th>
+                            <th>Quantité</th>
                             <th>Prix Unitaire (Ar)</th>
                             <th>Total (Ar)</th>
                         </tr>
@@ -143,14 +144,15 @@
                     <tbody>
                         <tr th:each="vente : ${ventes}">
                             <td th:text="${#temporals.format(vente.dateVente, 'dd/MM/yyyy')}">-</td>
-                            <td th:text="${#numbers.formatDecimal(vente.quantiteLait, 1, 2) + ' L'}">0 L</td>
+                            <td th:text="${vente.produit != null ? vente.produit.libelle : '-'}">Lait</td>
+                            <td th:text="${#numbers.formatDecimal(vente.quantite, 1, 2) + ' ' + (vente.produit != null ? vente.produit.uniteDefaut : '')}">0 L</td>
                             <td th:text="${#numbers.formatDecimal(vente.prixUnitaire, 1, 2) + ' Ar'}">0 Ar</td>
                             <td
-                                th:text="${#numbers.formatDecimal(vente.quantiteLait * vente.prixUnitaire, 1, 2) + ' Ar'}">
+                                th:text="${#numbers.formatDecimal(vente.quantite * vente.prixUnitaire, 1, 2) + ' Ar'}">
                                 0 Ar</td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(ventes)}">
-                            <td colspan="4" class="text-center" style="padding:32px;color:#9CA3AF;">
+                            <td colspan="5" class="text-center" style="padding:32px;color:#9CA3AF;">
                                 Aucune vente trouvée.
                             </td>
                         </tr>

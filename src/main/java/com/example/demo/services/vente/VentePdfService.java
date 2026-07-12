@@ -25,12 +25,17 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import com.example.demo.entity.auth.Utilisateur;
+import com.example.demo.entity.vente.RefProduit;
 import com.example.demo.entity.vente.Vente;
+import com.example.demo.repository.vente.RefProduitRepository;
 
 @Service
 public class VentePdfService {
     @Autowired
     private SpringTemplateEngine templateEngine;
+
+    @Autowired
+    private RefProduitRepository refProduitRepository;
 
     public byte[] generatePdf(Vente vente) throws Exception {
         Context context = new Context();
@@ -60,42 +65,46 @@ public class VentePdfService {
         Row header = sheet.createRow(0);
         // header.createCell(0).setCellValue("ID");
         header.createCell(0).setCellValue("Date vente");
-        header.createCell(1).setCellValue("Quantité lait");
-        header.createCell(2).setCellValue("Prix unitaire");
-        header.createCell(3).setCellValue("Montant total");
-        header.createCell(4).setCellValue("Créé le");
-        header.createCell(5).setCellValue("Créé par");
+        header.createCell(1).setCellValue("Produit");
+        header.createCell(2).setCellValue("Quantité");
+        header.createCell(3).setCellValue("Prix unitaire");
+        header.createCell(4).setCellValue("Montant total");
+        header.createCell(5).setCellValue("Créé le");
+        header.createCell(6).setCellValue("Créé par");
 
-        
+
         Row data = sheet.createRow(1);
-        
+
         data.createCell(0).setCellValue(
                 vente.getDateVente().toString()
         );
         data.createCell(1).setCellValue(
-                vente.getQuantiteLait().doubleValue()
+                vente.getProduit() != null ? vente.getProduit().getCode() : ""
         );
         data.createCell(2).setCellValue(
+                vente.getQuantite().doubleValue()
+        );
+        data.createCell(3).setCellValue(
                 vente.getPrixUnitaire().doubleValue()
         );
 
-        data.createCell(3).setCellValue(
-                vente.getQuantiteLait()
+        data.createCell(4).setCellValue(
+                vente.getQuantite()
                      .multiply(vente.getPrixUnitaire())
                      .doubleValue()
         );
 
-        data.createCell(4).setCellValue(
+        data.createCell(5).setCellValue(
                 vente.getCreatedAt().toString()
         );
 
         if (vente.getCreatedBy() != null) {
-            data.createCell(5).setCellValue(
+            data.createCell(6).setCellValue(
                     vente.getCreatedBy().getNom()
             );
         }
 
-        for (int i = 0; i <= 5; i++) {
+        for (int i = 0; i <= 6; i++) {
             sheet.autoSizeColumn(i);
         }
 
@@ -127,10 +136,19 @@ public List<Vente> importExcel(InputStream inputStream) throws IOException {
                 Vente vente = new Vente();
 
                 vente.setDateVente(parseLocalDateCell(row.getCell(0)));
-                vente.setQuantiteLait(parseBigDecimalCell(row.getCell(1)));
-                vente.setPrixUnitaire(parseBigDecimalCell(row.getCell(2)));
 
-                Cell createdAtCell = row.getCell(4);
+                String produitCode = getCellText(row.getCell(1));
+                if (!produitCode.isBlank()) {
+                        RefProduit produit = refProduitRepository.findByCode(produitCode.trim().toUpperCase())
+                                .orElseThrow(() -> new RuntimeException(
+                                        "Produit inconnu dans le fichier Excel : " + produitCode));
+                        vente.setProduit(produit);
+                }
+
+                vente.setQuantite(parseBigDecimalCell(row.getCell(2)));
+                vente.setPrixUnitaire(parseBigDecimalCell(row.getCell(3)));
+
+                Cell createdAtCell = row.getCell(5);
                 if (createdAtCell != null) {
                         String createdAtValue = getCellText(createdAtCell);
                         if (!createdAtValue.isBlank()) {
@@ -138,7 +156,7 @@ public List<Vente> importExcel(InputStream inputStream) throws IOException {
                         }
                 }
 
-                Cell createdByCell = row.getCell(5);
+                Cell createdByCell = row.getCell(6);
                 if (createdByCell != null) {
                         String createdByValue = getCellText(createdByCell);
                         if (!createdByValue.isBlank()) {
@@ -156,7 +174,7 @@ public List<Vente> importExcel(InputStream inputStream) throws IOException {
 }
 
 private boolean isRowEmpty(Row row) {
-        for (int i = 0; i <= 5; i++) {
+        for (int i = 0; i <= 6; i++) {
                 Cell cell = row.getCell(i);
                 if (cell != null && !getCellText(cell).isBlank()) {
                         return false;

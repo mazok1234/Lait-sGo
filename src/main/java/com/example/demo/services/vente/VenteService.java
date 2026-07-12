@@ -14,9 +14,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.entity.production.Production;
+import com.example.demo.entity.vente.RefProduit;
 import com.example.demo.entity.vente.Vente;
 import com.example.demo.repository.auth.UtilisateurRepository;
 import com.example.demo.repository.production.ProductionRepository;
+import com.example.demo.repository.vente.RefProduitRepository;
 import com.example.demo.repository.vente.VenteRepository;
 import com.example.demo.services.alerte.AlerteService;
 
@@ -24,22 +26,34 @@ import com.example.demo.services.alerte.AlerteService;
 @Transactional
 public class VenteService {
 
+    private static final String CODE_LAIT = "LAIT";
+
     private final ProductionRepository productionRepository;
     private final VenteRepository venteRepository;
     private final UtilisateurRepository utilisateurRepository;
+    private final RefProduitRepository refProduitRepository;
     private final AlerteService alerteService; // ← ajouté
 
     // Seuil en litres sous lequel une alerte stock lait est envoyée
     private static final BigDecimal SEUIL_STOCK_LAIT_L = new BigDecimal("50");
 
+    // Plafond de prix unitaire appliqué uniquement à la vente de lait
+    private static final BigDecimal PRIX_MAX_LAIT = new BigDecimal("9999.99");
+
     public VenteService(ProductionRepository productionRepository,
             VenteRepository venteRepository,
             UtilisateurRepository utilisateurRepository,
+            RefProduitRepository refProduitRepository,
             AlerteService alerteService) { // ← ajouté
         this.productionRepository = productionRepository;
         this.venteRepository = venteRepository;
         this.utilisateurRepository = utilisateurRepository;
+        this.refProduitRepository = refProduitRepository;
         this.alerteService = alerteService; // ← ajouté
+    }
+
+    public List<RefProduit> getProduits() {
+        return refProduitRepository.findAllByOrderByLibelleAsc();
     }
 
     // 1. findById — l'id est Integer dans Vente
@@ -61,13 +75,20 @@ public class VenteService {
                 min, max, PageRequest.of(page, size));
     }
 
-    public Vente effectuerVente(BigDecimal quantite, BigDecimal prixUnitaire, LocalDate dateVente) {
+    public Vente effectuerVente(BigDecimal quantite, BigDecimal prixUnitaire, LocalDate dateVente, RefProduit produit) {
+        if (produit == null || produit.getId() == null) {
+            throw new RuntimeException("Le produit vendu doit être sélectionné.");
+        }
+        RefProduit produitResolu = refProduitRepository.findById(produit.getId())
+                .orElseThrow(() -> new RuntimeException("Produit introuvable."));
+        String unite = produitResolu.getUniteDefaut();
+
         if (prixUnitaire == null || prixUnitaire.compareTo(BigDecimal.ZERO) <= 0) {
             throw new RuntimeException("Le prix unitaire doit être supérieur à 0.");
         }
-        BigDecimal maxPrix = new BigDecimal("9999.99");
-        if (prixUnitaire.compareTo(maxPrix) > 0) {
-            throw new RuntimeException("Le prix unitaire ne peut pas dépasser 9 999,99 Ar/L.");
+        boolean estLait = CODE_LAIT.equals(produitResolu.getCode());
+        if (estLait && prixUnitaire.compareTo(PRIX_MAX_LAIT) > 0) {
+            throw new RuntimeException("Le prix unitaire ne peut pas dépasser 9 999,99 Ar/" + unite + ".");
         }
         if (quantite == null || quantite.compareTo(BigDecimal.ZERO) <= 0) {
             throw new RuntimeException("La quantité doit être supérieure à 0.");
@@ -76,56 +97,61 @@ public class VenteService {
             throw new RuntimeException("La date de vente ne peut pas être dans le futur.");
         }
 
-        BigDecimal stock = productionRepository.getRemainingStock();
-        if (stock.compareTo(quantite) < 0) {
-            throw new RuntimeException("Stock insuffisant. Stock actuel : " + stock + " L");
-        }
-
-        List<Production> productions = productionRepository
-                .findByQuantiteRestanteGreaterThanOrderByDateProductionAsc(BigDecimal.ZERO);
-        BigDecimal restant = quantite;
-        List<Production> modified = new ArrayList<>();
-
-        for (Production production : productions) {
-            if (restant.compareTo(BigDecimal.ZERO) <= 0)
-                break;
-            BigDecimal disponible = production.getQuantiteRestante();
-            if (disponible.compareTo(restant) >= 0) {
-                production.setQuantiteRestante(disponible.subtract(restant));
-                restant = BigDecimal.ZERO;
-            } else {
-                restant = restant.subtract(disponible);
-                production.setQuantiteRestante(BigDecimal.ZERO);
+        if (estLait) {
+            BigDecimal stock = productionRepository.getRemainingStock();
+            if (stock.compareTo(quantite) < 0) {
+                throw new RuntimeException("Stock insuffisant. Stock actuel : " + stock + " L");
             }
-            modified.add(production);
+
+            List<Production> productions = productionRepository
+                    .findByQuantiteRestanteGreaterThanOrderByDateProductionAsc(BigDecimal.ZERO);
+            BigDecimal restant = quantite;
+            List<Production> modified = new ArrayList<>();
+
+            for (Production production : productions) {
+                if (restant.compareTo(BigDecimal.ZERO) <= 0)
+                    break;
+                BigDecimal disponible = production.getQuantiteRestante();
+                if (disponible.compareTo(restant) >= 0) {
+                    production.setQuantiteRestante(disponible.subtract(restant));
+                    restant = BigDecimal.ZERO;
+                } else {
+                    restant = restant.subtract(disponible);
+                    production.setQuantiteRestante(BigDecimal.ZERO);
+                }
+                modified.add(production);
+            }
+            productionRepository.saveAll(modified);
         }
-        productionRepository.saveAll(modified);
 
         Vente vente = new Vente();
         vente.setDateVente(dateVente);
-        vente.setQuantiteLait(quantite);
+        vente.setProduit(produitResolu);
+        vente.setQuantite(quantite);
         vente.setPrixUnitaire(prixUnitaire);
         vente.setCreatedAt(LocalDateTime.now());
         vente.setCreatedBy(resolveCreateurVente());
 
         Vente saved = venteRepository.save(vente);
 
-        // ← INJECTION ALERTE — vérification du stock après vente
-        BigDecimal stockRestant = productionRepository.getRemainingStock();
-        if (stockRestant.compareTo(SEUIL_STOCK_LAIT_L) <= 0) {
-            alerteService.envoyerAlerte(
-                    "stock_lait_bas",
-                    "attention",
-                    "Stock de lait insuffisant",
-                    "Stock restant après vente du " + dateVente
-                            + " : " + stockRestant + " L"
-                            + " (seuil critique : " + SEUIL_STOCK_LAIT_L + " L).",
-                    null);
-        } else {
-            // Stock reconstitué au-dessus du seuil → acquittement automatique
-            alerteService.acquitterAutomatiquement("stock_lait_bas", null);
+        if (estLait) {
+            // ← INJECTION ALERTE — vérification du stock après vente
+            BigDecimal stockRestant = productionRepository.getRemainingStock();
+            if (stockRestant.compareTo(SEUIL_STOCK_LAIT_L) <= 0) {
+                alerteService.envoyerAlerte(
+                        "stock_lait_bas",
+                        "attention",
+                        "Stock de lait insuffisant",
+                        "Stock restant après vente du " + dateVente
+                                + " : " + stockRestant + " L"
+                                + " (seuil critique : " + SEUIL_STOCK_LAIT_L + " L).",
+                        null);
+            } else {
+                // Stock reconstitué au-dessus du seuil → acquittement automatique
+                alerteService.acquitterAutomatiquement("stock_lait_bas", null);
+            }
+            // ← FIN INJECTION
         }
-        // ← FIN INJECTION
 
         return saved;
     }
@@ -173,6 +199,13 @@ public void importerVentes(List<Vente> ventes) {
 
     for (Vente vente : ventes) {
 
+        if (vente.getProduit() == null || vente.getProduit().getCode() == null) {
+            throw new RuntimeException(
+                    "Produit invalide pour la vente du "
+                    + vente.getDateVente()
+            );
+        }
+
         if (vente.getPrixUnitaire() == null ||
                 vente.getPrixUnitaire().compareTo(BigDecimal.ZERO) <= 0) {
             throw new RuntimeException(
@@ -181,8 +214,8 @@ public void importerVentes(List<Vente> ventes) {
             );
         }
 
-        if (vente.getQuantiteLait() == null ||
-                vente.getQuantiteLait().compareTo(BigDecimal.ZERO) <= 0) {
+        if (vente.getQuantite() == null ||
+                vente.getQuantite().compareTo(BigDecimal.ZERO) <= 0) {
             throw new RuntimeException(
                     "Quantité invalide pour la vente du "
                     + vente.getDateVente()
@@ -197,29 +230,27 @@ public void importerVentes(List<Vente> ventes) {
             );
         }
 
-        if (stockDisponible.compareTo(
-                vente.getQuantiteLait()) < 0) {
-
-            throw new RuntimeException(
-                    "Stock insuffisant pour la vente du "
-                    + vente.getDateVente()
-                    + ". Stock restant : "
-                    + stockDisponible
-                    + " L"
-            );
-        }
-
-        stockDisponible =
-                stockDisponible.subtract(
-                        vente.getQuantiteLait()
+        if (CODE_LAIT.equals(vente.getProduit().getCode())) {
+            if (stockDisponible.compareTo(vente.getQuantite()) < 0) {
+                throw new RuntimeException(
+                        "Stock insuffisant pour la vente du "
+                        + vente.getDateVente()
+                        + ". Stock restant : "
+                        + stockDisponible
+                        + " L"
                 );
+            }
+
+            stockDisponible = stockDisponible.subtract(vente.getQuantite());
+        }
     }
 
     for (Vente vente : ventes) {
         effectuerVente(
-                vente.getQuantiteLait(),
+                vente.getQuantite(),
                 vente.getPrixUnitaire(),
-                vente.getDateVente()
+                vente.getDateVente(),
+                vente.getProduit()
         );
     }
 }

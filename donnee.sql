@@ -29,6 +29,14 @@ INSERT INTO ref_role_utilisateur (code, libelle) VALUES
     ('employe', 'Employé')
 ON CONFLICT (code) DO NOTHING;
 
+INSERT INTO ref_produit (code, libelle, unite_defaut) VALUES
+    ('LAIT',    'Lait',    'L'),
+    ('ENGRAIS', 'Engrais', 'kg'),
+    ('VIANDE',  'Viande',  'kg'),
+    ('VACHE',   'Vache',   'unité'),
+    ('VEAU',    'Veau',    'unité')
+ON CONFLICT (code) DO NOTHING;
+
 INSERT INTO ref_niveau_alerte (code, libelle, ordre) VALUES
     ('urgent',    'Urgent',    1),
     ('attention', 'Attention', 2),
@@ -182,14 +190,22 @@ FROM ref_statut_sante s WHERE s.libelle = 'En_traitement'
 -- 5. MÉDICAMENTS / MALADIES
 -- ============================================================
 
-INSERT INTO medicament (id, nom, delai_attente_lait_defaut, delai_attente_viande_defaut, prix_unitaire) VALUES
-    (1, 'Amoxicilline 15%', 3, 8, 1000),
-    (2, 'Oxytetracycline LA', 4, 15, 900.80),
-    (3, 'Ivermectine', 0, 21, 1500.00),
-    (4, 'Anti-inflammatoire Meloxicam', 2, 5, 7000.25),
-    (5, 'Vitamine B12', 0, 0, 4000.00)
+INSERT INTO medicament (id, nom) VALUES
+    (1, 'Amoxicilline 15%'),
+    (2, 'Oxytetracycline LA'),
+    (3, 'Ivermectine'),
+    (4, 'Anti-inflammatoire Meloxicam'),
+    (5, 'Vitamine B12')
 ON CONFLICT (id) DO NOTHING;
 SELECT setval('medicament_id_seq', GREATEST((SELECT MAX(id) FROM medicament), 1));
+
+INSERT INTO medicament_fille (medicament_id, dose, unite, delai_attente_lait_defaut, delai_attente_viande_defaut, prix_unitaire) VALUES
+    (1, 10.00, 'ml', 3, 8, 1000),
+    (1, 20.00, 'ml', 3, 8, 1800),
+    (2, 15.00, 'ml', 4, 15, 900.80),
+    (3, 5.00,  'ml', 0, 21, 1500.00),
+    (4, 20.00, 'ml', 2, 5, 7000.25),
+    (5, 10.00, 'ml', 0, 0, 4000.00);
 
 INSERT INTO maladie (id, nom, description) VALUES
     (1, 'Mammite', 'Inflammation de la mamelle, souvent d''origine bactérienne'),
@@ -304,18 +320,19 @@ ON CONFLICT (id) DO NOTHING;
 
 SELECT setval('evenement_sante_id_seq', GREATEST((SELECT MAX(id) FROM evenement_sante), 1));
 
-INSERT INTO traitement_sante (evenement_sante_id, medicament_id, dose, unite, duree_traitement, delai_attente_j, date_debut, date_fin, nbr_medicament)
-SELECT x.evenement_sante_id, x.medicament_id, x.dose, x.unite, x.duree_traitement, x.delai_attente_j, x.date_debut, x.date_fin, x.nbr_medicament
+INSERT INTO traitement_sante (evenement_sante_id, medicament_fille_id, duree_traitement, delai_attente_j, date_debut, date_fin, nbr_medicament)
+SELECT x.evenement_sante_id, mf.id, x.duree_traitement, x.delai_attente_j, x.date_debut, x.date_fin, x.nbr_medicament
 FROM (VALUES
     (1, 1, 10.00, 'ml', 5, 3, DATE '2026-03-18', DATE '2026-03-22', 1),
     (2, 3, 5.00,  'ml', 1, 21, DATE '2026-05-02', DATE '2026-05-02', 1),
     (3, 1, 10.00, 'ml', 5, 3, DATE '2026-06-11', DATE '2026-06-15', 1),
     (3, 4, 20.00, 'ml', 3, 5, DATE '2026-06-11', DATE '2026-06-13', 1)
 ) AS x(evenement_sante_id, medicament_id, dose, unite, duree_traitement, delai_attente_j, date_debut, date_fin, nbr_medicament)
+JOIN medicament_fille mf ON mf.medicament_id = x.medicament_id AND mf.dose = x.dose AND mf.unite = x.unite
 WHERE NOT EXISTS (
     SELECT 1 FROM traitement_sante t
     WHERE t.evenement_sante_id = x.evenement_sante_id
-      AND t.medicament_id = x.medicament_id
+      AND t.medicament_fille_id = mf.id
       AND t.date_debut = x.date_debut
 );
 
@@ -502,15 +519,15 @@ WHERE NOT EXISTS (
 -- 12. VENTES
 -- ============================================================
 
-INSERT INTO vente (date_vente, quantite_litres, prix_unitaire, created_by)
-SELECT CURRENT_DATE, 25.00, 1500.00, u.id
+INSERT INTO vente (date_vente, produit_id, quantite, prix_unitaire, created_by)
+SELECT CURRENT_DATE, (SELECT id FROM ref_produit WHERE code = 'LAIT'), 25.00, 1500.00, u.id
 FROM utilisateur u WHERE u.email = 'admin@laitgo.mg'
   AND NOT EXISTS (
-      SELECT 1 FROM vente v WHERE v.date_vente = CURRENT_DATE AND v.quantite_litres = 25.00 AND v.prix_unitaire = 1500.00
+      SELECT 1 FROM vente v WHERE v.date_vente = CURRENT_DATE AND v.quantite = 25.00 AND v.prix_unitaire = 1500.00
   );
 
-INSERT INTO vente (date_vente, quantite_litres, prix_unitaire, created_by)
-SELECT v.date_vente, v.quantite_litres, v.prix_unitaire, (SELECT id FROM utilisateur ORDER BY id LIMIT 1)
+INSERT INTO vente (date_vente, produit_id, quantite, prix_unitaire, created_by)
+SELECT v.date_vente, (SELECT id FROM ref_produit WHERE code = 'LAIT'), v.quantite, v.prix_unitaire, (SELECT id FROM utilisateur ORDER BY id LIMIT 1)
 FROM (VALUES
     (DATE '2026-01-25', 300.00, 1600.00),
     (DATE '2026-02-25', 320.00, 1620.00),
@@ -518,10 +535,10 @@ FROM (VALUES
     (DATE '2026-04-25', 340.00, 1670.00),
     (DATE '2026-05-25', 360.00, 1700.00),
     (DATE '2026-06-25', 390.00, 1720.00)
-) AS v(date_vente, quantite_litres, prix_unitaire)
+) AS v(date_vente, quantite, prix_unitaire)
 WHERE NOT EXISTS (
     SELECT 1 FROM vente ve
-    WHERE ve.date_vente = v.date_vente AND ve.quantite_litres = v.quantite_litres AND ve.prix_unitaire = v.prix_unitaire
+    WHERE ve.date_vente = v.date_vente AND ve.quantite = v.quantite AND ve.prix_unitaire = v.prix_unitaire
 );
 
 COMMIT;

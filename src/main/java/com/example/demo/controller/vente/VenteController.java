@@ -36,6 +36,7 @@ private final VentePdfService ventePdfService;
 @GetMapping("/vente/nouveau")
 public String nouveau(Model model) {
     model.addAttribute("vente", new Vente());
+    model.addAttribute("produits", venteService.getProduits());
     return "vente/form";
 }
 
@@ -43,7 +44,7 @@ public String nouveau(Model model) {
 public String save(@ModelAttribute Vente vente,
                    RedirectAttributes redirectAttributes) {
     try {
-        Vente savedVente = venteService.effectuerVente(vente.getQuantiteLait(),vente.getPrixUnitaire(),vente.getDateVente());
+        Vente savedVente = venteService.effectuerVente(vente.getQuantite(), vente.getPrixUnitaire(), vente.getDateVente(), vente.getProduit());
 
         redirectAttributes.addFlashAttribute("success","Vente enregistrée.");
         redirectAttributes.addFlashAttribute("lastVenteId", savedVente.getId());

@@ -21,14 +21,14 @@ public interface VenteRepository extends JpaRepository<Vente, Integer> {
 
         public Page<Vente> findAllByOrderByDateVenteAsc(Pageable pageable);
 
-        @Query("SELECT COALESCE(SUM(v.quantiteLait), 0) FROM Vente v WHERE v.dateVente = :date")
+        @Query("SELECT COALESCE(SUM(v.quantite), 0) FROM Vente v WHERE v.dateVente = :date AND v.produit.code = 'LAIT'")
         BigDecimal getTotalVenduByDate(@Param("date") LocalDate date);
 
-        @Query("SELECT COALESCE(SUM(v.quantiteLait * v.prixUnitaire), 0) FROM Vente v")
+        @Query("SELECT COALESCE(SUM(v.quantite * v.prixUnitaire), 0) FROM Vente v")
         BigDecimal getTotalRevenus();
 
         @Query("""
-                        SELECT COALESCE(SUM(v.quantiteLait * v.prixUnitaire), 0)
+                        SELECT COALESCE(SUM(v.quantite * v.prixUnitaire), 0)
                         FROM Vente v
                         WHERE v.dateVente >= COALESCE(:dateDe, v.dateVente)
                           AND v.dateVente <= COALESCE(:dateA, v.dateVente)
@@ -36,14 +36,14 @@ public interface VenteRepository extends JpaRepository<Vente, Integer> {
         BigDecimal getTotalRevenusBetweenDates(@Param("dateDe") LocalDate dateDe,
                         @Param("dateA") LocalDate dateA);
 
-        @Query("SELECT new map(MONTH(v.dateVente) as month, YEAR(v.dateVente) as year, SUM(v.quantiteLait * v.prixUnitaire) as total) FROM Vente v GROUP BY YEAR(v.dateVente), MONTH(v.dateVente) ORDER BY year, month")
+        @Query("SELECT new map(MONTH(v.dateVente) as month, YEAR(v.dateVente) as year, SUM(v.quantite * v.prixUnitaire) as total) FROM Vente v GROUP BY YEAR(v.dateVente), MONTH(v.dateVente) ORDER BY year, month")
         List<java.util.Map<String, Object>> getRevenusMensuels();
 
         @Query("""
                             select v
                             from Vente v
-                            where (:min IS NULL or (v.prixUnitaire * v.quantiteLait) >= :min)
-                              and (:max IS NULL or (v.prixUnitaire * v.quantiteLait) <= :max)
+                            where (:min IS NULL or (v.prixUnitaire * v.quantite) >= :min)
+                              and (:max IS NULL or (v.prixUnitaire * v.quantite) <= :max)
                         """)
         Page<Vente> findByPrixTotalBetweenDateDesc(
                         @Param("min") BigDecimal min,

@@ -25,8 +25,12 @@ public class Vente{
     @Column(name = "date_vente")
     private LocalDate dateVente;
 
-    @Column(name = "quantite_litres")
-    private BigDecimal quantiteLait;
+    @ManyToOne
+    @JoinColumn(name = "produit_id")
+    private RefProduit produit;
+
+    @Column(name = "quantite")
+    private BigDecimal quantite;
 
     @Column(name = "prix_unitaire")
     private BigDecimal prixUnitaire;
@@ -54,12 +58,20 @@ public class Vente{
         this.dateVente = dateVente;
     }
 
-    public BigDecimal getQuantiteLait() {
-        return quantiteLait;
+    public RefProduit getProduit() {
+        return produit;
     }
 
-    public void setQuantiteLait(BigDecimal quantiteLait) {
-        this.quantiteLait = quantiteLait;
+    public void setProduit(RefProduit produit) {
+        this.produit = produit;
+    }
+
+    public BigDecimal getQuantite() {
+        return quantite;
+    }
+
+    public void setQuantite(BigDecimal quantite) {
+        this.quantite = quantite;
     }
 
     public BigDecimal getPrixUnitaire() {

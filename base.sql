@@ -6,6 +6,17 @@
 -- directement dans les CREATE TABLE (plus besoin des ALTER TABLE
 -- historiques). Les fichiers d'origine ne sont pas modifiés/supprimés.
 --
+-- Intègre aussi l'état final des migrations suivantes (elles restent
+-- disponibles pour mettre à jour une base déjà existante, mais leur
+-- résultat est déjà inclus ci-dessous) :
+--   - migration_medicament_fille.sql (split medicament -> medicament_fille)
+--   - migration_vente_produit.sql (vente.produit_id + ref_produit)
+--
+-- Vérifié le 2026-07-12 : ce fichier + donnee.sql reconstruisent, sur
+-- une base vide, un schéma identique colonne par colonne, contrainte
+-- par contrainte, index par index et vue par vue à celui d'une base
+-- laitgo réelle ayant reçu toutes les migrations ci-dessus.
+--
 -- Utilisation : base.sql + donnee.sql suffisent pour lancer le projet.
 --   psql -U postgres -f base.sql
 --   psql -U postgres -d laitgo -f donnee.sql
@@ -42,6 +53,13 @@ CREATE TABLE ref_role_utilisateur (
     id      SERIAL PRIMARY KEY,
     code    VARCHAR(30)  NOT NULL UNIQUE,
     libelle VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE ref_produit (
+    id           SERIAL PRIMARY KEY,
+    code         VARCHAR(30)  NOT NULL UNIQUE,
+    libelle      VARCHAR(100) NOT NULL,
+    unite_defaut VARCHAR(10)  NOT NULL
 );
 
 CREATE TABLE ref_niveau_alerte (
@@ -205,21 +223,19 @@ CREATE TABLE maladie (
 
 
 CREATE TABLE medicament (
-    id                          BIGSERIAL     PRIMARY KEY,
-    nom                         VARCHAR(150)  NOT NULL,
+    id   BIGSERIAL    PRIMARY KEY,
+    nom  VARCHAR(150) NOT NULL
 );
 
-CREATE TABLE traitement_fille
-(
-    id                          BIGSERIAL     PRIMARY KEY,
-    id_medicament                         VARCHAR(150)  NOT NULL   REFERENCES medicament(id),
-    delai_attente_j     DATE NOT NULL,
-    delai_traitement  DATE NOT NULL,
-    dose DECIMAL(10,2,)
-    unite           VARCHAR(50)   NOT NULL,
-    prix    DECIMAL(10,2)
+CREATE TABLE medicament_fille (
+    id                          BIGSERIAL      PRIMARY KEY,
+    medicament_id               BIGINT         NOT NULL REFERENCES medicament(id) ON DELETE CASCADE,
+    dose                        DECIMAL(10,2)  NOT NULL,
+    unite                       VARCHAR(50)    NOT NULL,
+    delai_attente_lait_defaut   INT            DEFAULT 0,
+    delai_attente_viande_defaut INT            DEFAULT 0,
+    prix_unitaire               DECIMAL(10,2)  DEFAULT 0
 );
-
 
 CREATE TABLE maladie_medicament (
     maladie_id    BIGINT NOT NULL REFERENCES maladie(id) ON DELETE CASCADE,
@@ -237,12 +253,14 @@ CREATE TABLE evenement_sante (
 );
 
 CREATE TABLE traitement_sante (
-    id                 BIGSERIAL     PRIMARY KEY,
-    evenement_sante_id BIGINT        NOT NULL REFERENCES evenement_sante(id) ON DELETE CASCADE,
-    medicament_id      BIGINT        NOT NULL REFERENCES traitement_fille(id),
-    date_debut         DATE          NOT NULL,
-    date_fin           DATE          NOT NULL,
-    nbr_medicament     INT           NOT NULL DEFAULT 1
+    id                  BIGSERIAL     PRIMARY KEY,
+    evenement_sante_id  BIGINT        NOT NULL REFERENCES evenement_sante(id) ON DELETE CASCADE,
+    medicament_fille_id BIGINT        NOT NULL REFERENCES medicament_fille(id),
+    duree_traitement    INT           NOT NULL,
+    date_debut          DATE          NOT NULL,
+    date_fin            DATE          NOT NULL,
+    nbr_medicament      INT           NOT NULL DEFAULT 1,
+    delai_attente_j     INT           NOT NULL DEFAULT 0
 );
 
 
@@ -348,8 +366,9 @@ CREATE INDEX idx_alerte_niveau          ON alerte(id_niveau);
 CREATE TABLE vente (
     id              BIGSERIAL    PRIMARY KEY,
     date_vente      DATE         NOT NULL,
-    quantite_litres DECIMAL(8,2) NOT NULL,
-    prix_unitaire   DECIMAL(6,2),
+    produit_id      INT          NOT NULL REFERENCES ref_produit(id),
+    quantite        DECIMAL(10,2) NOT NULL,
+    prix_unitaire   DECIMAL(10,2),
     created_by      BIGINT       REFERENCES utilisateur(id),
     created_at      TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
@@ -436,9 +455,11 @@ LEFT JOIN (
     GROUP BY date_production
 ) offre ON offre.date = jours.date
 LEFT JOIN (
-    SELECT date_vente AS date, SUM(quantite_litres) AS vente_l
-    FROM vente
-    GROUP BY date_vente
+    SELECT v.date_vente AS date, SUM(v.quantite) AS vente_l
+    FROM vente v
+    JOIN ref_produit p ON p.id = v.produit_id
+    WHERE p.code = 'LAIT'
+    GROUP BY v.date_vente
 ) vente ON vente.date = jours.date
 ORDER BY jours.date;
 
