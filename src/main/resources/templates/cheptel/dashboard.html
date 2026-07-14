@@ -133,7 +133,7 @@
                             <a th:href="@{'/cheptel/vaches/' + ${item.vache.id} + '/edit'}" class="action-pill" style="background:#eef4fa;">
                                 <i class="far fa-edit"></i>
                             </a>
-                            <a th:href="@{'/vaches/' + ${item.vache.id} + '/delete'}" class="action-pill" style="background:#fce8e6;color:#b34033;" onclick="return confirm('Supprimer cette vache ?');">
+                            <a th:href="@{'/cheptel/vaches/' + ${item.vache.id} + '/delete'}" class="action-pill" style="background:#fce8e6;color:#b34033;" onclick="return confirm('Supprimer cette vache ?');">
                                 <i class="far fa-trash-alt"></i>
                             </a>
                         </td>

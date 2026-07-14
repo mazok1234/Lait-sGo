@@ -5,6 +5,8 @@ import com.example.demo.services.alerte.AlerteService;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -89,12 +91,20 @@ public class VacheService {
                     "Impossible de supprimer cette vache : elle est la mère de " + filles + " autre(s) vache(s).");
         }
 
-        alerteService.detacherVache(id);
-        statutVieService.supprimerHistorique(id);
-        statutReproService.supprimerHistorique(id);
-        statutLactationService.supprimerHistorique(id);
-        statutSanteService.supprimerHistorique(id);
-        vacheRepository.deleteById(id);
+        try {
+            alerteService.detacherVache(id);
+            statutVieService.supprimerHistorique(id);
+            statutReproService.supprimerHistorique(id);
+            statutLactationService.supprimerHistorique(id);
+            statutSanteService.supprimerHistorique(id);
+            vacheRepository.deleteById(id);
+            vacheRepository.flush();
+        } catch (EmptyResultDataAccessException e) {
+            throw new IllegalArgumentException("Vache introuvable: " + id);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException(
+                    "Impossible de supprimer cette vache : elle est encore utilisée dans d'autres enregistrements (production, santé, reproduction ou vente).");
+        }
     }
 
     public long count() {

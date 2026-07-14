@@ -369,6 +369,11 @@ public class CheptelPageController {
         return "redirect:/cheptel/vaches";
     }
 
+    @GetMapping("/vaches/{id}/delete")
+    public String deleteVacheLegacy(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        return deleteVache(id, redirectAttributes);
+    }
+
     @GetMapping("/cheptel/races")
     public String races(Model model) {
         model.addAttribute("races", raceService.findAll());
