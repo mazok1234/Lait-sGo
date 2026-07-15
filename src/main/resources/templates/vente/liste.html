@@ -14,13 +14,16 @@
     <div class="card card-table">
         <div class="card-header filters" style="justify-content:space-between;gap:12px;flex-wrap:wrap;">
             <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-                <a th:href="@{/vente/liste(order='asc')}" class="btn btn-sm" style="border:1px solid #D1D5DB;">
+                <a th:href="@{/vente/liste(order='asc', min=${min}, max=${max}, produitId=${produitId})}"
+                   th:classappend="${order == 'asc'} ? ' active'" class="btn btn-sm" style="border:1px solid #D1D5DB;">
                     <i class="fas fa-arrow-up"></i> Date ↑
                 </a>
-                <a th:href="@{/vente/liste(order='desc')}" class="btn btn-sm" style="border:1px solid #D1D5DB;">
+                <a th:href="@{/vente/liste(order='desc', min=${min}, max=${max}, produitId=${produitId})}"
+                   th:classappend="${order == 'desc'} ? ' active'" class="btn btn-sm" style="border:1px solid #D1D5DB;">
                     <i class="fas fa-arrow-down"></i> Date ↓
                 </a>
                 <form method="get" th:action="@{/vente/liste}" style="display:flex;align-items:center;gap:8px;">
+                    <input type="hidden" name="order" th:value="${order}"/>
                     <input type="number" name="min" placeholder="Min" th:value="${min}"
                            style="padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;width:100px;font-family:'Inter',sans-serif;font-size:0.85rem;">
                     <input type="number" name="max" placeholder="Max" th:value="${max}"
@@ -73,13 +76,13 @@
 
         <div class="pagination" th:if="${page.totalPages > 1}">
             <a th:if="${!page.first}"
-               th:href="@{/vente/liste(page=${page.number-1}, min=${min}, max=${max}, produitId=${produitId})}"
+               th:href="@{/vente/liste(page=${page.number-1}, min=${min}, max=${max}, produitId=${produitId}, order=${order})}"
                class="btn btn-sm" style="border:1px solid #D1D5DB;">
                 <i class="fas fa-chevron-left"></i> Précédent
             </a>
             <span class="page-info" th:text="'Page ' + (${page.number} + 1) + ' / ' + ${page.totalPages}">Page 1</span>
             <a th:if="${!page.last}"
-               th:href="@{/vente/liste(page=${page.number+1}, min=${min}, max=${max}, produitId=${produitId})}"
+               th:href="@{/vente/liste(page=${page.number+1}, min=${min}, max=${max}, produitId=${produitId}, order=${order})}"
                class="btn btn-sm" style="border:1px solid #D1D5DB;">
                 Suivant <i class="fas fa-chevron-right"></i>
             </a>

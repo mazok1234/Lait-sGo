@@ -59,14 +59,11 @@ public String save(@ModelAttribute Vente vente,
 
 @GetMapping("/vente/liste")
 public String listeVente(@RequestParam(required = false ) BigDecimal min,@RequestParam(required = false ) BigDecimal max ,@RequestParam(required = false) Integer produitId, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="desc") String order, Model model){
-    if(order.equals("asc")) {
-        model.addAttribute("page", venteService.getOldestVentes(page, 10));
-    } else {
-        model.addAttribute("page", venteService.findByPrixTotalBetweenDateDesc( min, max, produitId, page , 10));
-    }
+    model.addAttribute("page", venteService.findByPrixTotalBetweenDate(min, max, produitId, order, page, 10));
     model.addAttribute("min", min);
     model.addAttribute("max", max);
     model.addAttribute("produitId", produitId);
+    model.addAttribute("order", order);
     model.addAttribute("produits", venteService.getProduits());
 
     return "vente/liste";

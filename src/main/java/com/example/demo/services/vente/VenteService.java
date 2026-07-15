@@ -60,15 +60,11 @@ public class VenteService {
                 .orElseThrow(() -> new RuntimeException("Vente introuvable : " + id));
     }
 
-    public Page<Vente> getOldestVentes(int page, int size) {
-        return venteRepository.findAllByOrderByDateVenteAsc(
-                PageRequest.of(page, size));
-    }
-
-    public Page<Vente> findByPrixTotalBetweenDateDesc(
-            BigDecimal min, BigDecimal max, Integer produitId, int page, int size) {
+    public Page<Vente> findByPrixTotalBetweenDate(
+            BigDecimal min, BigDecimal max, Integer produitId, String order, int page, int size) {
+        Sort.Direction direction = "asc".equalsIgnoreCase(order) ? Sort.Direction.ASC : Sort.Direction.DESC;
         return venteRepository.findByPrixTotalBetweenDateVenteDesc(
-                min, max, produitId, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dateVente")));
+                min, max, produitId, PageRequest.of(page, size, Sort.by(direction, "dateVente")));
     }
  
     public Vente effectuerVente(BigDecimal quantite, BigDecimal prixUnitaire, LocalDate dateVente, RefProduit produit) {
