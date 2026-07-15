@@ -211,7 +211,6 @@ public class CheptelPageController {
         }
 
         Integer vieId = form.getVieId();
-        // Si on a un sexe (cas d'un vêlage), déterminer automatiquement le statut vie approprié
         if (form.getSexe() != null && !form.getSexe().isBlank()) {
             String libelleStatut = "M".equals(form.getSexe()) ? "Veau" : "Genisse";
             var statut = statutVieService.getByLibelle(libelleStatut);
@@ -219,7 +218,6 @@ public class CheptelPageController {
                 vieId = statut.getId();
             }
         }
-        // Si aucun statut vie n'est défini, essayer de récupérer un statut par défaut
         if (vieId == null) {
             try {
                 var statutDefaut = statutVieService.getByLibelle("Genisse");
@@ -227,7 +225,6 @@ public class CheptelPageController {
                     vieId = statutDefaut.getId();
                 }
             } catch (IllegalStateException e) {
-                // Si le statut par défaut n'existe pas, prendre le premier statut disponible
                 var statuts = statutVieService.findAll();
                 if (!statuts.isEmpty()) {
                     vieId = statuts.get(0).getId();
@@ -248,54 +245,45 @@ public class CheptelPageController {
         if (vieId != null) {
             statutVieService.ouvrirInitial(v, vieId, today);
         }
-        // Gérer le statut reproduction
         if (form.getReproId() != null) {
             statutReproService.ouvrirInitial(v, form.getReproId(), today);
         } else {
-            // Si pas de statut défini, prendre par défaut "Vide"
             try {
                 var statutReproDefaut = statutReproService.getByLibelle("Vide");
                 if (statutReproDefaut != null) {
                     statutReproService.ouvrirInitial(v, statutReproDefaut.getId(), today);
                 }
             } catch (Exception e) {
-                // Si aucun statut par défaut, prendre le premier disponible
                 var statutsRepro = statutReproService.findAll();
                 if (!statutsRepro.isEmpty()) {
                     statutReproService.ouvrirInitial(v, statutsRepro.get(0).getId(), today);
                 }
             }
         }
-        // Gérer le statut lactation
         if (form.getLactationId() != null) {
             statutLactationService.ouvrirInitial(v, form.getLactationId(), today);
         } else {
-            // Si pas de statut défini, prendre par défaut "Tarie"
             try {
                 var statutLactationDefaut = statutLactationService.getByLibelle("Tarie");
                 if (statutLactationDefaut != null) {
                     statutLactationService.ouvrirInitial(v, statutLactationDefaut.getId(), today);
                 }
             } catch (Exception e) {
-                // Si aucun statut par défaut, prendre le premier disponible
                 var statutsLactation = statutLactationService.findAll();
                 if (!statutsLactation.isEmpty()) {
                     statutLactationService.ouvrirInitial(v, statutsLactation.get(0).getId(), today);
                 }
             }
         }
-        // Gérer le statut santé
         if (form.getSanteId() != null) {
             statutSanteService.ouvrirInitial(v, form.getSanteId(), today);
         } else {
-            // Si pas de statut défini, prendre par défaut "Saine"
             try {
                 var statutSanteDefaut = statutSanteService.getByLibelle("Saine");
                 if (statutSanteDefaut != null) {
                     statutSanteService.ouvrirInitial(v, statutSanteDefaut.getId(), today);
                 }
             } catch (Exception e) {
-                // Si aucun statut par défaut, prendre le premier disponible
                 var statutsSante = statutSanteService.findAll();
                 if (!statutsSante.isEmpty()) {
                     statutSanteService.ouvrirInitial(v, statutsSante.get(0).getId(), today);

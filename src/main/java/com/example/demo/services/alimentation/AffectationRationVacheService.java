@@ -48,11 +48,6 @@ public class AffectationRationVacheService {
         affectationRepository.deleteById(id);
     }
 
-    /**
-     * Applique une suggestion de ration pour une vache :
-     * 1. Désactive l'affectation active actuelle (date_fin = aujourd'hui)
-     * 2. Crée une nouvelle affectation avec la ration suggérée
-     */
     @Transactional
     public AffectationRationVache appliquerSuggestion(Long vacheId, Long rationSuggereeId) {
         Vache vache = vacheRepository.findById(vacheId)
@@ -60,7 +55,6 @@ public class AffectationRationVacheService {
         Ration ration = rationRepository.findById(rationSuggereeId)
                 .orElseThrow(() -> new IllegalArgumentException("Ration introuvable avec l'id " + rationSuggereeId));
 
-        // Désactiver l'affectation active actuelle
         List<AffectationRationVache> actives = affectationRepository.findAllByOrderByDateDebutDescIdDesc()
                 .stream()
                 .filter(a -> a.getVache().getId().equals(vacheId) && Boolean.TRUE.equals(a.getActif()))
@@ -72,7 +66,6 @@ public class AffectationRationVacheService {
             affectationRepository.save(active);
         }
 
-        // Créer la nouvelle affectation
         AffectationRationVache nouvelle = new AffectationRationVache();
         nouvelle.setVache(vache);
         nouvelle.setRation(ration);

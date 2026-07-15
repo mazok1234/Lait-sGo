@@ -21,7 +21,6 @@
 
                                 <input type="hidden" th:field="*{id}">
 
-                <!-- Aliment -->
                 <div style="display:flex;flex-direction:column;gap:6px;">
                     <label for="aliment" style="font-size:0.875rem;font-weight:600;">Aliment</label>
                     <select id="aliment" th:field="*{aliment}"
@@ -33,7 +32,6 @@
                           style="color:#DC2626;font-size:0.8rem;"></span>
                 </div>
 
-                <!-- Type -->
                 <div style="display:flex;flex-direction:column;gap:6px;">
                     <label style="font-size:0.875rem;font-weight:600;">Type</label>
                     <div style="display:flex;gap:12px;">
@@ -52,7 +50,6 @@
                           style="color:#DC2626;font-size:0.8rem;"></span>
                 </div>
 
-                <!-- Quantité -->
                 <div style="display:flex;flex-direction:column;gap:6px;">
                     <label for="quantiteKg" style="font-size:0.875rem;font-weight:600;">Quantité (kg)</label>
                     <input type="number" step="0.01" min="0.01" id="quantiteKg" th:field="*{quantiteKg}"
@@ -62,11 +59,9 @@
                           style="color:#DC2626;font-size:0.8rem;"></span>
                 </div>
 
-                <!-- Date (automatique) -->
                 <input type="hidden" id="dateMouvement" th:field="*{dateMouvement}"
                        th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}">
 
-                <!-- Boutons -->
                 <div style="display:flex;justify-content:space-between;margin-top:8px;">
                     <a th:href="@{/aliments}" class="btn"
                        style="border:1px solid #D1D5DB;background:white;color:#1A1A2E;">

@@ -3,7 +3,7 @@ package com.example.demo.services.reproduction;
 import com.example.demo.dto.AlerteReproductionDTO;
 import com.example.demo.entity.reproduction.Reproduction;
 import com.example.demo.repository.reproduction.ReproductionRepository;
-import com.example.demo.services.alerte.AlerteService; // ← ajouté
+import com.example.demo.services.alerte.AlerteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,11 +21,8 @@ public class ReproductionAlerteService {
     private ReproductionRepository reproductionRepository;
 
     @Autowired
-    private AlerteService alerteService; // ← ajouté
+    private AlerteService alerteService;
 
-    // Reproduction.vache est LAZY : la session doit rester ouverte le temps
-    // de parcourir les resultats et d'accéder à r.getVache().getNumeroBoucle().
-    // Pas readOnly : la boucle appelle alerteService.envoyerAlerte(), qui écrit.
     @Transactional
     public List<AlerteReproductionDTO> getAlertesVelage() {
         List<Reproduction> reproductions = reproductionRepository.findAll();
@@ -62,7 +59,6 @@ public class ReproductionAlerteService {
             }
             alerte.setNiveauUrgence(niveauUrgence);
 
-            // ← INJECTION ALERTE — avec tous les détails du module Reproduction
             alerteService.envoyerAlerte(
                 "rappel_velage",
                 niveauUrgence,
@@ -72,7 +68,6 @@ public class ReproductionAlerteService {
                     + " (IA enregistrée le " + r.getDateIA() + ").",
                 r.getVache().getId()
             );
-            // ← FIN INJECTION
 
             alertes.add(alerte);
         }

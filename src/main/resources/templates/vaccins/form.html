@@ -29,7 +29,6 @@
                 <form th:action="@{/vaccins/historique/save}" method="post"
                     style="display:flex;flex-direction:column;gap:16px;">
 
-                    <!-- Vache -->
                     <div style="display:flex;flex-direction:column;gap:6px;">
                         <label for="vacheId" style="font-size:0.875rem;font-weight:600;">
                             Vache
@@ -44,7 +43,6 @@
                         </select>
                     </div>
 
-                    <!-- Vaccin -->
                     <div style="display:flex;flex-direction:column;gap:6px;">
                         <label for="protocoleId" style="font-size:0.875rem;font-weight:600;">
                             Vaccin
@@ -60,7 +58,6 @@
                         </select>
                     </div>
 
-                    <!-- Date -->
                     <div style="display:flex;flex-direction:column;gap:6px;">
                         <label for="dateVaccination" style="font-size:0.875rem;font-weight:600;">
                             Date de vaccination
@@ -70,7 +67,6 @@
                             style="padding:10px;border:1px solid #D1D5DB;border-radius:6px;width:100%;">
                     </div>
 
-                    <!-- Type d'injection -->
                     <div style="display:flex;flex-direction:column;gap:6px;">
                         <label for="typeInjection" style="font-size:0.875rem;font-weight:600;">
                             Type d'injection
@@ -83,7 +79,6 @@
                         </select>
                     </div>
 
-                    <!-- Boutons -->
                     <div style="display:flex;justify-content:space-between;margin-top:12px;">
 
                         <a th:href="@{/vaccins}" class="btn"

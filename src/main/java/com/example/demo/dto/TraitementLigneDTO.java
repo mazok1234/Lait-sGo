@@ -5,8 +5,8 @@ import java.time.LocalDate;
 
 public class TraitementLigneDTO {
     private Long id;
-    private Long medicamentId;        // 1er select (cascade), non persiste directement
-    private Long medicamentFilleId;   // 2eme select, valeur reellement sauvegardee
+    private Long medicamentId;
+    private Long medicamentFilleId;
     private BigDecimal dose;
     private String unite;
     private BigDecimal prixUnitaire;

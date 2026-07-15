@@ -34,10 +34,8 @@ public class RationService {
                     Ration ration = rationRepository.findById(card.getId()).orElse(null);
                     long nbVaches;
                     if (ration != null && ration.getIdPhaseLactation() == null) {
-                        // Ration spécialisée (sans phase) → compter via les affectations réelles
                         nbVaches = rationRepository.countAffectationsForRation(card.getId());
                     } else {
-                        // Ration standard par phase → compter via la vue théorique
                         nbVaches = rationRepository.countVachesForRation(card.getId());
                     }
                     return new RationCardVm(card.getId(), card.getNom(), card.getStade(), nbVaches);
@@ -156,7 +154,6 @@ public class RationService {
     }
 
     public List<RationActiveVacheVm> getRationsActivesVaches() {
-        // Rations standards par phase
         List<RationActiveVacheVm> standards = rationRepository.findRationsActivesVaches().stream()
             .map(v -> new RationActiveVacheVm(
                 v.getVacheId(),
@@ -168,7 +165,6 @@ public class RationService {
             ))
             .toList();
 
-        // Rations spécialisées (affectations manuelles)
         List<RationActiveVacheVm> manuelles = rationRepository.findAffectationsManuelles().stream()
             .map(v -> new RationActiveVacheVm(
                 v.getVacheId(),
@@ -180,10 +176,8 @@ public class RationService {
             ))
             .toList();
 
-        // Fusionner les deux listes (les manuelles peuvent remplacer les standards)
         List<RationActiveVacheVm> fusion = new ArrayList<>(standards);
         for (RationActiveVacheVm manuelle : manuelles) {
-            // Remplacer si la vache a déjà une entrée standard
             boolean remplace = false;
             for (int i = 0; i < fusion.size(); i++) {
                 if (fusion.get(i).vacheId().equals(manuelle.vacheId())) {
@@ -215,8 +209,6 @@ public class RationService {
                                       Long rationId,
                                       String rationRecommandee) {
     }
-
-    // ========== Suggestions ==========
 
     public List<SuggestionVm> getSuggestions() {
         return rationRepository.findAllSuggestions().stream()

@@ -33,31 +33,28 @@ public class VenteService {
     private final VenteRepository venteRepository;
     private final UtilisateurRepository utilisateurRepository;
     private final RefProduitRepository refProduitRepository;
-    private final AlerteService alerteService; // ← ajouté
+    private final AlerteService alerteService;
 
-    // Seuil en litres sous lequel une alerte stock lait est envoyée
     private static final BigDecimal SEUIL_STOCK_LAIT_L = new BigDecimal("50");
 
-    // Plafond de prix unitaire appliqué uniquement à la vente de lait
     private static final BigDecimal PRIX_MAX_LAIT = new BigDecimal("9999.99");
 
     public VenteService(ProductionRepository productionRepository,
             VenteRepository venteRepository,
             UtilisateurRepository utilisateurRepository,
             RefProduitRepository refProduitRepository,
-            AlerteService alerteService) { // ← ajouté
+            AlerteService alerteService) {
         this.productionRepository = productionRepository;
         this.venteRepository = venteRepository;
         this.utilisateurRepository = utilisateurRepository;
         this.refProduitRepository = refProduitRepository;
-        this.alerteService = alerteService; // ← ajouté
+        this.alerteService = alerteService;
     }
 
     public List<RefProduit> getProduits() {
         return refProduitRepository.findAllByOrderByLibelleAsc();
     }
 
-    // 1. findById — l'id est Integer dans Vente
     public Vente findById(Integer id) {
         return venteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Vente introuvable : " + id));
@@ -134,7 +131,6 @@ public class VenteService {
         Vente saved = venteRepository.save(vente);
 
         if (estLait) {
-            // ← INJECTION ALERTE — vérification du stock après vente
             BigDecimal stockRestant = productionRepository.getRemainingStock();
             if (stockRestant.compareTo(SEUIL_STOCK_LAIT_L) <= 0) {
                 alerteService.envoyerAlerte(
@@ -146,10 +142,8 @@ public class VenteService {
                                 + " (seuil critique : " + SEUIL_STOCK_LAIT_L + " L).",
                         null);
             } else {
-                // Stock reconstitué au-dessus du seuil → acquittement automatique
                 alerteService.acquitterAutomatiquement("stock_lait_bas", null);
             }
-            // ← FIN INJECTION
         }
 
         return saved;

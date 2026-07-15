@@ -104,7 +104,6 @@ public class VaccinController {
 
                 historiqueRepo.save(h);
 
-                // Acquitter les alertes vaccin actives pour cette vache
                 if (h.getVache() != null && h.getVache().getId() != null) {
                         alerteService.acquitterAutomatiquement("vaccin_en_retard",   h.getVache().getId());
                         alerteService.acquitterAutomatiquement("vaccin_prioritaire", h.getVache().getId());

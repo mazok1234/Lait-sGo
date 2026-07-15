@@ -11,7 +11,6 @@ import org.springframework.data.repository.query.Param;
 import com.example.demo.entity.production.Production;
 
 public interface ProductionRepository extends JpaRepository<Production, Long> {
-    // Methode alerte
     List<Production> findByVacheOrderByDateProductionDesc(com.example.demo.entity.cheptel.Vache vache);
 
     @Query("SELECT COALESCE(SUM(p.quantiteRestante), 0) FROM Production p")

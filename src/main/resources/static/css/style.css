@@ -74,7 +74,6 @@ button.primary {
 
 button.primary:hover { background: var(--green-900); }
 
-/* ---- layout ---- */
 
 .layout { display: flex; min-height: 100vh; }
 
@@ -126,7 +125,6 @@ button.primary:hover { background: var(--green-900); }
 
 .main { flex: 1; min-width: 0; padding: 28px 36px; }
 
-/* ---- dashboard ---- */
 
 .filters {
   display: grid;
@@ -196,7 +194,6 @@ tbody td.day { text-align: center; border-left: 1px solid var(--border); }
 .pagination button { width: 34px; height: 34px; padding: 0; }
 .pagination span { font-size: 13px; color: var(--text-secondary); }
 
-/* ---- forms (velage) ---- */
 
 .form-card {
   max-width: 420px;

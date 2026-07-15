@@ -39,7 +39,6 @@ public class TraitementSante {
     @Column(name = "duree_traitement", nullable = false)
     private Integer dureeTraitement;
 
-    // Override possible du delai par defaut de la fiche fille
     @Column(name = "delai_attente_j", nullable = false)
     private Integer delaiAttenteJ = 0;
 
@@ -73,8 +72,6 @@ public class TraitementSante {
 
     public LocalDate getDateFin() { return dateFin; }
     public void setDateFin(LocalDate d) { this.dateFin = d; }
-
-    // --- Delegates vers medicamentFille : evite de toucher aux templates existants ---
 
     @Transient
     public Medicament getMedicament() {

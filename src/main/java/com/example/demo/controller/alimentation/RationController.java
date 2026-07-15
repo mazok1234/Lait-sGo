@@ -160,8 +160,6 @@ public class RationController {
         return "redirect:/rations/details/" + id;
     }
 
-    // ========== Suggestions ==========
-
     @GetMapping("/suggestions")
     public String suggestions(Model model) {
         model.addAttribute("suggestions", rationService.getSuggestions());

@@ -30,7 +30,6 @@ public class AlerteController {
         this.niveauRepo    = niveauRepo;
     }
 
-    // Dashboard — toutes alertes (non acquittées en haut, acquittées en bas)
     @GetMapping
     public String dashboard(
             @RequestParam(required = false) String niveau,
@@ -45,14 +44,12 @@ public class AlerteController {
         return "alertes/dashboard";
     }
 
-    // Détail d'une alerte
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
         model.addAttribute("alerte", alerteService.getDetail(id));
         return "alertes/detail";
     }
 
-    // Badge sidebar
     @GetMapping("/api/count")
     @ResponseBody
     public String countBadge() {
@@ -60,7 +57,6 @@ public class AlerteController {
         return String.valueOf(count);
     }
 
-    // Acquittement manuel
     @PostMapping("/{id}/acquitter")
     public String acquitter(@PathVariable Long id, RedirectAttributes redirectAttrs) {
         try {

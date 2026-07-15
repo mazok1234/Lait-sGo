@@ -22,7 +22,6 @@ public class AlerteService {
     private final RefNiveauAlerteRepository niveauRepo;
     private final VacheRepository vacheRepo;
 
-    // Mapping type → module (logique métier — pas en BDD)
     public static final String STOCK_ALIMENT_BAS_PREFIX = "stock_aliment_bas";
     private static final Map<String, String> MODULE_PAR_TYPE = new HashMap<>();
     static {
@@ -45,9 +44,6 @@ public class AlerteService {
         this.vacheRepo  = vacheRepo;
     }
 
-    // ----------------------------------------------------------------
-    // FA-01 : Créer une alerte
-    // ----------------------------------------------------------------
     public Alerte creerAlerte(String typeAlerte, Integer idNiveau,
             String titre, String description, Long vacheId) {
         RefNiveauAlerte niveau = niveauRepo.findById(idNiveau)
@@ -61,12 +57,8 @@ public class AlerteService {
         return alerteRepo.save(alerte);
     }
 
-    // ----------------------------------------------------------------
-    // FA-02 : Dashboard — non acquittées (triées) + acquittées en bas
-    // ----------------------------------------------------------------
     public List<AlerteDTO> listerToutesAlertes(String niveauCode, String typeAlerte) {
 
-        // 1. Alertes non acquittées avec filtres
         List<Alerte> nonAcquittees;
         List<String> filtreTypes = getTypeFilterKeys(typeAlerte);
         boolean filtreParModule = typeAlerte != null && filtreTypes.size() > 0;
@@ -108,12 +100,10 @@ public class AlerteService {
             nonAcquittees = alerteRepo.findByAcquitteeFalseOrderByCreatedAtDesc();
         }
 
-        // Trier par gravité (ordre BDD) puis par date
         nonAcquittees.sort(Comparator
                 .comparingInt((Alerte a) -> a.getNiveau().getOrdre())
                 .thenComparing(Comparator.comparing(Alerte::getCreatedAt).reversed()));
 
-        // 2. Alertes acquittées — appliquer le filtre module si activé, mais jamais filtrer par niveau
         List<Alerte> acquittees = alerteRepo.findByAcquitteeTrueOrderByCreatedAtDesc();
         if (filtreParModule) {
             acquittees = acquittees.stream()
@@ -121,15 +111,11 @@ public class AlerteService {
                     .collect(Collectors.toList());
         }
 
-        // 3. Fusionner : non acquittées en premier, acquittées en bas
         return Stream.concat(nonAcquittees.stream(), acquittees.stream())
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
-    // ----------------------------------------------------------------
-    // FA-03 : Acquittement manuel (met à true, ne supprime pas)
-    // ----------------------------------------------------------------
     public void acquitter(Long id) {
         Alerte alerte = alerteRepo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Alerte introuvable : " + id));
@@ -140,18 +126,12 @@ public class AlerteService {
         alerteRepo.save(alerte);
     }
 
-    // ----------------------------------------------------------------
-    // FA-05 : Détail d'une alerte
-    // ----------------------------------------------------------------
     public AlerteDTO getDetail(Long id) {
         Alerte alerte = alerteRepo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Alerte introuvable : " + id));
         return toDTO(alerte);
     }
 
-    // ----------------------------------------------------------------
-    // KPIs — compter les non acquittées par niveau
-    // ----------------------------------------------------------------
     public Map<String, Long> compterParNiveau() {
         return alerteRepo.findByAcquitteeFalseOrderByCreatedAtDesc()
                 .stream()
@@ -160,18 +140,11 @@ public class AlerteService {
                         Collectors.counting()));
     }
 
-    // ----------------------------------------------------------------
-    // Badge sidebar
-    // ----------------------------------------------------------------
     public long compterNonAcquittees() {
         return alerteRepo.findByAcquitteeFalseOrderByCreatedAtDesc().size();
     }
 
-    // ----------------------------------------------------------------
-    // Filtres types disponibles (depuis le mapping, pas la BDD)
-    // ----------------------------------------------------------------
     public List<Map<String, String>> getTypesDisponibles() {
-        // Dédupliquer par module (une option par module dans la liste déroulante)
         Map<String, String> moduleVersCode = new LinkedHashMap<>();
         MODULE_PAR_TYPE.forEach((code, module) -> {
             moduleVersCode.putIfAbsent(module, code);
@@ -219,16 +192,12 @@ public class AlerteService {
         });
     }
 
-    // ----------------------------------------------------------------
-    // envoyerAlerte — appelé par les autres modules
-    // ----------------------------------------------------------------
     public void envoyerAlerte(String typeAlerte, String niveauCode,
             String titre, String description, Long vacheId) {
         try {
             RefNiveauAlerte niveau = niveauRepo.findByCode(niveauCode)
                     .orElseThrow(() -> new IllegalArgumentException("Niveau inconnu : " + niveauCode));
 
-            // Chercher une alerte active existante, sinon réactiver la dernière acquittée
             boolean alimPrefix = typeAlerte != null && typeAlerte.startsWith(STOCK_ALIMENT_BAS_PREFIX);
             Optional<Alerte> alerteExistante;
             if (alimPrefix) {
@@ -243,7 +212,6 @@ public class AlerteService {
 
             if (alerteExistante.isPresent()) {
                 Alerte existante = alerteExistante.get();
-                // Mettre à jour si le niveau ou la description a changé
                 if (!existante.getNiveau().getCode().equals(niveauCode)
                         || !existante.getDescription().equals(description)) {
                     existante.setNiveau(niveau);
@@ -277,7 +245,6 @@ public class AlerteService {
                 return;
             }
 
-            // Créer une nouvelle alerte
             creerAlerte(typeAlerte, niveau.getId(), titre, description, vacheId);
             System.out.println("[Alertes] Créée : " + typeAlerte + " [" + niveauCode + "]");
 
@@ -286,9 +253,6 @@ public class AlerteService {
         }
     }
 
-    // ----------------------------------------------------------------
-    // acquitterAutomatiquement — appelé par les autres modules
-    // ----------------------------------------------------------------
     public void acquitterAutomatiquement(String typeAlerte, Long vacheId) {
         try {
             boolean alimPrefix = typeAlerte != null && typeAlerte.startsWith(STOCK_ALIMENT_BAS_PREFIX);
@@ -311,18 +275,12 @@ public class AlerteService {
         }
     }
 
-    // ----------------------------------------------------------------
-    // detacherVache — si une vache est supprimée
-    // ----------------------------------------------------------------
     public void detacherVache(Long vacheId) {
         List<Alerte> alertes = alerteRepo.findByVacheId(vacheId);
         alertes.forEach(a -> a.setVacheId(null));
         alerteRepo.saveAll(alertes);
     }
 
-    // ----------------------------------------------------------------
-    // toDTO — conversion interne
-    // ----------------------------------------------------------------
     private AlerteDTO toDTO(Alerte a) {
         AlerteDTO dto = new AlerteDTO();
         dto.setId(a.getId());

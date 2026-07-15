@@ -1,9 +1,9 @@
 package com.example.demo.services.alimentation;
 
 import com.example.demo.entity.alimentation.MouvementAliment;
-import com.example.demo.repository.alimentation.AlimentRepository;       // ← ajouté
+import com.example.demo.repository.alimentation.AlimentRepository;
 import com.example.demo.repository.alimentation.MouvementAlimentRepository;
-import com.example.demo.services.alerte.AlerteService;                   // ← ajouté
+import com.example.demo.services.alerte.AlerteService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -15,12 +15,12 @@ import java.util.List;
 public class MouvementAlimentService {
 
     private final MouvementAlimentRepository mouvementRepo;
-    private final AlerteService              alerteService;   // ← ajouté
-    private final AlimentRepository          alimentRepository; // ← ajouté
+    private final AlerteService              alerteService;
+    private final AlimentRepository          alimentRepository;
 
     public MouvementAlimentService(MouvementAlimentRepository mouvementRepo,
                                     AlerteService alerteService,
-                                    AlimentRepository alimentRepository) { // ← ajouté
+                                    AlimentRepository alimentRepository) {
         this.mouvementRepo     = mouvementRepo;
         this.alerteService     = alerteService;
         this.alimentRepository = alimentRepository;
@@ -51,7 +51,6 @@ public class MouvementAlimentService {
 
         MouvementAliment saved = mouvementRepo.save(mouvement);
 
-        // ← INJECTION ALERTE — vérification du seuil après chaque mouvement
         if (mouvement.getAliment() != null && mouvement.getAliment().getId() != null) {
             Long alimentId = mouvement.getAliment().getId();
             BigDecimal stockActuel = getStockActuel(alimentId);
@@ -63,7 +62,6 @@ public class MouvementAlimentService {
                         if ("sortie".equalsIgnoreCase(mouvement.getTypeMouvement())
                             && stockActuel.compareTo(aliment.getSeuilAlerteKg()) <= 0) {
 
-                        // Stock sous le seuil → alerte urgent (code spécifique par aliment)
                         String typeAlerte = "stock_aliment_bas_" + aliment.getId();
                         alerteService.envoyerAlerte(
                             typeAlerte,
@@ -77,14 +75,12 @@ public class MouvementAlimentService {
                     } else if ("entree".equalsIgnoreCase(mouvement.getTypeMouvement())
                             && stockActuel.compareTo(aliment.getSeuilAlerteKg()) > 0) {
 
-                        // Stock reconstitué → acquittement automatique (sur le préfixe + id)
                         String typePrefix = "stock_aliment_bas_" + aliment.getId();
                         alerteService.acquitterAutomatiquement(typePrefix, null);
                     }
                 }
             });
         }
-        // ← FIN INJECTION
 
         return saved;
     }

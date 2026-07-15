@@ -8,8 +8,8 @@ public class AlerteDTO {
     private String description;
     private String niveauCode;
     private String niveauLibelle;
-    private String typeAlerte;    // code brut : "vaccin_en_retard", "stock_aliment_bas"...
-    private String moduleSource;  // calculé dans le service : "Santé", "Alimentation"...
+    private String typeAlerte;
+    private String moduleSource;
     private Long vacheId;
     private String vacheNom;
     private String vacheBoucle;

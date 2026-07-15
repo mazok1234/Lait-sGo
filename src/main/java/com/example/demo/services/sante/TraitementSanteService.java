@@ -81,7 +81,6 @@ public class TraitementSanteService {
         return medicamentRepository.findAll();
     }
 
-    /** Medicaments pouvant soigner une maladie donnee (via maladie_medicament). */
     public List<Medicament> findMedicamentsByMaladie(Long maladieId) {
         if (maladieId == null) {
             return List.of();
@@ -89,7 +88,6 @@ public class TraitementSanteService {
         return medicamentRepository.findByMaladieId(maladieId);
     }
 
-    /** Variantes (filles) disponibles pour un medicament donne. */
     public List<MedicamentFille> findFillesByMedicament(Long medicamentId) {
         if (medicamentId == null) {
             return List.of();
@@ -97,7 +95,6 @@ public class TraitementSanteService {
         return medicamentFilleRepository.findByMedicamentId(medicamentId);
     }
 
-    /** Prépare un formulaire vierge avec une ligne de médicament par défaut. */
     public EvenementSanteFormDTO createEmptyForm() {
         EvenementSanteFormDTO form = new EvenementSanteFormDTO();
         form.setDateEvenement(LocalDate.now());
@@ -109,7 +106,6 @@ public class TraitementSanteService {
         return form;
     }
 
-    /** Charge un événement existant + ses lignes de traitement pour l'édition. */
     public EvenementSanteFormDTO findFormById(Long evenementId) {
         EvenementSante evenement = evenementRepository.findById(evenementId).orElse(null);
         if (evenement == null) {
@@ -172,7 +168,7 @@ public class TraitementSanteService {
 
         for (TraitementLigneDTO ligne : form.getLignes()) {
             if (isBlankLine(ligne)) {
-                continue; // ligne vide ignorée
+                continue;
             }
             auMoinsUneLigneValide = true;
 
@@ -326,7 +322,7 @@ public class TraitementSanteService {
         if (evenement == null) {
             return;
         }
-        evenementRepository.delete(evenement); // cascade + orphanRemoval supprime les traitements liés
+        evenementRepository.delete(evenement);
         synchronizeVacheStatuses();
     }
 

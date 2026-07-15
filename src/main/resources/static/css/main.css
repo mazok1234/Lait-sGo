@@ -27,7 +27,6 @@ ul {
     list-style: none;
 }
 
-/* --- Sidebar --- */
 .sidebar {
     position: fixed;
     top: 0;
@@ -154,7 +153,6 @@ ul {
     color: #DC2626;
 }
 
-/* --- Main Content --- */
 .main-content {
     margin-left: 260px;
     flex: 1;
@@ -163,7 +161,6 @@ ul {
     flex-direction: column;
 }
 
-/* --- Header --- */
 .header {
     display: flex;
     align-items: center;
@@ -236,7 +233,6 @@ ul {
     color: #1A1A2E;
 }
 
-/* --- Page Content --- */
 .page-content {
     padding: 32px;
     flex: 1;
@@ -258,7 +254,6 @@ ul {
     color: #6B7280;
 }
 
-/* --- Stats Grid --- */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -266,7 +261,6 @@ ul {
     margin-bottom: 28px;
 }
 
-/* --- Cards --- */
 .card {
     background-color: #FFFFFF;
     border: 1px solid #F0EEF0;
@@ -316,7 +310,6 @@ ul {
     color: #1A1A2E;
 }
 
-/* --- Content Grid (tableaux) --- */
 .content-grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -345,7 +338,6 @@ ul {
     padding: 0;
 }
 
-/* --- Table --- */
 .table {
     width: 100%;
     border-collapse: collapse;
@@ -377,7 +369,6 @@ ul {
     padding: 0;
 }
 
-/* --- Empty State --- */
 .empty-state {
     display: flex;
     flex-direction: column;
@@ -398,7 +389,6 @@ ul {
     font-weight: 500;
 }
 
-/* --- Filtres (historique) --- */
 .filters {
     display: flex;
     gap: 16px;
@@ -445,7 +435,6 @@ ul {
     font-size: 0.8rem;
 }
 
-/* --- Tri (historique) --- */
 .sortable {
     cursor: pointer;
     user-select: none;
@@ -460,7 +449,6 @@ ul {
     font-size: 0.7rem;
 }
 
-/* --- Pagination (historique) --- */
 .pagination {
     display: flex;
     align-items: center;
@@ -486,7 +474,6 @@ ul {
     font-weight: 500;
 }
 
-/* --- Aucun résultat (historique) --- */
 .no-result {
     display: none;
     text-align: center;
@@ -506,7 +493,6 @@ ul {
     font-weight: 500;
 }
 
-/* --- Filtres stats (statistique) --- */
 .stat-filters {
     display: flex;
     gap: 16px;
@@ -516,7 +502,6 @@ ul {
     flex-wrap: wrap;
 }
 
-/* --- Compat Cheptel (utilisé dans les templates) --- */
 .action-pill {
     display: inline-flex;
     align-items: center;
@@ -604,7 +589,6 @@ ul {
     box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.1);
 }
 
-/* --- Grille stats (statistique) --- */
 .stat-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -645,7 +629,6 @@ ul {
     font-weight: 700;
 }
 
-/* --- Utilitaires --- */
 .grid-full {
     grid-template-columns: 1fr !important;
 }
@@ -658,7 +641,6 @@ ul {
     margin-top: 20px;
 }
 
-/* --- Badges --- */
 .badge {
     display: inline-block;
     padding: 4px 10px;
@@ -679,7 +661,6 @@ ul {
     color: #C62828;
 }
 
-/* --- Buttons --- */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -708,9 +689,6 @@ ul {
     font-size: 0.8rem;
 }
 
-/* ==========================================
-   Cheptel – styles spécifiques
-   ========================================== */
 
 .cheptel-wrapper {
     font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -1016,11 +994,7 @@ ul {
     .cheptel-wrapper .card { padding: 1.2rem; }
 }
 
-/* ==========================================
-   Alertes – composants spécifiques
-   ========================================== */
 
-/* --- Flash messages --- */
 .flash {
     display: flex;
     align-items: center;
@@ -1040,12 +1014,10 @@ ul {
     color: #C62828;
 }
 
-/* --- Stats grid 3 colonnes (alertes KPI) --- */
 .stats-grid-3 {
     grid-template-columns: repeat(3, 1fr);
 }
 
-/* --- KPI card --- */
 .kpi-card {
     display: flex;
     align-items: center;
@@ -1053,7 +1025,6 @@ ul {
     padding: 20px;
 }
 
-/* --- Icônes colorées --- */
 .icon-danger {
     background-color: #FEECEC;
     color: #DC2626;
@@ -1072,7 +1043,6 @@ ul {
     color: #1D6F42;
 }
 
-/* --- Badges de niveau --- */
 .badge-niveau {
     display: inline-flex;
     align-items: center;
@@ -1091,7 +1061,6 @@ ul {
 .badge-niveau-warning { background: #FFF7ED; color: #F59E0B; }
 .badge-niveau-info    { background: #EFF6FF; color: #007AFF; }
 
-/* --- Cellules tableau alertes --- */
 .cell-titre {
     font-weight: 500;
 }
@@ -1111,7 +1080,6 @@ ul {
     font-weight: 500;
 }
 
-/* --- Filtres variantes --- */
 .filters-between {
     justify-content: space-between;
     flex-wrap: wrap;
@@ -1136,7 +1104,6 @@ ul {
     border-bottom: none;
 }
 
-/* --- Sélecteur taille de page --- */
 .page-size-select {
     padding: 6px 10px;
     border: 1px solid #D1D5DB;
@@ -1152,9 +1119,6 @@ ul {
     box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.1);
 }
 
-/* ==========================================
-   Détail alerte
-   ========================================== */
 .detail-wrapper {
     max-width: 640px;
     margin: 0 auto;
@@ -1332,7 +1296,6 @@ ul {
     font-weight: 600;
 }
 
-/* --- Responsive --- */
 @media (max-width: 1200px) {
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -1383,13 +1346,11 @@ ul {
     }
 }
 
-/* Rend la page floue */
 .blur-background {
     filter: blur(8px); 
     pointer-events: none; 
 }
 
-/* L'arrière-plan de la boîte de dialogue (couvre tout l'écran) */
 #modalOverlay {
     position: fixed;
     top: 0;
@@ -1416,7 +1377,6 @@ ul {
     z-index: 999;
 }
 
-/* La boîte du formulaire elle-même */
 .modal-card {
     background: white;
     padding: 24px;
@@ -1431,7 +1391,6 @@ ul {
 }
 
 
-/* submenu */
 .has-submenu .submenu{
     display:none;
     list-style:none;

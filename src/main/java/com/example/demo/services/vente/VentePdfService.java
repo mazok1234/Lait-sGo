@@ -63,7 +63,6 @@ public class VentePdfService {
 
         
         Row header = sheet.createRow(0);
-        // header.createCell(0).setCellValue("ID");
         header.createCell(0).setCellValue("Date vente");
         header.createCell(1).setCellValue("Produit");
         header.createCell(2).setCellValue("Quantité");

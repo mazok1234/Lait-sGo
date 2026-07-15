@@ -9,6 +9,5 @@ public interface RefNiveauAlerteRepository extends JpaRepository<RefNiveauAlerte
 
     Optional<RefNiveauAlerte> findByCode(String code);
 
-    // Triés par ordre pour les filtres du dashboard
     List<RefNiveauAlerte> findAllByOrderByOrdreAsc();
 }

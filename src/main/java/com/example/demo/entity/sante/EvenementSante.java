@@ -74,8 +74,6 @@ public class EvenementSante {
     public List<TraitementSante> getTraitements() { return traitements; }
     public void setTraitements(List<TraitementSante> traitements) { this.traitements = traitements; }
 
-    // --- Champs calculés utilisés par la liste ---
-
     @Transient
     public int getNombreMedicaments() {
         return traitements != null ? traitements.size() : 0;

@@ -419,16 +419,14 @@ public class ReproductionService {
         reproduction.setDateVelageReel(dateVelageReel);
         reproduction.setSexeVeau(sexeVeau);
         reproductionRepository.save(reproduction);
- 
-        // ← ACQUITTEMENT AUTO — vêlage confirmé, l'alerte rappel_velage disparaît
+
         if (reproduction.getVache() != null) {
             alerteService.acquitterAutomatiquement(
                 "rappel_velage",
                 reproduction.getVache().getId()
             );
         }
-        // ← FIN ACQUITTEMENT
- 
+
         mettreAJourMereApresVelage(reproduction.getVache(), dateVelageReel);
         return reproduction;
     }

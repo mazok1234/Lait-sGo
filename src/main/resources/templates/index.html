@@ -6,15 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lait's Go</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link th:href="@{/vendor/fonts/inter/inter.css}" rel="stylesheet">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/vendor/fontawesome/css/all.min.css}">
 
     <link rel="stylesheet" th:href="@{/css/main.css}">
-    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:src="@{/vendor/js/htmx.min.js}"></script>
+    <script th:src="@{/vendor/js/chart.umd.js}"></script>
 </head>
 
 <body>

@@ -118,8 +118,7 @@ public class ProductionService {
         int count = 0;
         
         for (Production hist : historique) {
-            // CORRECTION 2 : Si l'ID correspond à la ligne actuelle, ou si c'est la même date, on l'exclut du calcul de la moyenne
-            if ((p.getId() != null && hist.getId().equals(p.getId())) || 
+            if ((p.getId() != null && hist.getId().equals(p.getId())) ||
                 (hist.getDateProduction() != null && p.getDateProduction() != null && !hist.getDateProduction().isBefore(p.getDateProduction()))) {
                 continue;
             }
@@ -132,7 +131,7 @@ public class ProductionService {
 
         if (count > 0) {
             BigDecimal moyenne = somme.divide(BigDecimal.valueOf(count), 2, java.math.RoundingMode.HALF_UP);
-            BigDecimal seuilCritique = moyenne.multiply(BigDecimal.valueOf(0.80)); // -20%
+            BigDecimal seuilCritique = moyenne.multiply(BigDecimal.valueOf(0.80));
             
             boolean estEnBaisse = p.getQuantiteLitres().compareTo(seuilCritique) < 0;
 

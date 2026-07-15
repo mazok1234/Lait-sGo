@@ -35,9 +35,6 @@ public class VaccinService {
                 this.alerteRepo = alerteRepo;
         }
 
-        // ---------------------------------------------------------------
-        // Vaccins en retard → alerte URGENT
-        // ---------------------------------------------------------------
         public List<HistoriqueVaccin> getVaccinsEnRetard(Long vacheId) {
                 Vache vache = vacheRepository.findById(vacheId)
                                 .orElseThrow(() -> new RuntimeException("Vache introuvable"));
@@ -66,9 +63,6 @@ public class VaccinService {
                 return enRetard;
         }
 
-        // ---------------------------------------------------------------
-        // Vaccins à revoir ce mois → alerte INFO
-        // ---------------------------------------------------------------
         public List<HistoriqueVaccin> getVaccinsARevoirParMois(int mois, int annee) {
                 List<HistoriqueVaccin> derniers = historiqueRepository.findLastByVaccin();
                 List<HistoriqueVaccin> result = new ArrayList<>();
@@ -93,9 +87,6 @@ public class VaccinService {
                 return result;
         }
 
-        // ---------------------------------------------------------------
-        // Vaccins prioritaires — niveau calculé selon jours restants
-        // ---------------------------------------------------------------
         public List<HistoriqueVaccin> getVaccinsPrioritaires() {
                 List<HistoriqueVaccin> derniers = historiqueRepository.findLastByVaccin();
                 LocalDate today = LocalDate.now();
@@ -121,7 +112,6 @@ public class VaccinService {
                         String description;
 
                         if (prochaineDate.isBefore(today)) {
-                                // Déjà en retard → urgent
                                 long joursRetard = ChronoUnit.DAYS.between(prochaineDate, today);
                                 niveauCode = "urgent";
                                 typeCode = "vaccin_en_retard";
@@ -130,7 +120,6 @@ public class VaccinService {
                                                 + " en retard de " + joursRetard + " jour(s)"
                                                 + " (rappel prévu le " + prochaineDate + ").";
                         } else if (joursAvant <= 7) {
-                                // Dans moins de 7 jours → attention
                                 niveauCode = "attention";
                                 typeCode = "vaccin_prioritaire";
                                 titre = "Vaccin prioritaire dans " + joursAvant + "j — "
@@ -138,7 +127,6 @@ public class VaccinService {
                                 description = "Vaccin " + h.getProtocoleVaccin().getNomVaccin()
                                                 + " — prochain rappel le " + prochaineDate + ".";
                         } else {
-                                // Plus de 7 jours → info
                                 niveauCode = "info";
                                 typeCode = "rappel_vaccin";
                                 titre = "Rappel vaccin — " + h.getVache().getNumeroBoucle();
@@ -160,14 +148,10 @@ public class VaccinService {
                                                                 h.setAlerteAcquittee(false);
                                                         },
                                                         () -> {
-                                                                // Vérifier si une alerte acquittée existe
                                                                 alerteRepo.findTopByVacheIdAndTypeAlerteAndAcquitteeTrueOrderByCreatedAtDesc(
                                                                                 h.getVache().getId(), typeCode)
                                                                                 .ifPresent(a -> {
-                                                                                        h.setAlerteId(null); // Pas de
-                                                                                                             // lien —
-                                                                                                             // alerte
-                                                                                                             // acquittée
+                                                                                        h.setAlerteId(null);
                                                                                         h.setAlerteAcquittee(true);
                                                                                 });
                                                         });
@@ -176,9 +160,6 @@ public class VaccinService {
                 return sorted;
         }
 
-        // ---------------------------------------------------------------
-        // Statistiques (inchangé)
-        // ---------------------------------------------------------------
         public List<VaccinStatDTO> getStatistiquesVaccins() {
                 return historiqueRepository.findAll()
                                 .stream()
@@ -201,9 +182,6 @@ public class VaccinService {
                                 .toList();
         }
 
-        // ---------------------------------------------------------------
-        // Statut texte (inchangé)
-        // ---------------------------------------------------------------
         public List<String> statut(List<HistoriqueVaccin> vaccins) {
                 List<String> statuts = new ArrayList<>();
                 LocalDate today = LocalDate.now();
