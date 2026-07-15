@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -62,19 +63,17 @@ public class VenteService {
                 .orElseThrow(() -> new RuntimeException("Vente introuvable : " + id));
     }
 
-    // 2. getOldestVentes — tri par date ASC avec pagination
     public Page<Vente> getOldestVentes(int page, int size) {
         return venteRepository.findAllByOrderByDateVenteAsc(
                 PageRequest.of(page, size));
     }
 
-    // 3. findByPrixTotalBetweenDateDesc — déjà dans le repository, juste exposer
     public Page<Vente> findByPrixTotalBetweenDateDesc(
             BigDecimal min, BigDecimal max, int page, int size) {
-        return venteRepository.findByPrixTotalBetweenDateDesc(
-                min, max, PageRequest.of(page, size));
+        return venteRepository.findByPrixTotalBetweenDateVenteDesc(
+                min, max, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dateVente")));
     }
-
+ 
     public Vente effectuerVente(BigDecimal quantite, BigDecimal prixUnitaire, LocalDate dateVente, RefProduit produit) {
         if (produit == null || produit.getId() == null) {
             throw new RuntimeException("Le produit vendu doit être sélectionné.");
