@@ -1,6 +1,0 @@
--- ============================================================
--- Ce fichier ne contenait que des données de test (module Alertes).
--- Elles ont été fusionnées dans donnee.sql (sections 6, 8, 10, 11, 13 :
--- vaches V001_TEST..V004_TEST, vaccination, reproduction, stock
--- aliments sous seuil, vente, alertes de démonstration).
--- ============================================================

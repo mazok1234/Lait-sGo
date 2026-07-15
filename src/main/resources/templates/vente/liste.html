@@ -25,6 +25,15 @@
                            style="padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;width:100px;font-family:'Inter',sans-serif;font-size:0.85rem;">
                     <input type="number" name="max" placeholder="Max" th:value="${max}"
                            style="padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;width:100px;font-family:'Inter',sans-serif;font-size:0.85rem;">
+                    <select name="produitId"
+                            style="padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-family:'Inter',sans-serif;font-size:0.85rem;">
+                        <option value="">Tous les produits</option>
+                        <option th:each="produit : ${produits}"
+                                th:value="${produit.id}"
+                                th:text="${produit.libelle}"
+                                th:selected="${produitId != null and produitId == produit.id}">
+                        </option>
+                    </select>
                     <input type="hidden" name="page" value="0"/>
                     <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-filter"></i> Filtrer</button>
                 </form>
@@ -64,13 +73,13 @@
 
         <div class="pagination" th:if="${page.totalPages > 1}">
             <a th:if="${!page.first}"
-               th:href="@{/vente/liste(page=${page.number-1}, min=${min}, max=${max})}"
+               th:href="@{/vente/liste(page=${page.number-1}, min=${min}, max=${max}, produitId=${produitId})}"
                class="btn btn-sm" style="border:1px solid #D1D5DB;">
                 <i class="fas fa-chevron-left"></i> Précédent
             </a>
             <span class="page-info" th:text="'Page ' + (${page.number} + 1) + ' / ' + ${page.totalPages}">Page 1</span>
             <a th:if="${!page.last}"
-               th:href="@{/vente/liste(page=${page.number+1}, min=${min}, max=${max})}"
+               th:href="@{/vente/liste(page=${page.number+1}, min=${min}, max=${max}, produitId=${produitId})}"
                class="btn btn-sm" style="border:1px solid #D1D5DB;">
                 Suivant <i class="fas fa-chevron-right"></i>
             </a>

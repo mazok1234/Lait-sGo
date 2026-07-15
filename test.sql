@@ -1,7 +1,0 @@
--- ============================================================
--- Ce fichier ne contenait que des données de démonstration pour les
--- graphes admin (production, ventes, dépenses sur 6 mois). Elles ont
--- été fusionnées dans donnee.sql (sections 6, 10, 11, 12 : vache
--- TEST-001, aliments Foin/Ensilage, mouvements sur 6 mois, production
--- et ventes mensuelles).
--- ============================================================

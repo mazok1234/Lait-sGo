@@ -44,9 +44,11 @@ public interface VenteRepository extends JpaRepository<Vente, Integer> {
                             from Vente v
                             where (:min IS NULL or (v.prixUnitaire * v.quantite) >= :min)
                               and (:max IS NULL or (v.prixUnitaire * v.quantite) <= :max)
+                              and (:produitId IS NULL or v.produit.id = :produitId)
                         """)
         Page<Vente> findByPrixTotalBetweenDateVenteDesc(
                         @Param("min") BigDecimal min,
                         @Param("max") BigDecimal max,
+                        @Param("produitId") Integer produitId,
                         Pageable pageable);
 }

@@ -69,9 +69,9 @@ public class VenteService {
     }
 
     public Page<Vente> findByPrixTotalBetweenDateDesc(
-            BigDecimal min, BigDecimal max, int page, int size) {
+            BigDecimal min, BigDecimal max, Integer produitId, int page, int size) {
         return venteRepository.findByPrixTotalBetweenDateVenteDesc(
-                min, max, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dateVente")));
+                min, max, produitId, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dateVente")));
     }
  
     public Vente effectuerVente(BigDecimal quantite, BigDecimal prixUnitaire, LocalDate dateVente, RefProduit produit) {
