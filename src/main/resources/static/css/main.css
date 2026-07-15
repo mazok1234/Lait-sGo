@@ -61,6 +61,12 @@ ul {
     color: #007AFF;
 }
 
+.logo-img {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+}
+
 .sidebar-nav {
     flex: 1;
     padding: 16px 12px;

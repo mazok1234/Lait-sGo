@@ -42,6 +42,7 @@
             margin-bottom: 0.4rem;
         }
         .login-logo i { font-size: 1.7rem; color: #007AFF; }
+        .login-logo-img { width: 64px; height: 64px; object-fit: contain; }
         .login-subtitle {
             text-align: center;
             color: #6B7280;
@@ -107,7 +108,7 @@
 
     <div class="login-card">
         <div class="login-logo">
-            <i class="fas fa-cow"></i>
+            <img th:src="@{/image/logo.png}" alt="Lait's Go" class="login-logo-img">
             <span>Lait's Go</span>
         </div>
         <div class="login-subtitle">Connexion à votre espace</div>
