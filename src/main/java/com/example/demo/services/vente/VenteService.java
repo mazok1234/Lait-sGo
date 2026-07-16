@@ -22,18 +22,24 @@ import com.example.demo.repository.production.ProductionRepository;
 import com.example.demo.repository.vente.RefProduitRepository;
 import com.example.demo.repository.vente.VenteRepository;
 import com.example.demo.services.alerte.AlerteService;
+import com.example.demo.services.cheptel.StatutVieService;
 
 @Service
 @Transactional
 public class VenteService {
 
     private static final String CODE_LAIT = "LAIT";
+    private static final String CODE_VEAU = "VEAU";
+    private static final String CODE_VACHE = "VACHE";
+    private static final String STATUT_VIE_VEAU = "Veau";
+    private static final String STATUT_VIE_VACHE_ACTIVE = "Vache_active";
 
     private final ProductionRepository productionRepository;
     private final VenteRepository venteRepository;
     private final UtilisateurRepository utilisateurRepository;
     private final RefProduitRepository refProduitRepository;
     private final AlerteService alerteService;
+    private final StatutVieService statutVieService;
 
     private static final BigDecimal SEUIL_STOCK_LAIT_L = new BigDecimal("50");
 
@@ -43,12 +49,18 @@ public class VenteService {
             VenteRepository venteRepository,
             UtilisateurRepository utilisateurRepository,
             RefProduitRepository refProduitRepository,
-            AlerteService alerteService) {
+            AlerteService alerteService,
+            StatutVieService statutVieService) {
         this.productionRepository = productionRepository;
         this.venteRepository = venteRepository;
         this.utilisateurRepository = utilisateurRepository;
         this.refProduitRepository = refProduitRepository;
         this.alerteService = alerteService;
+        this.statutVieService = statutVieService;
+    }
+
+    private int nombreDisponible(String statutVieLibelle) {
+        return statutVieService.findVacheIdsByStatut(statutVieService.getByLibelle(statutVieLibelle).getId()).size();
     }
 
     public List<RefProduit> getProduits() {
@@ -114,6 +126,20 @@ public class VenteService {
                 modified.add(production);
             }
             productionRepository.saveAll(modified);
+        }
+
+        if (CODE_VEAU.equals(produitResolu.getCode())) {
+            int disponible = nombreDisponible(STATUT_VIE_VEAU);
+            if (quantite.compareTo(BigDecimal.valueOf(disponible)) > 0) {
+                throw new RuntimeException("Stock insuffisant. Veaux disponibles dans le cheptel : " + disponible);
+            }
+        }
+
+        if (CODE_VACHE.equals(produitResolu.getCode())) {
+            int disponible = nombreDisponible(STATUT_VIE_VACHE_ACTIVE);
+            if (quantite.compareTo(BigDecimal.valueOf(disponible)) > 0) {
+                throw new RuntimeException("Stock insuffisant. Vaches disponibles dans le cheptel : " + disponible);
+            }
         }
 
         Vente vente = new Vente();
@@ -185,6 +211,8 @@ public class VenteService {
 public void importerVentes(List<Vente> ventes) {
 
     BigDecimal stockDisponible = productionRepository.getRemainingStock();
+    BigDecimal veauxDisponibles = BigDecimal.valueOf(nombreDisponible(STATUT_VIE_VEAU));
+    BigDecimal vachesDisponibles = BigDecimal.valueOf(nombreDisponible(STATUT_VIE_VACHE_ACTIVE));
 
     for (Vente vente : ventes) {
 
@@ -231,6 +259,32 @@ public void importerVentes(List<Vente> ventes) {
             }
 
             stockDisponible = stockDisponible.subtract(vente.getQuantite());
+        }
+
+        if (CODE_VEAU.equals(vente.getProduit().getCode())) {
+            if (veauxDisponibles.compareTo(vente.getQuantite()) < 0) {
+                throw new RuntimeException(
+                        "Stock insuffisant pour la vente du "
+                        + vente.getDateVente()
+                        + ". Veaux disponibles : "
+                        + veauxDisponibles
+                );
+            }
+
+            veauxDisponibles = veauxDisponibles.subtract(vente.getQuantite());
+        }
+
+        if (CODE_VACHE.equals(vente.getProduit().getCode())) {
+            if (vachesDisponibles.compareTo(vente.getQuantite()) < 0) {
+                throw new RuntimeException(
+                        "Stock insuffisant pour la vente du "
+                        + vente.getDateVente()
+                        + ". Vaches disponibles : "
+                        + vachesDisponibles
+                );
+            }
+
+            vachesDisponibles = vachesDisponibles.subtract(vente.getQuantite());
         }
     }
 

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:replace="~{index :: layout(~{::mainContent})}">
+
+<head>
+    <title>Historique vaccins</title>
+</head>
+
+<body>
+
+    <div th:fragment="mainContent" class="page-content">
+
+        <div class="page-header">
+            <h1 class="page-title" th:text="'Historique vaccins — ' + ${vache.numeroBoucle}">Historique vaccins</h1>
+            <p class="page-subtitle">Vaccinations enregistrées pour cette vache</p>
+        </div>
+
+        <div class="card card-table">
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Vaccin</th>
+                            <th>Type d'injection</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="h : ${historiques}">
+                            <td th:text="${h.dateVaccination}">2024-01-01</td>
+                            <td th:text="${h.protocoleVaccin != null ? h.protocoleVaccin.nomVaccin : '-'}">Vaccin</td>
+                            <td th:text="${h.typeInjection}">-</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(historiques)}">
+                            <td colspan="3" class="text-center" style="padding:32px;color:#9CA3AF;">
+                                Aucune vaccination enregistrée pour cette vache.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

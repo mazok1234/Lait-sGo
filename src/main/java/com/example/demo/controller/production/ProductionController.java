@@ -14,28 +14,37 @@ import com.example.demo.repository.cheptel.VacheRepository;
 import com.example.demo.repository.vente.VenteRepository;
 import com.example.demo.services.production.ProductionService;
 import com.example.demo.services.cheptel.StatutLactationVacheService;
+import com.example.demo.services.cheptel.StatutSanteService;
 
 @Controller
 @RequestMapping("/productions")
 public class ProductionController {
     private static final String STATUT_VACHE_EN_LACTATION = "En_lactation";
+    private static final String STATUT_VACHE_SAINE = "Saine";
 
     private final ProductionService productionService;
     private final VacheRepository vacheRepository;
     private final VenteRepository venteRepository;
     private final StatutLactationVacheService statutLactationService;
+    private final StatutSanteService statutSanteService;
 
     public ProductionController(ProductionService productionService, VacheRepository vacheRepository,
-            VenteRepository venteRepository, StatutLactationVacheService statutLactationService) {
+            VenteRepository venteRepository, StatutLactationVacheService statutLactationService,
+            StatutSanteService statutSanteService) {
         this.productionService = productionService;
         this.vacheRepository = vacheRepository;
         this.venteRepository = venteRepository;
         this.statutLactationService = statutLactationService;
+        this.statutSanteService = statutSanteService;
     }
 
     private List<Vache> vachesEnLactation() {
-        Integer statutId = statutLactationService.getByLibelle(STATUT_VACHE_EN_LACTATION).getId();
-        return vacheRepository.findAllById(statutLactationService.findVacheIdsByStatut(statutId));
+        Integer statutLactationId = statutLactationService.getByLibelle(STATUT_VACHE_EN_LACTATION).getId();
+        Integer statutSanteId = statutSanteService.getByLibelle(STATUT_VACHE_SAINE).getId();
+        List<Long> idsEnLactation = statutLactationService.findVacheIdsByStatut(statutLactationId);
+        List<Long> idsSaines = statutSanteService.findVacheIdsByStatut(statutSanteId);
+        List<Long> idsEligibles = idsEnLactation.stream().filter(idsSaines::contains).toList();
+        return vacheRepository.findAllById(idsEligibles);
     }
 
 @GetMapping
